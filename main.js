@@ -13,13 +13,15 @@ function install(app) {
       { text: 'Rule the web', completed: false },
     ];
 
-    var  numCompleted =  arr.filter(function(curr) { return curr.completed }).length
+    var numCompleted =  arr.filter(function(curr) { return curr.completed }).length
+    var numLeft = arr.length - numCompleted;
     if (isCompleted || isActive) {
       arr = arr.filter(function(curr) { return curr.completed == isCompleted });
     }
     res.render('index', {
       todoItems: arr,
       numCompleted: numCompleted,
+      numLeft: numLeft,
       what: isCompleted ? 'completed' : isActive ? 'active' : ''
     });
   });
