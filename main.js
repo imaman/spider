@@ -6,10 +6,13 @@ function install(app) {
     res.type('txt').send('Hi there');
   });
   app.get('/todos', function(req, res) {
-    res.render('index', { todoItems: [
-      { text: 'Create a TodoMVC template', completed: true },
-      { text: 'Rule the web', completed: false },
-    ]});
+    res.render('index', {
+      todoItems: [
+        { text: 'Create a TodoMVC template', completed: true },
+        { text: 'Rule the web', completed: false },
+      ],
+      numCompleted: 1
+    });
   });
 }
 

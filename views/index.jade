@@ -26,7 +26,9 @@ html(lang='en')
               input(class="edit" value=curr.text)
 
       footer(id="footer")
-        span(id="todo-count") <strong>1</strong> item left
+        span(id="todo-count")
+          strong= numCompleted
+          |  item left
         ul(id="filters")
           li
             a(class="selected" href="#/") All
@@ -34,7 +36,9 @@ html(lang='en')
             a(href="#/active") Active
           li
             a(href="#/completed") Completed
-        button(id="clear-completed") Clear completed (1)
+        button(id="clear-completed")
+          | Clear completed
+          = ' (' + numCompleted + ')'
 
     footer(id="info")
       p Double-click to edit a todo
