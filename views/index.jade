@@ -31,11 +31,11 @@ html(lang='en')
           |  item left
         ul(id="filters")
           li
-            a(class="selected" href="#/") All
+            a(class="selected" href="/todos") All
           li
-            a(href="#/active") Active
+            a(href="/todos?what=active") Active
           li
-            a(href="#/completed") Completed
+            a(href="todos?what=completed") Completed
         button(id="clear-completed")
           | Clear completed
           = ' (' + numCompleted + ')'

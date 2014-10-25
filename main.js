@@ -6,12 +6,20 @@ function install(app) {
     res.type('txt').send('Hi there');
   });
   app.get('/todos', function(req, res) {
+    var isCompleted = req.query.what == 'completed';
+    var isActive = req.query.what == 'active';
+    var arr = [
+      { text: 'Create a TodoMVC template', completed: true },
+      { text: 'Rule the web', completed: false },
+    ];
+
+    var  numCompleted =  arr.filter(function(curr) { return curr.completed }).length
+    if (isCompleted || isActive) {
+      arr = arr.filter(function(curr) { return curr.completed == isCompleted });
+    }
     res.render('index', {
-      todoItems: [
-        { text: 'Create a TodoMVC template', completed: true },
-        { text: 'Rule the web', completed: false },
-      ],
-      numCompleted: 1
+      todoItems: arr,
+      numCompleted: numCompleted
     });
   });
 }
