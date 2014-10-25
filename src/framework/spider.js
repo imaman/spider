@@ -22,29 +22,22 @@ function createApp(port, done) {
   done(null, app);
 }
 
-function x(port, done) {
+exports.run = function(port, ready, done) {
   var flow = funflow.newFlow(
     function create(port, done) {
-      console.log('L.31');
       createApp(port, done);
     },
     function listen(app, done) {
-      console.log('L.35');
       this.app = app;
-      this.server = app.listen(app.get('port'), done)
+      this.server = app.listen(app.get('port'), done);
+      ready(app);
     },
     function serverIsUp(next) {
       console.log('> Express server started at http://localhost:' + this.app.get('port'));
       next();
     }
   );
-  console.log('L.44');
   flow(null, port, done);
-}
-
-exports.run = function(port, done) {
-  console.log('@@@@ ' + port);
-  x(port, done);
 };
 
 
