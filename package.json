@@ -11,11 +11,16 @@
     "type": "git",
     "url": "https://github.com/imaman/spider.git"
   },
-  "keywords": [
-  ],
-  "devDependencies": {
-  },
+  "keywords": [],
+  "devDependencies": {},
   "dependencies": {
+    "express": "^4.10.0",
+    "funflow": "0.0.8",
+    "jade": "^1.7.0",
+    "path": "^0.4.9",
+    "method-override": "^2.3.0",
+    "morgan": "^1.4.1",
+    "body-parser": "^1.9.1"
   },
   "license": "MIT",
   "engines": {
