@@ -1,15 +1,19 @@
 var spider = require('./src/framework/spider.js');
 
 
-function done(err) {
-  console.log('done. err=' + err);
-}
-
-function ready(app) {
+function install(app) {
   app.get('/', function(req, res) {
     res.type('txt').send('Hi there');
   });
 }
 
-spider.run(3000, ready, done);
+function ready(app) {
+  console.log('>> Express server started at http://localhost:' + app.get('port'));
+}
+
+function done(err) {
+  console.log('done. err=' + err);
+}
+
+spider.run(3000, install, ready, done);
 

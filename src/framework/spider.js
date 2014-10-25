@@ -22,19 +22,19 @@ function createApp(port, done) {
   done(null, app);
 }
 
-exports.run = function(port, ready, done) {
+exports.run = function(port, install, ready, done) {
   var flow = funflow.newFlow(
     function create(port, done) {
       createApp(port, done);
     },
     function listen(app, done) {
       this.app = app;
+      install(app);
       this.server = app.listen(app.get('port'), done);
-      ready(app);
     },
-    function serverIsUp(next) {
-      console.log('> Express server started at http://localhost:' + this.app.get('port'));
-      next();
+    function serverIsUp(done) {
+      ready(this.app);
+      done();
     }
   );
   flow(null, port, done);
