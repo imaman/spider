@@ -7,22 +7,24 @@ var logger = morgan('combined');
 var path = require('path');
 var funflow = require('funflow');
 
-function createApp(port, done) {
-  var app = express();
+exports.run = function(port, rootDir, install, ready, done) {
+  function createApp(port, done) {
+    var app = express();
 
-  app.set('port', port);
-  app.set('views', path.join(__dirname, 'views'));
-  app.set('view engine', 'jade');
+    app.set('port', port);
+    app.set('views', path.join(rootDir, 'views'));
+    app.set('view engine', 'jade');
 
-  app.use(logger);
-  app.use(bodyParser.json());
-  app.use(methodOverride());
+    app.use(logger);
+    app.use(bodyParser.json());
+    app.use(methodOverride());
 
-  app.use(express.static(__dirname + '/public'));
-  done(null, app);
-}
+    app.use(express.static(rootDir + '/bower_components'));
+    app.use(express.static(rootDir + '/css'));
+    app.use(express.static(rootDir + '/public'));
+    done(null, app);
+  }
 
-exports.run = function(port, install, ready, done) {
   var flow = funflow.newFlow(
     function create(port, done) {
       createApp(port, done);

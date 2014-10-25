@@ -5,6 +5,9 @@ function install(app) {
   app.get('/', function(req, res) {
     res.type('txt').send('Hi there');
   });
+  app.get('/todos', function(req, res) {
+    res.sendFile(__dirname + '/index.html');
+  });
 }
 
 function ready(app) {
@@ -15,5 +18,5 @@ function done(err) {
   console.log('done. err=' + err);
 }
 
-spider.run(3000, install, ready, done);
+spider.run(3000, __dirname, install, ready, done);
 
