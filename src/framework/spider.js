@@ -17,6 +17,7 @@ exports.run = function(port, rootDir, install, ready, done) {
 
     app.use(logger);
     app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({extended: true}));
     app.use(methodOverride());
 
     app.use(express.static(rootDir + '/bower_components'));

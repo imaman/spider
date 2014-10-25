@@ -13,8 +13,13 @@ function install(app) {
 
   app.delete('/todos', function(req, res) {
     arr = arr.filter(function(curr) { return !curr.completed; });
-    res.send(200).end();
+    res.sendStatus(200).end();
   });
+  app.post('/todos', function(req, res) {
+    arr.push({ text: req.body.text, completed: false });
+    res.sendStatus(200).end();
+  });
+
   app.get('/todos', function(req, res) {
     var isCompleted = req.query.what == 'completed';
     var isActive = req.query.what == 'active';
