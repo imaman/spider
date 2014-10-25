@@ -6,7 +6,7 @@ function install(app) {
     res.type('txt').send('Hi there');
   });
   app.get('/todos', function(req, res) {
-    res.sendFile(__dirname + '/index.html');
+    res.render('index');
   });
 }
 

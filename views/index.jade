@@ -1,0 +1,56 @@
+
+doctype html
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    title TodoMVC
+    link(rel="stylesheet" href="todomvc-common/base.css")
+
+  body
+    section(id="todoapp")
+      header(id="header")
+        h1 todos
+        input(id="new-todo" placeholder="What needs to be done?" autofocus)
+
+
+
+
+      section(id="main")
+        input(id="toggle-all" type="checkbox")
+        label(for="toggle-all") Mark all as complete
+        ul(id="todo-list")
+          li(class="completed")
+            div(class="view")
+              input(class="toggle" type="checkbox" checked)
+              label Create a TodoMVC template
+              button(class="destroy")
+
+            input(class="edit" value="Create a TodoMVC template")
+          li
+            div(class="view")
+              input(class="toggle" type="checkbox")
+              label Rule the web
+              button(class="destroy")
+
+            input(class="edit" value="Rule the web")
+
+      footer(id="footer")
+        span(id="todo-count") <strong>1</strong> item left
+        ul(id="filters")
+          li
+            a(class="selected" href="#/") All
+          li
+            a(href="#/active") Active
+          li
+            a(href="#/completed") Completed
+        button(id="clear-completed") Clear completed (1)
+
+    footer(id="info")
+      p Double-click to edit a todo
+      p Template by <a href="http://github.com/sindresorhus">Sindre Sorhus</a>
+      p Created by <a href="http://todomvc.com">you</a>
+      p Part of <a href="http://todomvc.com">TodoMVC</a>
+
+    script(src="todomvc-common/base.js")
+    script(src="js/app.js")
+
