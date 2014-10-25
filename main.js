@@ -19,7 +19,8 @@ function install(app) {
     }
     res.render('index', {
       todoItems: arr,
-      numCompleted: numCompleted
+      numCompleted: numCompleted,
+      what: isCompleted ? 'completed' : isActive ? 'active' : ''
     });
   });
 }
