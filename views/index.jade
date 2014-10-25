@@ -38,9 +38,10 @@ html(lang='en')
             a(class=(what == "active" ? "selected" : "") href="/todos?what=active") Active
           li
             a(class=(what == "completed" ? "selected" : "") href="/todos?what=completed") Completed
-        button(id="clear-completed")
-          | Clear completed
-          = ' (' + numCompleted + ')'
+        if numCompleted > 0
+          button(id="clear-completed")
+            | Clear completed
+            = ' (' + numCompleted + ')'
 
     footer(id="info")
       p Double-click to edit a todo
