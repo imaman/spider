@@ -5,13 +5,19 @@ function install(app) {
   app.get('/', function(req, res) {
     res.type('txt').send('Hi there');
   });
+
+  var arr = [
+    { text: 'Create a TodoMVC template', completed: true },
+    { text: 'Rule the web', completed: false },
+  ];
+
+  app.delete('/todos', function(req, res) {
+    arr = arr.filter(function(curr) { return !curr.completed; });
+    res.send(200).end();
+  });
   app.get('/todos', function(req, res) {
     var isCompleted = req.query.what == 'completed';
     var isActive = req.query.what == 'active';
-    var arr = [
-      { text: 'Create a TodoMVC template', completed: true },
-      { text: 'Rule the web', completed: false },
-    ];
 
     var numCompleted =  arr.filter(function(curr) { return curr.completed }).length
     var numLeft = arr.length - numCompleted;

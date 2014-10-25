@@ -22,6 +22,7 @@ exports.run = function(port, rootDir, install, ready, done) {
     app.use(express.static(rootDir + '/bower_components'));
     app.use(express.static(rootDir + '/css'));
     app.use(express.static(rootDir + '/public'));
+
     done(null, app);
   }
 
