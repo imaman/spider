@@ -37,7 +37,7 @@ exports.newModel = function() {
     lookup: function(id) { return select(id).get(); },
     remove: function(id) { select(id).remove(); },
     findAll: function(pred) { return selectAll(pred).get(); },
-    size: function() { return all().length; }
+    size: function() { return selectAll().get().length; }
   };
 };
 
