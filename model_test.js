@@ -77,20 +77,6 @@ describe('model', function() {
     expect(model.at(id)).to.be(null);
   });
 
-  describe('forEach', function() {
-    it('provides access to all elements', function() {
-      var model = newModel();
-      var a = model.add({text: 'A'});
-      var b = model.add({text: 'B'});
-      model.forEach(function(curr) {
-        curr.text = curr.text + curr.text;
-      });
-
-      expect(model.at(a).text).to.equal('AA');
-      expect(model.at(b).text).to.equal('BB');
-    });
-  });
-
   describe('remove multiple items', function() {
     it('deletes the item that matches the predicate', function() {
       var model = newModel();
