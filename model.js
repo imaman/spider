@@ -24,7 +24,7 @@ exports.newModel = function() {
       forEach: function(act) { asArr().forEach(act) },
       map: function(f) { return asArr().map(f) },
       get: function() { return data[id] || null },
-      remove: function() { data[id] = null }
+      remove: function() { delete data[id] }
     };
   }
 
@@ -45,7 +45,8 @@ exports.newModel = function() {
     lookup: function(id) { return id === undefined ? selectAll() : select(id); },
     remove: function(id) { select(id).remove(); },
     findAll: function(pred) { return selectAll(pred).get(); },
-    size: function() { return selectAll().get().length; }
+    size: function() { return selectAll().get().length; },
+    toString: function() { return JSON.stringify(data, null, 2); }
   };
 };
 
