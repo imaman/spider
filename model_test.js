@@ -139,43 +139,4 @@ describe('model', function() {
       expect(model.lookup(a2).get()).to.be(null);
     });
   });
-  describe('findAll', function() {
-    it('finds an item that matches the predicate', function() {
-      var model = newModel();
-      var a = model.add({text: 'A'});
-      var all = model.findAll(function(curr) { return curr.text == 'A' });
-
-      expect(all.map(function(curr) { return curr.id })).to.eql([ a ]);
-    });
-    it('finds all the items that match the predicate', function() {
-      var model = newModel();
-      var a1 = model.add({text: 'A'});
-      var a2 = model.add({text: 'A'});
-      var all = model.findAll(function(curr) { return curr.text == 'A' });
-      expect(all.map(function(curr) { return curr.id })).to.contain(a1);
-      expect(all.map(function(curr) { return curr.id })).to.contain(a2);
-    });
-    it('finds only the items that match the predicate', function() {
-      var model = newModel();
-      var a1 = model.add({text: 'A'});
-      var b = model.add({text: 'B'});
-      var a2 = model.add({text: 'A'});
-      var all = model.findAll(function(curr) { return curr.text == 'A' });
-      var ids = all.map(function(curr) { return curr.id });
-      expect(ids).to.contain(a1);
-      expect(ids).to.contain(a2);
-      expect(ids).not.to.contain(b);
-    });
-    it('finds all elements if no predicate is given', function() {
-      var model = newModel();
-      var a1 = model.add({text: 'A'});
-      var b = model.add({text: 'B'});
-      var a2 = model.add({text: 'A'});
-      var all = model.findAll();
-      var ids = all.map(function(curr) { return curr.id });
-      expect(ids).to.contain(a1);
-      expect(ids).to.contain(a2);
-      expect(ids).to.contain(b);
-    });
-  });
 });

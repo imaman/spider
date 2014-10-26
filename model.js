@@ -45,7 +45,6 @@ exports.newModel = function() {
     add: function(obj) { obj.id = nextId(); data[obj.id] = obj; return obj.id; },
     forEach: function(f) { this.q().forEach(f); },
     lookup: function(id) { return id === undefined ? selectAll() : select(id); },
-    findAll: function(pred) { return this.q(pred).get(); },
     size: function() { return this.q().get().length; },
     toString: function() { return JSON.stringify(data, null, 2); }
   };

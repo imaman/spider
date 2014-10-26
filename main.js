@@ -44,12 +44,12 @@ function install(app) {
 
     var numCompleted = model.q(function(curr) { return curr.completed }).size();
     var numLeft = model.size() - numCompleted;
-    var selected = model.findAll();
+    var selected = model.q();
     if (isCompleted || isActive) {
-      selected = selected.filter(function(curr) { return curr.completed == isCompleted });
+      selected = model.q(function(curr) { return curr.completed == isCompleted });
     }
     res.render('index', {
-      todoItems: selected,
+      todoItems: selected.get(),
       numCompleted: numCompleted,
       numLeft: numLeft,
       what: isCompleted ? 'completed' : isActive ? 'active' : ''
