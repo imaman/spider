@@ -22,25 +22,21 @@ exports.newModel = function() {
   }
 
   function selectAll(pred) {
+    pred = pred || function() { return true };
     return {
-      forEach: function(act) { all().filter(pred).forEach(act) },
-      remove: function() { this.forEach(function(curr) { delete data[curr.id] }) }
+      forEach: function(act) { this.get().forEach(act) },
+      remove: function() { this.forEach(function(curr) { delete data[curr.id] }) },
+      get: function() { return all().filter(pred) }
     };
   }
 
   return {
     add: function(obj) { obj.id = nextId(); data[obj.id] = obj; return obj.id; },
     removeAll: function(pred) { selectAll(pred).remove(); },
-    forEach: function(f) { all().forEach(f); },
-    lookup: function(id) {
-      return select(id).get();
-    },
-    remove: function(id) {
-      select(id).remove();
-    },
-    findAll: function(pred) {
-      return all().filter(pred || function() { return true; });
-    },
+    forEach: function(f) { selectAll().forEach(f); },
+    lookup: function(id) { return select(id).get(); },
+    remove: function(id) { select(id).remove(); },
+    findAll: function(pred) { return selectAll(pred).get(); },
     size: function() { return all().length; }
   };
 };
