@@ -16,4 +16,17 @@ $(document).ready(function() {
       });
     }
   });
+
+  $('.toggle').change(function() {
+    var box = $(this);
+    $.ajax({
+      url: '/todos/' + box.attr('item_id'),
+      type: 'PUT',
+      data: {
+        completed: box.prop('checked')
+      }
+    }).always(function() {
+      window.location.reload();
+    });
+  });
 });

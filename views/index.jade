@@ -22,7 +22,7 @@ html(lang='en')
           each curr in todoItems
             li(class=curr.completed ? 'completed' : '')
               div(class="view")
-                input(class="toggle" type="checkbox" checked=curr.completed)
+                input(class="toggle" type="checkbox" checked=curr.completed item_id=curr.id)
                 label= curr.text
                 button(class="destroy")
               input(class="edit" value=curr.text)

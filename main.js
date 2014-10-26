@@ -6,9 +6,16 @@ function install(app) {
     res.redirect('/todos');
   });
 
+  var ordinal = 0;
+  function nextId() {
+    var res = ordinal;
+    ++ordinal;
+    return res;
+  }
+
   var arr = [
-    { text: 'Create a TodoMVC template', completed: true },
-    { text: 'Rule the web', completed: false },
+    { id: nextId(), text: 'Create a TodoMVC template', completed: true },
+    { id: nextId(), text: 'Rule the web', completed: false },
   ];
 
   app.delete('/todos', function(req, res) {
@@ -16,7 +23,18 @@ function install(app) {
     res.sendStatus(200).end();
   });
   app.post('/todos', function(req, res) {
-    arr.push({ text: req.body.text, completed: false });
+    arr.push({ id: nextId(), text: req.body.text, completed: false });
+    res.sendStatus(200).end();
+  });
+
+  app.put('/todos/:id', function(req, res) {
+    var candidates = arr.filter(function(curr) { return curr.id == req.params.id });
+    if (candidates.length != 1) {
+      res.sendStatus(404).end();
+      return;
+    }
+
+    candidates[0].completed = (req.body.completed === 'true');
     res.sendStatus(200).end();
   });
 
