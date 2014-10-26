@@ -26,7 +26,7 @@ function install(app) {
       selector = undefined;
     }
 
-    model.lookup(selector).forEach(function(curr) {
+    model.q(selector).forEach(function(curr) {
       curr.completed = newState;
     });
     res.sendStatus(200).end();
