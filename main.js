@@ -14,7 +14,7 @@ function install(app) {
   model.add({text: 'Rule the web', completed: false });
 
   app.delete('/todos', function(req, res) {
-    model.q(function(curr) { return curr.completed; }).remove();
+    completed.remove();
     res.sendStatus(200).end();
   });
   app.post('/todos', function(req, res) {
@@ -45,16 +45,17 @@ function install(app) {
     var isCompleted = req.query.what == 'completed';
     var isActive = req.query.what == 'active';
 
-    var numCompleted = completed.size();
-    var numLeft = model.size() - numCompleted;
     var selected = model.q();
-    if (isCompleted || isActive) {
-      selected = model.q(function(curr) { return curr.completed == isCompleted });
+    if (isCompleted) {
+      selected = completed;
+    } else if (isActive) {
+      selected = active;
     }
+
     res.render('index', {
       todoItems: selected.get(),
-      numCompleted: numCompleted,
-      numLeft: numLeft,
+      numCompleted: completed.size(),
+      numLeft: active.size(),
       what: isCompleted ? 'completed' : isActive ? 'active' : ''
     });
   });
