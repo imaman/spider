@@ -21,14 +21,14 @@ function install(app) {
 
   app.put('/todos/:id', function(req, res) {
     var newState = (req.body.completed === 'true');
-    if (req.params.id == '_ALL_') {
-      model.forEach(function(curr) {
-        curr.completed = newState;
-      });
-      res.sendStatus(200).end();
-      return;
+    var selector = req.params.id;
+    if (selector == '_ALL_') {
+      selector = undefined;
     }
-    model.lookup(req.params.id).completed = newState;
+
+    model.lookup(selector).forEach(function(curr) {
+      curr.completed = newState;
+    });
     res.sendStatus(200).end();
   });
 
