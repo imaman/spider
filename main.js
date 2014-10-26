@@ -26,11 +26,12 @@ function install(app) {
 
     var numCompleted =  arr.filter(function(curr) { return curr.completed }).length
     var numLeft = arr.length - numCompleted;
+    var selected = arr;
     if (isCompleted || isActive) {
-      arr = arr.filter(function(curr) { return curr.completed == isCompleted });
+      selected = selected.filter(function(curr) { return curr.completed == isCompleted });
     }
     res.render('index', {
-      todoItems: arr,
+      todoItems: selected,
       numCompleted: numCompleted,
       numLeft: numLeft,
       what: isCompleted ? 'completed' : isActive ? 'active' : ''
