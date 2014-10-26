@@ -1,11 +1,6 @@
 var spider = require('./src/framework/spider.js');
 
-
-function install(app) {
-  app.get('/', function(req, res) {
-    res.redirect('/todos');
-  });
-
+function newModel() {
   var ordinal = 0;
   function nextId() {
     var res = ordinal;
@@ -18,44 +13,65 @@ function install(app) {
     { id: nextId(), text: 'Rule the web', completed: false },
   ];
 
+  return {
+    add: function(obj) { obj.id = nextId(); arr.push(obj); },
+    removeAll: function(pred) {
+      arr = arr.filter(function(curr) { return !pred(curr); });
+    },
+    forEach: function(f) { arr.forEach(f); },
+    lookup: function(id) {
+      var res = arr.filter(function(curr) { return curr.id == id });
+      if (res.length != 1)
+        throw new Error('Lookup of ID ' + id + ' has failed');
+      return res[0];
+    },
+    remove: function(id) {
+      var positions = arr.map(function(curr, pos) {
+        return curr.id == id ? pos : -1
+      });
+      positions = positions.filter(function(pos) { return pos >= 0; });
+      if (positions.length != 1)
+        throw new Error('Lookup of ID ' + id + ' has failed');
+
+      arr.splice(positions[0], 1);
+    },
+    findAll: function(pred) {
+      return arr.filter(pred || function() { return true; });
+    },
+    size: function() { return arr.length; }
+  };
+}
+
+function install(app) {
+  app.get('/', function(req, res) {
+    res.redirect('/todos');
+  });
+
+  var model = newModel();
   app.delete('/todos', function(req, res) {
-    arr = arr.filter(function(curr) { return !curr.completed; });
+    model.removeAll(function(curr) { return curr.completed; });
     res.sendStatus(200).end();
   });
   app.post('/todos', function(req, res) {
-    arr.push({ id: nextId(), text: req.body.text, completed: false });
+    model.add({text: req.body.text, completed: false });
     res.sendStatus(200).end();
   });
 
   app.put('/todos/:id', function(req, res) {
     var newState = (req.body.completed === 'true');
     if (req.params.id == '_ALL_') {
-      arr.forEach(function(curr) {
+      model.forEach(function(curr) {
         curr.completed = newState;
       });
       res.sendStatus(200).end();
       return;
     }
-    var candidates = arr.filter(function(curr) { return curr.id == req.params.id });
-    if (candidates.length != 1) {
-      res.sendStatus(404).end();
-      return;
-    }
-
-    candidates[0].completed = newState;
+    model.lookup(req.params.id).completed = newState;
     res.sendStatus(200).end();
   });
 
   app.delete('/todos/:id', function(req, res) {
-    var positions = arr.map(function(curr, pos) {
-      return curr.id == req.params.id ? pos : -1 });
-    positions = positions.filter(function(pos) { return pos >= 0; });
-    if (positions.length != 1) {
-      res.sendStatus(404).end();
-      return;
-    }
-
-    arr.splice(positions[0], 1);
+    model.remove(req.params.id);
     res.sendStatus(200).end();
   });
 
@@ -63,9 +79,9 @@ function install(app) {
     var isCompleted = req.query.what == 'completed';
     var isActive = req.query.what == 'active';
 
-    var numCompleted =  arr.filter(function(curr) { return curr.completed }).length
-    var numLeft = arr.length - numCompleted;
-    var selected = arr;
+    var numCompleted = model.findAll(function(curr) { return curr.completed }).length;
+    var numLeft = model.size() - numCompleted;
+    var selected = model.findAll();
     if (isCompleted || isActive) {
       selected = selected.filter(function(curr) { return curr.completed == isCompleted });
     }
