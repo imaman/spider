@@ -52,6 +52,20 @@ describe('model', function() {
       expect(model.q(function(e) { return e.text == 'A' }).size()).to.equal(2);
       expect(model.q(id).size()).to.equal(1);
     });
+    it('is lazily evaluated', function() {
+      var model = newModel();
+      var q = model.q(function(e) { return e.text == 'A' });
+      expect(q.size()).to.equal(0);
+
+      model.add({text: 'A'});
+      expect(q.size()).to.equal(1);
+
+      model.add({text: 'A'});
+      expect(q.size()).to.equal(2);
+
+      model.q().remove();
+      expect(q.size()).to.equal(0);
+    });
   });
 
   describe('at', function() {
