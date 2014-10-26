@@ -24,7 +24,7 @@ html(lang='en')
               div(class="view")
                 input(class="toggle" type="checkbox" checked=curr.completed item_id=curr.id)
                 label= curr.text
-                button(class="destroy")
+                button(class="destroy" item_id=curr.id)
               input(class="edit" value=curr.text)
 
       footer(id="footer")

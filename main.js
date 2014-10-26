@@ -38,6 +38,19 @@ function install(app) {
     res.sendStatus(200).end();
   });
 
+  app.delete('/todos/:id', function(req, res) {
+    var positions = arr.map(function(curr, pos) {
+      return curr.id == req.params.id ? pos : -1 });
+    positions = positions.filter(function(pos) { return pos >= 0; });
+    if (positions.length != 1) {
+      res.sendStatus(404).end();
+      return;
+    }
+
+    arr.splice(positions[0], 1);
+    res.sendStatus(200).end();
+  });
+
   app.get('/todos', function(req, res) {
     var isCompleted = req.query.what == 'completed';
     var isActive = req.query.what == 'active';

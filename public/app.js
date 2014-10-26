@@ -29,4 +29,16 @@ $(document).ready(function() {
       window.location.reload();
     });
   });
+
+  $('.destroy').click(function() {
+    var button = $(this);
+    $.ajax({
+      url: '/todos/' + button.attr('item_id'),
+      type: 'DELETE'
+    }).always(function() {
+      window.location.reload();
+    });
+  });
+
+
 });
