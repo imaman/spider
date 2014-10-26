@@ -13,6 +13,37 @@ describe('model', function() {
     expect(model.size()).to.be(1);
   });
 
+  describe('querying', function() {
+    it('can find by ID', function() {
+      var model = newModel();
+      var id = model.add({text: 'SOME_TEXT'});
+      var texts = model.q(id).map(function(curr) { return curr.text });
+      expect(texts).to.eql(['SOME_TEXT']);
+    });
+    it('can find by predicate', function() {
+      var model = newModel();
+      var a1 = model.add({text: 'A1'});
+      var b = model.add({text: 'B'});
+      var a2 = model.add({text: 'A2'});
+      var query = model.q(function(i) { return i.text.indexOf('A') >= 0 });
+      var texts = query.map(function(curr) { return curr.text });
+      expect(texts).to.contain('A1');
+      expect(texts).to.contain('A2');
+      expect(texts).not.to.contain('B');
+    });
+    it('finds all if the query is flasy', function() {
+      var model = newModel();
+      var a = model.add({text: 'A'});
+      var b = model.add({text: 'B'});
+      var query = model.q(null);
+      var texts = query.map(function(curr) { return curr.text });
+      expect(texts).to.contain('A');
+      expect(texts).to.contain('B');
+      expect(texts).to.have.length(2);
+    });
+
+  });
+
   describe('lookup', function() {
     it('finds an item by its ID', function() {
       var model = newModel();
