@@ -8,34 +8,30 @@ exports.newModel = function() {
     return res;
   }
 
-  var data = [];
+  var data = {};
+
+  function all() {
+    return Object.keys(data).filter(function(key) { return key }).map(function(key) { return data[key]; });
+  }
 
   var result = {
-    add: function(obj) { obj.id = nextId(); data.push(obj); },
+    add: function(obj) { obj.id = nextId(); data[obj.id] = obj; },
     removeAll: function(pred) {
-      data = data.filter(function(curr) { return !pred(curr); });
+      all().filter(function(curr) { return pred(curr); }).forEach(function(curr) {
+        delete data[curr.id];
+      });
     },
-    forEach: function(f) { data.forEach(f); },
+    forEach: function(f) { all().forEach(f); },
     lookup: function(id) {
-      var res = data.filter(function(curr) { return curr.id == id });
-      if (res.length != 1)
-        throw new Error('Lookup of ID ' + id + ' has failed');
-      return res[0];
+      return data[id];
     },
     remove: function(id) {
-      var positions = data.map(function(curr, pos) {
-        return curr.id == id ? pos : -1
-      });
-      positions = positions.filter(function(pos) { return pos >= 0; });
-      if (positions.length != 1)
-        throw new Error('Lookup of ID ' + id + ' has failed');
-
-      data.splice(positions[0], 1);
+      delete data[id];
     },
     findAll: function(pred) {
-      return data.filter(pred || function() { return true; });
+      return all().filter(pred || function() { return true; });
     },
-    size: function() { return data.length; }
+    size: function() { return all().length; }
   };
 
   result.add({text: 'Create a TodoMVC template', completed: true });
