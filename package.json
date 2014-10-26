@@ -4,7 +4,7 @@
   "author": "imaman",
   "description": "playground for a new MVC framework",
   "scripts": {
-    "test": "jasmine-node --captureExceptions --verbose specs"
+    "test": "node_modules/mocha/bin/mocha *_test.js"
   },
   "main": "./main.js",
   "repository": {
@@ -12,7 +12,10 @@
     "url": "https://github.com/imaman/spider.git"
   },
   "keywords": [],
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "^2.0.1",
+    "expect.js": "^0.3.1"
+  },
   "dependencies": {
     "express": "^4.10.0",
     "funflow": "0.0.8",
