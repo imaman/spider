@@ -3,7 +3,7 @@ var spider = require('./src/framework/spider.js');
 
 function install(app) {
   app.get('/', function(req, res) {
-    res.type('txt').send('Hi there');
+    res.redirect('/todos');
   });
 
   var arr = [
