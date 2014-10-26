@@ -44,7 +44,7 @@ exports.newModel = function() {
     forEach: function(f) { this.q().forEach(f); },
     lookup: function(id) { return id === undefined ? selectAll() : select(id); },
     findAll: function(pred) { return this.q(pred).get(); },
-    size: function() { return selectAll().get().length; },
+    size: function() { return this.q().get().length; },
     toString: function() { return JSON.stringify(data, null, 2); }
   };
 };
