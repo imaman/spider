@@ -11,7 +11,7 @@ function install(app) {
   model.add({text: 'Rule the web', completed: false });
 
   app.delete('/todos', function(req, res) {
-    model.removeAll(function(curr) { return curr.completed; });
+    model.q(function(curr) { return curr.completed; }).remove();
     res.sendStatus(200).end();
   });
   app.post('/todos', function(req, res) {
@@ -33,7 +33,7 @@ function install(app) {
   });
 
   app.delete('/todos/:id', function(req, res) {
-    model.remove(req.params.id);
+    model.q(req.params.id).remove();
     res.sendStatus(200).end();
   });
 

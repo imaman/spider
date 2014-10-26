@@ -85,7 +85,7 @@ describe('model', function() {
   it('can delete an item by ID', function() {
     var model = newModel();
     var id = model.add({text: 'SOME_TEXT'});
-    model.remove(id);
+    model.q(id).remove();
     expect(model.lookup(id).get()).to.be(null);
   });
 
@@ -103,18 +103,18 @@ describe('model', function() {
     });
   });
 
-  describe('removeAll', function() {
+  describe('remove multiple items', function() {
     it('deletes the item that matches the predicate', function() {
       var model = newModel();
       var a = model.add({text: 'A'});
-      model.removeAll(function(curr) { return curr.text == 'A' });
+      model.q(function(curr) { return curr.text == 'A' }).remove();
       expect(model.lookup(a).get()).to.be(null);
     });
     it('deletes only the item that matches the predicate', function() {
       var model = newModel();
       var a = model.add({text: 'A'});
       var b = model.add({text: 'B'});
-      model.removeAll(function(curr) { return curr.text == 'A' });
+      model.q(function(curr) { return curr.text == 'A' }).remove();
       expect(model.lookup(a).get()).to.be(null);
       expect(model.lookup(b).get()).to.have.property('text').equal('B');
     });
@@ -123,7 +123,7 @@ describe('model', function() {
       var a1 = model.add({text: 'A'});
       var b = model.add({text: 'B'});
       var a2 = model.add({text: 'A'});
-      model.removeAll(function(curr) { return curr.text == 'A' });
+      model.q(function(curr) { return curr.text == 'A' }).remove();
       expect(model.lookup(a1).get()).to.be(null);
       expect(model.lookup(b).get()).not.to.be(null);
       expect(model.lookup(a2).get()).to.be(null);

@@ -41,10 +41,8 @@ exports.newModel = function() {
   return {
     q: function(arg) { return !arg ? selectAll() : typeof(arg) === 'function' ? selectAll(arg) : select(arg) },
     add: function(obj) { obj.id = nextId(); data[obj.id] = obj; return obj.id; },
-    removeAll: function(pred) { this.q(pred).remove(); },
     forEach: function(f) { selectAll().forEach(f); },
     lookup: function(id) { return id === undefined ? selectAll() : select(id); },
-    remove: function(id) { this.q(id).remove() },
     findAll: function(pred) { return selectAll(pred).get(); },
     size: function() { return selectAll().get().length; },
     toString: function() { return JSON.stringify(data, null, 2); }
