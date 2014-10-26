@@ -28,13 +28,21 @@ function install(app) {
   });
 
   app.put('/todos/:id', function(req, res) {
+    var newState = (req.body.completed === 'true');
+    if (req.params.id == '_ALL_') {
+      arr.forEach(function(curr) {
+        curr.completed = newState;
+      });
+      res.sendStatus(200).end();
+      return;
+    }
     var candidates = arr.filter(function(curr) { return curr.id == req.params.id });
     if (candidates.length != 1) {
       res.sendStatus(404).end();
       return;
     }
 
-    candidates[0].completed = (req.body.completed === 'true');
+    candidates[0].completed = newState;
     res.sendStatus(200).end();
   });
 
