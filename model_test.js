@@ -41,7 +41,17 @@ describe('model', function() {
       expect(texts).to.contain('B');
       expect(texts).to.have.length(2);
     });
-
+    it('reports result set size', function() {
+      var model = newModel();
+      expect(model.q('non_existing_id').size()).to.equal(0);
+      var id = model.add({text: 'A'});
+      expect(id).not.to.be(null);
+      model.add({text: 'B'});
+      model.add({text: 'A'});
+      expect(model.q().size()).to.equal(3);
+      expect(model.q(function(e) { return e.text == 'A' }).size()).to.equal(2);
+      expect(model.q(id).size()).to.equal(1);
+    });
   });
 
   describe('lookup', function() {

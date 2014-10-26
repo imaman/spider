@@ -42,7 +42,7 @@ function install(app) {
     var isCompleted = req.query.what == 'completed';
     var isActive = req.query.what == 'active';
 
-    var numCompleted = model.findAll(function(curr) { return curr.completed }).length;
+    var numCompleted = model.q(function(curr) { return curr.completed }).size();
     var numLeft = model.size() - numCompleted;
     var selected = model.findAll();
     if (isCompleted || isActive) {

@@ -24,7 +24,8 @@ exports.newModel = function() {
       forEach: function(act) { asArr().forEach(act) },
       map: function(f) { return asArr().map(f) },
       get: function() { return data[id] || null },
-      remove: function() { delete data[id] }
+      remove: function() { delete data[id] },
+      size: function() { return asArr().length }
     };
   }
 
@@ -34,12 +35,13 @@ exports.newModel = function() {
       forEach: function(act) { this.get().forEach(act) },
       map: function(f) { return this.get().map(f) },
       remove: function() { this.forEach(function(curr) { delete data[curr.id] }) },
-      get: function() { return all().filter(pred) }
+      get: function() { return all().filter(pred) },
+      size: function() { return this.get().length }
     };
   }
 
   return {
-    q: function(arg) { return !arg ? selectAll() : typeof(arg) === 'function' ? selectAll(arg) : select(arg) },
+    q: function(arg) { return (arg === null || arg === undefined) ? selectAll() : typeof(arg) === 'function' ? selectAll(arg) : select(arg) },
     add: function(obj) { obj.id = nextId(); data[obj.id] = obj; return obj.id; },
     forEach: function(f) { this.q().forEach(f); },
     lookup: function(id) { return id === undefined ? selectAll() : select(id); },
