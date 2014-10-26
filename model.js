@@ -14,8 +14,8 @@ exports.newModel = function() {
     return Object.keys(data).filter(function(key) { return key }).map(function(key) { return data[key]; });
   }
 
-  var result = {
-    add: function(obj) { obj.id = nextId(); data[obj.id] = obj; },
+  return {
+    add: function(obj) { obj.id = nextId(); data[obj.id] = obj; return obj.id; },
     removeAll: function(pred) {
       all().filter(function(curr) { return pred(curr); }).forEach(function(curr) {
         delete data[curr.id];
@@ -23,7 +23,7 @@ exports.newModel = function() {
     },
     forEach: function(f) { all().forEach(f); },
     lookup: function(id) {
-      return data[id];
+      return data[id] || null;
     },
     remove: function(id) {
       delete data[id];
@@ -33,11 +33,6 @@ exports.newModel = function() {
     },
     size: function() { return all().length; }
   };
-
-  result.add({text: 'Create a TodoMVC template', completed: true });
-  result.add({text: 'Rule the web', completed: false });
-
-  return result;
 };
 
 

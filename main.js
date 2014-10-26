@@ -7,6 +7,9 @@ function install(app) {
   });
 
   var model = Model.newModel();
+  model.add({text: 'Create a TodoMVC template', completed: true });
+  model.add({text: 'Rule the web', completed: false });
+
   app.delete('/todos', function(req, res) {
     model.removeAll(function(curr) { return curr.completed; });
     res.sendStatus(200).end();
