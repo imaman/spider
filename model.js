@@ -8,12 +8,9 @@ exports.newModel = function() {
     return res;
   }
 
-  var data = [
-    { id: nextId(), text: 'Create a TodoMVC template', completed: true },
-    { id: nextId(), text: 'Rule the web', completed: false },
-  ];
+  var data = [];
 
-  return {
+  var result = {
     add: function(obj) { obj.id = nextId(); data.push(obj); },
     removeAll: function(pred) {
       data = data.filter(function(curr) { return !pred(curr); });
@@ -40,6 +37,11 @@ exports.newModel = function() {
     },
     size: function() { return data.length; }
   };
+
+  result.add({text: 'Create a TodoMVC template', completed: true });
+  result.add({text: 'Rule the web', completed: false });
+
+  return result;
 };
 
 
