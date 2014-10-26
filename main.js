@@ -7,6 +7,9 @@ function install(app) {
   });
 
   var model = Model.newModel();
+  var completed = model.q(function(e) { return e.completed });
+  var active = model.q(function(e) { return !e.completed });
+
   model.add({text: 'Create a TodoMVC template', completed: true });
   model.add({text: 'Rule the web', completed: false });
 
@@ -42,7 +45,7 @@ function install(app) {
     var isCompleted = req.query.what == 'completed';
     var isActive = req.query.what == 'active';
 
-    var numCompleted = model.q(function(curr) { return curr.completed }).size();
+    var numCompleted = completed.size();
     var numLeft = model.size() - numCompleted;
     var selected = model.q();
     if (isCompleted || isActive) {
