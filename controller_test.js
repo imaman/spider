@@ -44,6 +44,20 @@ describe('controller', function() {
         end(done);
     });
   });
+  describe('DELETE /todos/:id', function() {
+    it('removes the item with the given ID', function(done) {
+      var app = spider.createApp(-1, __dirname);
+      var model = Model.newModel();
+      var id = model.add({text: 'TODO_1', completed: true});
+      controller.install(model, app);
+      request(app).
+        delete('/todos/' + id).
+        expect(function(res) {
+          expect(model.q(id).one()).to.be(null);
+        }).
+        end(done);
+    });
+  });
 });
 
 
