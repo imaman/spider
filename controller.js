@@ -35,7 +35,6 @@ function install(model, app) {
   });
 
   app.get('/todos', function(req, res) {
-    console.log('model=' + model);
     var isCompleted = req.query.what == 'completed';
     var isActive = req.query.what == 'active';
 
