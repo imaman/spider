@@ -35,21 +35,11 @@ function install(model, app) {
   });
 
   app.get('/todos', function(req, res) {
-    var isCompleted = req.query.what == 'completed';
-    var isActive = req.query.what == 'active';
-
-    var selected = model.q();
-    if (isCompleted) {
-      selected = completed;
-    } else if (isActive) {
-      selected = active;
-    }
-
     res.render('index', {
-      todoItems: selected.get(),
+      todoItems: model.q().get(),
       numCompleted: completed.size(),
       numLeft: active.size(),
-      what: isCompleted ? 'completed' : isActive ? 'active' : ''
+      what: ''
     });
   });
 
