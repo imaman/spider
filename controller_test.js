@@ -117,6 +117,25 @@ describe('controller', function() {
         end(done);
     });
   });
+
+  describe('DELETE /todos', function() {
+    it('removes completed items', function(done) {
+      var app = spider.createApp(-1, __dirname);
+      var model = Model.newModel();
+
+      model.add({text: 'COMPLETED_1', completed: true});
+      model.add({text: 'ACTIVE', completed: false});
+      model.add({text: 'COMPLETED_2', completed: true});
+
+      controller.install(model, app);
+      request(app).
+        delete('/todos').
+        expect(function(res) {
+          expect(model.q().map(function(curr) { return curr.text })).to.eql(['ACTIVE']);
+        }).
+        end(done);
+    });
+  });
 });
 
 
