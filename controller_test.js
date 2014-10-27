@@ -6,7 +6,7 @@ var expect = require('expect.js');
 
 describe('controller', function() {
   it('shows a list of todo items', function(done) {
-    var app = spider.createApp(3000, __dirname);
+    var app = spider.createApp(-1, __dirname);
     var model = Model.newModel();
     model.add({text: 'TODO_1', completed: true});
     controller.install(model, app);
