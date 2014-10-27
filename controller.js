@@ -1,11 +1,9 @@
-var Model = require('./model.js');
 
-function install(app) {
+function install(model, app) {
   app.get('/', function(req, res) {
     res.redirect('/todos');
   });
 
-  var model = Model.newModel();
   var completed = model.q(function(e) { return e.completed });
   var active = model.q(function(e) { return !e.completed });
 

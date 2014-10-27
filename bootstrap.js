@@ -1,5 +1,6 @@
 var spider = require('./src/framework/spider.js');
 var controller = require('./controller.js');
+var Model = require('./model.js');
 
 
 function ready(app) {
@@ -10,5 +11,5 @@ function done(err) {
   console.log('done. err=' + err);
 }
 
-spider.run(3000, __dirname, controller.install, ready, done);
+spider.run(3000, __dirname, controller.install.bind(null, Model.newModel()), ready, done);
 
