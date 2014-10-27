@@ -52,6 +52,24 @@ function install(model, app) {
       what: isCompleted ? 'completed' : isActive ? 'active' : ''
     });
   });
+
+  app.get('/todos_completed', function(req, res) {
+    res.render('index', {
+      todoItems: completed.get(),
+      numCompleted: completed.size(),
+      numLeft: active.size(),
+      what: 'completed'
+    });
+  });
+
+  app.get('/todos_active', function(req, res) {
+    res.render('index', {
+      todoItems: active.get(),
+      numCompleted: completed.size(),
+      numLeft: active.size(),
+      what: 'active'
+    });
+  });
 }
 
 exports.install = install;

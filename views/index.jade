@@ -35,9 +35,9 @@ html(lang='en')
           li
             a(class=(what =="" ? "selected" : "") href="/todos") All
           li
-            a(class=(what == "active" ? "selected" : "") href="/todos?what=active") Active
+            a(class=(what == "active" ? "selected" : "") href="/todos_active") Active
           li
-            a(class=(what == "completed" ? "selected" : "") href="/todos?what=completed") Completed
+            a(class=(what == "completed" ? "selected" : "") href="/todos_completed") Completed
         if numCompleted > 0
           button(id="clear-completed")
             | Clear completed
