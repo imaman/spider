@@ -1,7 +1,7 @@
 $(document).ready(function() {
   $('#clear-completed').click(function() {
     $.ajax({
-      ur: '/todos',
+      url: '/todos_completed',
       type: 'DELETE'
     }).always(function() {
       window.location.reload();

@@ -7,7 +7,7 @@ function install(model, app) {
   var completed = model.q(function(e) { return e.completed });
   var active = model.q(function(e) { return !e.completed });
 
-  app.delete('/todos', function(req, res) {
+  app.delete('/todos_completed', function(req, res) {
     completed.remove();
     res.sendStatus(200).end();
   });

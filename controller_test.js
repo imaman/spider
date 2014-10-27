@@ -122,7 +122,7 @@ describe('controller', function() {
     });
   });
 
-  describe('DELETE /todos', function() {
+  describe('DELETE /todos_completed', function() {
     it('removes completed items', function(done) {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
@@ -133,7 +133,7 @@ describe('controller', function() {
 
       controller.install(model, app);
       request(app).
-        delete('/todos').
+        delete('/todos_completed').
         expect(function(res) {
           expect(model.q().map(function(curr) { return curr.text })).to.eql(['ACTIVE']);
         }).
