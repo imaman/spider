@@ -5,8 +5,8 @@ var Model = require('./model.js');
 var expect = require('expect.js');
 
 describe('controller', function() {
-  describe('/todos', function() {
-    it('shows the list of todo items', function(done) {
+  describe('GET /todos', function() {
+    it('lists all todo items', function(done) {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
       model.add({text: 'TODO_1', completed: true});
@@ -15,7 +15,7 @@ describe('controller', function() {
         get('/todos').
         expect(200, /TODO_1/, done);
     });
-    it('?what=completed shows only completed items', function(done) {
+    it('lists only completed items when ?what=completed', function(done) {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
       model.add({text: 'COMPLETED_TODO', completed: true});
@@ -29,7 +29,7 @@ describe('controller', function() {
         }).
         end(done);
     });
-    it('?what=active shows only active items', function(done) {
+    it('lists only completed items when ?what=acive', function(done) {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
       model.add({text: 'COMPLETED_TODO', completed: true});
