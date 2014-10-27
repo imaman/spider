@@ -101,6 +101,22 @@ describe('controller', function() {
         end(done);
     });
   });
+
+  describe('POST /todos', function() {
+    it('creates a new item', function(done) {
+      var app = spider.createApp(-1, __dirname);
+      var model = Model.newModel();
+
+      controller.install(model, app);
+      request(app).
+        post('/todos').
+        send({ text: 'TODO_100' }).
+        expect(function(res) {
+          expect(model.q().map(function(curr) { return curr.text })).to.eql(['TODO_100']);
+        }).
+        end(done);
+    });
+  });
 });
 
 
