@@ -7,9 +7,6 @@ function install(model, app) {
   var completed = model.q(function(e) { return e.completed });
   var active = model.q(function(e) { return !e.completed });
 
-  model.add({text: 'Create a TodoMVC template', completed: true });
-  model.add({text: 'Rule the web', completed: false });
-
   app.delete('/todos', function(req, res) {
     completed.remove();
     res.sendStatus(200).end();
