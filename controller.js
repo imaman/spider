@@ -17,7 +17,7 @@ function install(model, app) {
   });
 
   app.put('/todos/:id', function(req, res) {
-    var newState = (req.body.completed === 'true');
+    var newState = (req.param('completed') === 'true');
     var selector = req.params.id;
     if (selector == '_ALL_') {
       selector = undefined;

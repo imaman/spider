@@ -58,6 +58,49 @@ describe('controller', function() {
         end(done);
     });
   });
+  describe('PUT /todos/:id', function() {
+    it('sets the completion state of the item with the given ID', function(done) {
+      var app = spider.createApp(-1, __dirname);
+      var model = Model.newModel();
+      var id = model.add({text: 'TODO_1', completed: false});
+      controller.install(model, app);
+      request(app).
+        put('/todos/' + id + '?completed=true').
+        expect(function(res) {
+          expect(model.q(id).one().completed).to.be(true);
+        }).
+        end(done);
+    });
+    it('sets the completion state of only the item with the given ID', function(done) {
+      var app = spider.createApp(-1, __dirname);
+      var model = Model.newModel();
+      var a = model.add({text: 'TODO_1', completed: false});
+      var b = model.add({text: 'TODO_2', completed: false});
+
+      controller.install(model, app);
+      request(app).
+        put('/todos/' + a + '?completed=true').
+        expect(function(res) {
+          expect(model.q(b).one().completed).to.be(false);
+        }).
+        end(done);
+    });
+    it('sets the completion state of all items when id is _ALL_', function(done) {
+      var app = spider.createApp(-1, __dirname);
+      var model = Model.newModel();
+      model.add({text: 'TODO_1', completed: true});
+      model.add({text: 'TODO_2', completed: true});
+      model.add({text: 'TODO_3', completed: true});
+
+      controller.install(model, app);
+      request(app).
+        put('/todos/_ALL_?completed=false').
+        expect(function(res) {
+          expect(model.q().map(function(curr) { return curr.completed })).to.eql([false, false, false]);
+        }).
+        end(done);
+    });
+  });
 });
 
 
