@@ -89,7 +89,9 @@ describe('controller', function() {
         }).
         end(done);
     });
-    it('sets the completion state of all items when id is _ALL_', function(done) {
+  });
+  describe('PUT /todos', function() {
+    it('sets the completion state of all items', function(done) {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
       model.add({text: 'TODO_1', completed: true});
@@ -98,7 +100,7 @@ describe('controller', function() {
 
       controller.install(model, app);
       request(app).
-        put('/todos/_ALL_?completed=false').
+        put('/todos/?completed=false').
         expect(function(res) {
           expect(model.q().map(function(curr) { return curr.completed })).to.eql([false, false, false]);
         }).

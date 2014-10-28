@@ -18,12 +18,15 @@ function install(model, app) {
 
   app.put('/todos/:id', function(req, res) {
     var newState = (req.param('completed') === 'true');
-    var selector = req.params.id;
-    if (selector == '_ALL_') {
-      selector = undefined;
-    }
+    model.q(req.params.id).forEach(function(curr) {
+      curr.completed = newState;
+    });
+    res.sendStatus(200).end();
+  });
 
-    model.q(selector).forEach(function(curr) {
+  app.put('/todos', function(req, res) {
+    var newState = (req.param('completed') === 'true');
+    model.q().forEach(function(curr) {
       curr.completed = newState;
     });
     res.sendStatus(200).end();

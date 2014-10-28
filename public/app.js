@@ -43,7 +43,7 @@ $(document).ready(function() {
   $('#toggle-all').change(function() {
     var box = $(this);
     $.ajax({
-      url: '/todos/_ALL_',
+      url: '/todos',
       type: 'PUT',
       data: {
         completed: box.prop('checked')
