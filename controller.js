@@ -52,6 +52,7 @@ function install(model, app) {
   }
 
   var completedTodosController = newController('todo_completed', completed);
+  var activeTodosController = newController('todo_active', active);
   var todoController = newController(null, model, 'id');
   var todosContoller = newController('todo', model);
 
@@ -80,14 +81,13 @@ function install(model, app) {
     };
   }));
 
-  app.get('/todos_active', function(req, res) {
-    res.render('index', {
-      todoItems: active.get(),
+  app.get('/todos_active', activeTodosController.get(function(req, selection) {
+    return {
+      todoItems: selection.get(),
       numCompleted: completed.size(),
-      numLeft: active.size(),
-      byController: 'todos_active'
-    });
-  });
+      numLeft: active.size()
+    };
+  }));
 }
 
 exports.install = install;
