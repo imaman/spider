@@ -59,7 +59,7 @@ describe('controller', function() {
         expect(function(res) {
           expect(model.q(id).one()).to.be(null);
         }).
-        end(done);
+        expect(200, done);
     });
   });
   describe('PUT /todos/:id', function() {

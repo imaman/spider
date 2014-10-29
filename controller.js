@@ -19,7 +19,7 @@ function install(model, app) {
     }
 
     return function(req, res) {
-      entityDelete(selection.q(req.params[idParam]));
+      entityDelete(selection.q(req.params[idParam]), res);
     };
   }
 
