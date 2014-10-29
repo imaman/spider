@@ -4,9 +4,6 @@ function install(model, app) {
     res.redirect('/todos');
   });
 
-  var completed = model.q(function(e) { return e.completed });
-  var active = model.q(function(e) { return !e.completed });
-
   function entityDelete(q, res) {
     q.remove();
     res.sendStatus(200).end();
@@ -50,6 +47,9 @@ function install(model, app) {
       }
     }
   }
+
+  var completed = model.q(function(e) { return e.completed });
+  var active = model.q(function(e) { return !e.completed });
 
   var completedTodosController = newController('todo_completed', completed);
   var activeTodosController = newController('todo_active', active);
