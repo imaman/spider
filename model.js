@@ -14,6 +14,11 @@ exports.newModel = function() {
     return Object.keys(data).filter(function(key) { return key }).map(function(key) { return data[key]; });
   }
 
+  function pick(arg) {
+    return (arg === null || arg === undefined) ? selectAll() :
+      typeof(arg) === 'function' ? selectAll(arg) : select(arg)
+  }
+
   function select(id) {
     function asArr() {
       var temp = data[id] || null;
@@ -33,6 +38,7 @@ exports.newModel = function() {
   function selectAll(pred) {
     pred = pred || function() { return true };
     return {
+      q: function(arg) { return arg ? pick(arg) : this },
       forEach: function(act) { this.get().forEach(act) },
       map: function(f) { return this.get().map(f) },
       remove: function() { this.forEach(function(curr) { delete data[curr.id] }) },
@@ -42,7 +48,7 @@ exports.newModel = function() {
   }
 
   return {
-    q: function(arg) { return (arg === null || arg === undefined) ? selectAll() : typeof(arg) === 'function' ? selectAll(arg) : select(arg) },
+    q: pick,
     add: function(obj) { obj.id = nextId(); data[obj.id] = obj; return obj.id; },
     at: function(id) { return this.q(id).one() },
     size: function() { return this.q().size() },

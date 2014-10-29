@@ -23,7 +23,7 @@ function install(model, app) {
     };
   }
 
-  function newController(selection, idParam) {
+  function newController(name, selection, idParam) {
     return {
       post: function(jsonFromReq) {
         return function(req, res) {
@@ -34,7 +34,9 @@ function install(model, app) {
       delete: function() { return newDeleteController(selection, idParam) },
       get: function(jsonFromReq) {
         return function(req, res) {
-          res.render('index', jsonFromReq(req, selection.q(req.params[idParam])));
+          var data = jsonFromReq(req, selection.q(req.params[idParam]));
+          data.byController = data.byController || name;
+          res.render('index', data);
         };
       },
       put: function() {
@@ -49,9 +51,9 @@ function install(model, app) {
     }
   }
 
-  var completedTodosController = newController(completed);
-  var todoController = newController(model, 'id');
-  var todosContoller = newController(model);
+  var completedTodosController = newController('todo_completed', completed);
+  var todoController = newController(null, model, 'id');
+  var todosContoller = newController('todo', model);
 
   app.delete('/todos_completed', completedTodosController.delete());
   app.delete('/todos/:id', todoController.delete());
@@ -67,19 +69,16 @@ function install(model, app) {
     return {
       todoItems: selection.get(),
       numCompleted: completed.size(),
-      numLeft: active.size(),
-      byController: 'todos'
+      numLeft: active.size()
     };
   }));
-
-  app.get('/todos_completed', function(req, res) {
-    res.render('index', {
-      todoItems: completed.get(),
+  app.get('/todos_completed', completedTodosController.get(function(req, selection) {
+    return {
+      todoItems: selection.get(),
       numCompleted: completed.size(),
-      numLeft: active.size(),
-      byController: 'todos_completed'
-    });
-  });
+      numLeft: active.size()
+    };
+  }));
 
   app.get('/todos_active', function(req, res) {
     res.render('index', {
