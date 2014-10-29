@@ -34,7 +34,7 @@ function install(model, app) {
       delete: function() { return newDeleteController(selection, idParam) },
       get: function(jsonFromReq) {
         return function(req, res) {
-          res.render('index', jsonFromReq(req));
+          res.render('index', jsonFromReq(req, selection.q(req.params[idParam])));
         };
       },
       put: function() {
@@ -63,9 +63,9 @@ function install(model, app) {
   app.put('/todos/:id', todoController.put());
   app.put('/todos', todosContoller.put());
 
-  app.get('/todos', todoController.get(function(req) {
+  app.get('/todos', todoController.get(function(req, selection) {
     return {
-      todoItems: model.q().get(),
+      todoItems: selection.get(),
       numCompleted: completed.size(),
       numLeft: active.size(),
       what: ''
