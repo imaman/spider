@@ -25,7 +25,18 @@ function install(model, app) {
 
   function newController(selection, idParam) {
     return {
+      post: function(jsonFromReq) {
+        return function(req, res) {
+          model.add(jsonFromReq(req));
+          res.sendStatus(200).end();
+        };
+      },
       delete: function() { return newDeleteController(selection, idParam) },
+      get: function(jsonFromReq) {
+        return function(req, res) {
+          res.render('index', jsonFromReq(req));
+        };
+      },
       put: function() {
         return function(req, res) {
           var newState = (req.param('completed') === 'true');
@@ -40,33 +51,26 @@ function install(model, app) {
 
   var completedTodosController = newController(completed);
   var todoController = newController(model, 'id');
+  var todosContoller = newController(model);
 
   app.delete('/todos_completed', completedTodosController.delete());
   app.delete('/todos/:id', todoController.delete());
 
-  app.post('/todos', function(req, res) {
-    model.add({text: req.body.text, completed: false });
-    res.sendStatus(200).end();
-  });
+  app.post('/todos', todosContoller.post(function(req) {
+    return { text: req.body.text, completed: false };
+  }));
 
   app.put('/todos/:id', todoController.put());
+  app.put('/todos', todosContoller.put());
 
-  app.put('/todos', function(req, res) {
-    var newState = (req.param('completed') === 'true');
-    model.q().forEach(function(curr) {
-      curr.completed = newState;
-    });
-    res.sendStatus(200).end();
-  });
-
-  app.get('/todos', function(req, res) {
-    res.render('index', {
+  app.get('/todos', todoController.get(function(req) {
+    return {
       todoItems: model.q().get(),
       numCompleted: completed.size(),
       numLeft: active.size(),
       what: ''
-    });
-  });
+    };
+  }));
 
   app.get('/todos_completed', function(req, res) {
     res.render('index', {
