@@ -23,8 +23,17 @@ function install(model, app) {
     };
   }
 
-  app.delete('/todos_completed', newDeleteController(completed));
-  app.delete('/todos/:id', newDeleteController(model, 'id'));
+  function newController(collection, idParam) {
+    return {
+      delete: function() { return newDeleteController(collection, idParam) }
+    }
+  }
+
+  var completedTodosController = newController(completed);
+  var todoController = newController(model, 'id');
+
+  app.delete('/todos_completed', completedTodosController.delete());
+  app.delete('/todos/:id', todoController.delete());
 
   app.post('/todos', function(req, res) {
     model.add({text: req.body.text, completed: false });
