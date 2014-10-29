@@ -11,10 +11,15 @@ function install(model, app) {
     q.remove();
     res.sendStatus(200).end();
   }
+  function newDeleteController(coll, idParam) {
+    if (!idParam) {
+      return function(req, res) {
+        entityDelete(coll, res);
+      }
+    }
+  }
 
-  app.delete('/todos_completed', function(req, res) {
-    entityDelete(completed);
-  });
+  app.delete('/todos_completed', newDeleteController(completed));
   app.delete('/todos/:id', function(req, res) {
     entityDelete(model.q(req.params.id));
   });

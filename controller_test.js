@@ -150,7 +150,7 @@ describe('controller', function() {
         expect(function(res) {
           expect(model.q().map(function(curr) { return curr.text })).to.eql(['ACTIVE']);
         }).
-        end(done);
+        expect(200, done);
     });
   });
 });
