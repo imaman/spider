@@ -7,13 +7,16 @@ function install(model, app) {
   var completed = model.q(function(e) { return e.completed });
   var active = model.q(function(e) { return !e.completed });
 
-  app.delete('/todos_completed', function(req, res) {
-    completed.remove();
+  function entityDelete(q, res) {
+    q.remove();
     res.sendStatus(200).end();
+  }
+
+  app.delete('/todos_completed', function(req, res) {
+    entityDelete(completed);
   });
   app.delete('/todos/:id', function(req, res) {
-    model.q(req.params.id).remove();
-    res.sendStatus(200).end();
+    entityDelete(model.q(req.params.id));
   });
 
   app.post('/todos', function(req, res) {
