@@ -69,52 +69,68 @@ describe('model', function() {
   });
 
   describe('at', function() {
-    it('finds an item by its ID', function() {
+    it('finds an item by its ID', function(done) {
       var model = newModel();
       var id = model.add({text: 'SOME_TEXT'});
-      var item = model.at(id);
-
-      expect(item).to.have.property('text').equal('SOME_TEXT');
-      expect(item).to.have.property('id').equal(id);
+      model.at(id, function(err, item) {
+        expect(item).to.have.property('text').equal('SOME_TEXT');
+        expect(item).to.have.property('id').equal(id);
+        done();
+      });
     });
-    it('returns null when if the ID was not found', function() {
+    it('returns null when if the ID was not found', function(done) {
       var model = newModel();
-      expect(model.at('some_id')).to.be(null);
+      expectAt(model, 'some_id', null, done);
     });
   });
 
 
-  it('can delete an item by ID', function() {
+  it('can delete an item by ID', function(done) {
     var model = newModel();
     var id = model.add({text: 'SOME_TEXT'});
     model.q(id).remove();
-    expect(model.at(id)).to.be(null);
+    expectAt(model, id, null, done);
   });
 
+  function expectAt(model, id, expected, done) {
+    model.at(id, function(err, value) {
+      expect(err).to.be(null);
+      expect(value).to.equal(expected);
+      done();
+    });
+  }
+
   describe('remove multiple items', function() {
-    it('deletes the item that matches the predicate', function() {
+    it('deletes the item that matches the predicate', function(done) {
       var model = newModel();
       var a = model.add({text: 'A'});
       model.q(function(curr) { return curr.text == 'A' }).remove();
-      expect(model.at(a)).to.be(null);
+      expectAt(model, a, null, done);
     });
-    it('deletes only the item that matches the predicate', function() {
+    it('deletes only the item that matches the predicate', function(done) {
       var model = newModel();
       var a = model.add({text: 'A'});
       var b = model.add({text: 'B'});
       model.q(function(curr) { return curr.text == 'A' }).remove();
-      expect(model.at(a)).to.be(null);
-      expect(model.at(b)).to.have.property('text').equal('B');
+      expectAt(model, a, null, function() {
+        model.at(b, function(err, value) {
+          expect(value).to.have.property('text').equal('B');
+          done();
+        });
+      });
     });
-    it('deletes all items that match the predicate', function() {
+    it('deletes all items that match the predicate', function(done) {
       var model = newModel();
       var a1 = model.add({text: 'A'});
       var b = model.add({text: 'B'});
       var a2 = model.add({text: 'A'});
       model.q(function(curr) { return curr.text == 'A' }).remove();
-      expect(model.at(a1)).to.be(null);
-      expect(model.at(b)).not.to.be(null);
-      expect(model.at(a2)).to.be(null);
+      expectAt(model, a1, null, function() {
+        model.at(b, function(err, value) {
+          expect(value).not.to.be(null);
+          expectAt(model, a2, null, done);
+       });
+      });
     });
   });
 });

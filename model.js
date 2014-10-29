@@ -50,7 +50,7 @@ exports.newModel = function() {
   return {
     q: pick,
     add: function(obj) { obj.id = nextId(); data[obj.id] = obj; return obj.id; },
-    at: function(id) { return this.q(id).one() },
+    at: function(id, done) { done(null, this.q(id).one()) },
     size: function() { return this.q().size() },
     toString: function() { return JSON.stringify(data, null, 2); }
   };
