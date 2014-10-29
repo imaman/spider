@@ -11,6 +11,11 @@ function install(model, app) {
     completed.remove();
     res.sendStatus(200).end();
   });
+  app.delete('/todos/:id', function(req, res) {
+    model.q(req.params.id).remove();
+    res.sendStatus(200).end();
+  });
+
   app.post('/todos', function(req, res) {
     model.add({text: req.body.text, completed: false });
     res.sendStatus(200).end();
@@ -29,11 +34,6 @@ function install(model, app) {
     model.q().forEach(function(curr) {
       curr.completed = newState;
     });
-    res.sendStatus(200).end();
-  });
-
-  app.delete('/todos/:id', function(req, res) {
-    model.q(req.params.id).remove();
     res.sendStatus(200).end();
   });
 
