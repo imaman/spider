@@ -33,11 +33,11 @@ html(lang='en')
           |  item left
         ul(id="filters")
           li
-            a(class=(what =="" ? "selected" : "") href="/todos") All
+            a(class=(what =="todos" ? "selected" : "") href="/todos") All
           li
-            a(class=(what == "active" ? "selected" : "") href="/todos_active") Active
+            a(class=(what == "todos_active" ? "selected" : "") href="/todos_active") Active
           li
-            a(class=(what == "completed" ? "selected" : "") href="/todos_completed") Completed
+            a(class=(what == "todos_completed" ? "selected" : "") href="/todos_completed") Completed
         if numCompleted > 0
           button(id="clear-completed")
             | Clear completed

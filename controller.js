@@ -68,7 +68,7 @@ function install(model, app) {
       todoItems: selection.get(),
       numCompleted: completed.size(),
       numLeft: active.size(),
-      what: ''
+      what: 'todos'
     };
   }));
 
@@ -77,7 +77,7 @@ function install(model, app) {
       todoItems: completed.get(),
       numCompleted: completed.size(),
       numLeft: active.size(),
-      what: 'completed'
+      what: 'todos_completed'
     });
   });
 
@@ -86,7 +86,7 @@ function install(model, app) {
       todoItems: active.get(),
       numCompleted: completed.size(),
       numLeft: active.size(),
-      what: 'active'
+      what: 'todos_active'
     });
   });
 }
