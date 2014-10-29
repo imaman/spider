@@ -23,13 +23,15 @@ function install(model, app) {
   app.put('/todos/:id', todoController.put());
   app.put('/todos', todosContoller.put());
 
-  app.get('/todos', todoController.get(function(req, selection) {
+  function listTodoItems(req, selection) {
     return {
       todoItems: selection.get(),
       numCompleted: completed.size(),
       numLeft: active.size()
     };
-  }));
+  }
+  app.get('/todos', todoController.get(listTodoItems));
+
   app.get('/todos_completed', completedTodosController.get(function(req, selection) {
     return {
       todoItems: selection.get(),
