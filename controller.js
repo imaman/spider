@@ -15,14 +15,16 @@ function install(model, app) {
     if (!idParam) {
       return function(req, res) {
         entityDelete(coll, res);
-      }
+      };
     }
+
+    return function(req, res) {
+      entityDelete(coll.q(req.params[idParam]));
+    };
   }
 
   app.delete('/todos_completed', newDeleteController(completed));
-  app.delete('/todos/:id', function(req, res) {
-    entityDelete(model.q(req.params.id));
-  });
+  app.delete('/todos/:id', newDeleteController(model, 'id'));
 
   app.post('/todos', function(req, res) {
     model.add({text: req.body.text, completed: false });
