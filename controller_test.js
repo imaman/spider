@@ -122,6 +122,17 @@ describe('controller', function() {
         }).
         end(done);
     });
+    it('500s if the item cannot be added to the DB', function(done) {
+      var app = spider.createApp(-1, __dirname);
+      var model = Model.newModel();
+      model.add = function() { throw new Error('add() failed') };
+
+      controller.install(model, app);
+      request(app).
+        post('/todos').
+        send({ text: 'TODO_100' }).
+        expect(500, done);
+    });
   });
 
   describe('DELETE /todos_completed', function() {
