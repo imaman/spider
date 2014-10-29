@@ -8,20 +8,20 @@ function install(model, app) {
   var completed = model.q(function(e) { return e.completed });
   var active = model.q(function(e) { return !e.completed });
 
-  var completedTodosController = autoController.create('todo_completed', completed);
-  var activeTodosController = autoController.create('todo_active', active);
-  var todoController = autoController.create(null, model, 'id');
-  var todosContoller = autoController.create('todo', model);
+  var completedTodos = autoController.create('todo_completed', completed);
+  var activeTodos = autoController.create('todo_active', active);
+  var todo = autoController.create(null, model, 'id');
+  var todos = autoController.create('todo', model);
 
-  app.delete('/todos_completed', completedTodosController.delete());
-  app.delete('/todos/:id', todoController.delete());
+  app.delete('/todos_completed', completedTodos.delete());
+  app.delete('/todos/:id', todo.delete());
 
-  app.post('/todos', todosContoller.post(function(req) {
+  app.post('/todos', todos.post(function(req) {
     return { text: req.body.text, completed: false };
   }));
 
-  app.put('/todos/:id', todoController.put());
-  app.put('/todos', todosContoller.put());
+  app.put('/todos/:id', todo.put());
+  app.put('/todos', todos.put());
 
   function listTodoItems(req, selection) {
     return {
@@ -30,23 +30,9 @@ function install(model, app) {
       numLeft: active.size()
     };
   }
-  app.get('/todos', todoController.get(listTodoItems));
-
-  app.get('/todos_completed', completedTodosController.get(function(req, selection) {
-    return {
-      todoItems: selection.get(),
-      numCompleted: completed.size(),
-      numLeft: active.size()
-    };
-  }));
-
-  app.get('/todos_active', activeTodosController.get(function(req, selection) {
-    return {
-      todoItems: selection.get(),
-      numCompleted: completed.size(),
-      numLeft: active.size()
-    };
-  }));
+  app.get('/todos', todo.get(listTodoItems));
+  app.get('/todos_completed', completedTodos.get(listTodoItems));
+  app.get('/todos_active', activeTodos.get(listTodoItems));
 }
 
 exports.install = install;
