@@ -25,7 +25,16 @@ function install(model, app) {
 
   function newController(selection, idParam) {
     return {
-      delete: function() { return newDeleteController(selection, idParam) }
+      delete: function() { return newDeleteController(selection, idParam) },
+      put: function() {
+        return function(req, res) {
+          var newState = (req.param('completed') === 'true');
+          selection.q(req.params[idParam]).forEach(function(curr) {
+            curr.completed = newState;
+          });
+          res.sendStatus(200).end();
+        };
+      }
     }
   }
 
@@ -40,13 +49,7 @@ function install(model, app) {
     res.sendStatus(200).end();
   });
 
-  app.put('/todos/:id', function(req, res) {
-    var newState = (req.param('completed') === 'true');
-    model.q(req.params.id).forEach(function(curr) {
-      curr.completed = newState;
-    });
-    res.sendStatus(200).end();
-  });
+  app.put('/todos/:id', todoController.put());
 
   app.put('/todos', function(req, res) {
     var newState = (req.param('completed') === 'true');
