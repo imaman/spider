@@ -11,21 +11,21 @@ function install(model, app) {
     q.remove();
     res.sendStatus(200).end();
   }
-  function newDeleteController(coll, idParam) {
+  function newDeleteController(selection, idParam) {
     if (!idParam) {
       return function(req, res) {
-        entityDelete(coll, res);
+        entityDelete(selection, res);
       };
     }
 
     return function(req, res) {
-      entityDelete(coll.q(req.params[idParam]));
+      entityDelete(selection.q(req.params[idParam]));
     };
   }
 
-  function newController(collection, idParam) {
+  function newController(selection, idParam) {
     return {
-      delete: function() { return newDeleteController(collection, idParam) }
+      delete: function() { return newDeleteController(selection, idParam) }
     }
   }
 
