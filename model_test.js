@@ -28,11 +28,13 @@ describe('model', function() {
       model.add({text: 'A1'}, {text: 'B'}, {text: 'A2'}, function(err, a1, b, a2) {
         if (err) return done(err);
         var query = model.q(function(i) { return i.text.indexOf('A') >= 0 });
-        var texts = query.map(function(curr) { return curr.text });
-        expect(texts).to.contain('A1');
-        expect(texts).to.contain('A2');
-        expect(texts).not.to.contain('B');
-        done();
+        query.map(function(curr) { return curr.text }, function(err, texts) {
+          if (err) return done(err);
+          expect(texts).to.contain('A1');
+          expect(texts).to.contain('A2');
+          expect(texts).not.to.contain('B');
+          done();
+        });
       });
     });
     it('finds all if the query is falsy', function(done) {
@@ -40,11 +42,13 @@ describe('model', function() {
       model.add({text: 'A'}, {text: 'B'}, function(err, a, b) {
         if(err) return done(err);
         var query = model.q(null);
-        var texts = query.map(function(curr) { return curr.text });
-        expect(texts).to.contain('A');
-        expect(texts).to.contain('B');
-        expect(texts).to.have.length(2);
-        done();
+        query.map(function(curr) { return curr.text }, function(err, texts) {
+          if (err) return done(err);
+          expect(texts).to.contain('A');
+          expect(texts).to.contain('B');
+          expect(texts).to.have.length(2);
+          done();
+        });
       });
     });
     xit('reports result set size', function() {

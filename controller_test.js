@@ -117,7 +117,11 @@ describe('controller', function() {
         request(app).
           put('/todos/?completed=false').
           expect(function(res) {
-            expect(model.q().map(function(curr) { return curr.completed })).to.eql([false, false, false]);
+            model.q().map(function(curr) { return curr.completed },
+              function(err, states) {
+                if (err) return done(err);
+                expect(states).to.eql([false, false, false]);
+              });
           }).
           end(done);
       });
@@ -134,7 +138,11 @@ describe('controller', function() {
         post('/todos').
         send({ text: 'TODO_100' }).
         expect(function(res) {
-          expect(model.q().map(function(curr) { return curr.text })).to.eql(['TODO_100']);
+          model.q().map(function(curr) { return curr.text },
+            function(err, texts) {
+              if (err) return done(err);
+              expect(texts).to.eql(['TODO_100']);
+            });
         }).
         end(done);
     });
@@ -165,7 +173,11 @@ describe('controller', function() {
         request(app).
           delete('/todos_completed').
           expect(function(res) {
-            expect(model.q().map(function(curr) { return curr.text })).to.eql(['ACTIVE']);
+            model.q().map(function(curr) { return curr.text },
+              function(err, texts) {
+                if (err) return done(err);
+                expect(texts).to.eql(['ACTIVE']);
+              });
           }).
           expect(200, done);
       });

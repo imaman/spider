@@ -39,7 +39,7 @@ exports.newModel = function() {
       forEach: function(act, done) { all().filter(pred).forEach(act); done() },
       remove: function(done) { this.forEach(function(curr) { delete data[curr.id] }, done) },
       size: function() { return all().filter(pred).length },
-      map: function(f, done) { return all().filter(pred).map(f); done(); },
+      map: function(f, done) { done(null, all().filter(pred).map(f)) }
     };
   }
 

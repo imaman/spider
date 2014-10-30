@@ -23,12 +23,15 @@ function install(model, app) {
   app.put('/todos/:id', todo.put());
   app.put('/todos', todos.put());
 
-  function listTodoItems(req, selection) {
-    return {
-      todoItems: selection.get(),
-      numCompleted: completed.size(),
-      numLeft: active.size()
-    };
+  function listTodoItems(req, selection, done) {
+    selection.map(function(curr) { return curr }, function(err, data) {
+      if (err) return done(err);
+      done(null, {
+        todoItems: data,
+        numCompleted: completed.size(),
+        numLeft: active.size()
+      });
+    });
   }
   app.get('/todos', todo.get(listTodoItems));
   app.get('/todos_completed', completedTodos.get(listTodoItems));

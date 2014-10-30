@@ -28,9 +28,11 @@ exports.create = function(name, selection, idParam) {
     delete: function() { return newDeleteController(selection, idParam) },
     get: function(jsonFromReq) {
       return function(req, res) {
-        var data = jsonFromReq(req, selection.q(req.params[idParam]));
-        data.byController = data.byController || name;
-        res.render('index', data);
+        var data = jsonFromReq(req, selection.q(req.params[idParam]), function(err, data) {
+          if (err) return res.sendStatus(500).end();
+          data.byController = data.byController || name;
+          res.render('index', data);
+        });
       };
     },
     put: function() {
