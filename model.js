@@ -36,11 +36,10 @@ exports.newModel = function() {
     pred = pred || function() { return true };
     return {
       q: function(arg) { return arg ? pick(arg) : this },
-      forEach: function(act, done) { this.get().forEach(act); done() },
-      map: function(f) { return this.get().map(f) },
+      forEach: function(act, done) { all().filter(pred).forEach(act); done() },
       remove: function(done) { this.forEach(function(curr) { delete data[curr.id] }, done) },
-      get: function() { return all().filter(pred) },
-      size: function() { return this.get().length },
+      size: function() { return all().filter(pred).length },
+      map: function(f, done) { return all().filter(pred).map(f); done(); },
     };
   }
 
