@@ -27,7 +27,7 @@ exports.newModel = function() {
 
     return {
       forEach: function(act) { asArr().forEach(act) },
-      remove: function() { delete data[id] },
+      remove: function(done) { delete data[id]; done(); },
       one: function() { return data[id] || null }
     };
   }
@@ -38,7 +38,7 @@ exports.newModel = function() {
       q: function(arg) { return arg ? pick(arg) : this },
       forEach: function(act) { this.get().forEach(act) },
       map: function(f) { return this.get().map(f) },
-      remove: function() { this.forEach(function(curr) { delete data[curr.id] }) },
+      remove: function(done) { this.forEach(function(curr) { delete data[curr.id] }); done(null) },
       get: function() { return all().filter(pred) },
       size: function() { return this.get().length },
     };

@@ -1,6 +1,7 @@
 function entityDelete(q, res) {
-  q.remove();
-  res.sendStatus(200).end();
+  q.remove(function (err) {
+    res.sendStatus(err ? 500 : 200).end();
+  });
 }
 
 function newDeleteController(selection, idParam) {

@@ -71,9 +71,11 @@ describe('model', function() {
           if (err) return done(err);
           expect(q.size()).to.equal(2);
 
-          model.q().remove();
-          expect(q.size()).to.equal(0);
-          done();
+          model.q().remove(function(err) {
+            if (err) return done(err);
+            expect(q.size()).to.equal(0);
+            done();
+          });
         });
       });
     });
@@ -102,8 +104,10 @@ describe('model', function() {
     var model = newModel();
     model.add({text: 'SOME_TEXT'}, function(err, id) {
       if (err) return done(err);
-      model.q(id).remove();
-      expectAt(model, id, null, done);
+      model.q(id).remove(function(err) {
+        if (err) return done(err);
+        expectAt(model, id, null, done);
+      });
     });
   });
 
@@ -120,19 +124,23 @@ describe('model', function() {
       var model = newModel();
       model.add({text: 'A'}, function(err, a) {
         if (err) return done(err);
-        model.q(function(curr) { return curr.text == 'A' }).remove();
-        expectAt(model, a, null, done);
+        model.q(function(curr) { return curr.text == 'A' }).remove(function(err) {
+          if (err) return done(err);
+          expectAt(model, a, null, done);
+        });
       });
     });
     it('deletes only the item that matches the predicate', function(done) {
       var model = newModel();
       model.add({text: 'A'}, {text: 'B'}, function(err, a, b) {
         if (err) return done(err);
-        model.q(function(curr) { return curr.text == 'A' }).remove();
-        expectAt(model, a, null, function() {
-          model.at(b, function(err, value) {
-            expect(value).to.have.property('text').equal('B');
-            done();
+        model.q(function(curr) { return curr.text == 'A' }).remove(function(err) {
+          if (err) return done(err);
+          expectAt(model, a, null, function() {
+            model.at(b, function(err, value) {
+              expect(value).to.have.property('text').equal('B');
+              done();
+            });
           });
         });
       });
@@ -141,11 +149,13 @@ describe('model', function() {
       var model = newModel();
       model.add({text: 'A'}, {text: 'B'}, {text: 'A'}, function(err, a1, b, a2) {
         if (err) return done(err);
-        model.q(function(curr) { return curr.text == 'A' }).remove();
-        expectAt(model, a1, null, function() {
-          model.at(b, function(err, value) {
-            expect(value).not.to.be(null);
-            expectAt(model, a2, null, done);
+        model.q(function(curr) { return curr.text == 'A' }).remove(function(err) {
+          if (err) return done(err);
+          expectAt(model, a1, null, function() {
+            model.at(b, function(err, value) {
+              expect(value).not.to.be(null);
+              expectAt(model, a2, null, done);
+            });
           });
         });
       });
