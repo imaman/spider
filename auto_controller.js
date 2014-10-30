@@ -38,8 +38,9 @@ exports.create = function(name, selection, idParam) {
         var newState = (req.param('completed') === 'true');
         selection.q(req.params[idParam]).forEach(function(curr) {
           curr.completed = newState;
+        }, function (err) {
+          res.sendStatus(err ? 500 : 200).end();
         });
-        res.sendStatus(200).end();
       };
     }
   }
