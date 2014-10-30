@@ -27,10 +27,7 @@ exports.newModel = function() {
 
     return {
       forEach: function(act) { asArr().forEach(act) },
-      map: function(f) { return asArr().map(f) },
-      get: function() { return asArr() },
       remove: function() { delete data[id] },
-      size: function() { return asArr().length },
       one: function() { return data[id] || null }
     };
   }
@@ -50,6 +47,7 @@ exports.newModel = function() {
   return {
     q: pick,
     add: function(obj) { obj.id = nextId(); data[obj.id] = obj; return obj.id; },
+    // Debugging/Testing purposes
     at: function(id, done) { done(null, this.q(id).one()) },
     size: function() { return this.q().size() },
     toString: function() { return JSON.stringify(data, null, 2); }

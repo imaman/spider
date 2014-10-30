@@ -14,7 +14,7 @@ describe('model', function() {
   });
 
   describe('querying', function() {
-    it('can find by ID', function() {
+    xit('can find by ID', function() {
       var model = newModel();
       var id = model.add({text: 'SOME_TEXT'});
       var texts = model.q(id).map(function(curr) { return curr.text });
@@ -41,7 +41,7 @@ describe('model', function() {
       expect(texts).to.contain('B');
       expect(texts).to.have.length(2);
     });
-    it('reports result set size', function() {
+    xit('reports result set size', function() {
       var model = newModel();
       expect(model.q('non_existing_id').size()).to.equal(0);
       var id = model.add({text: 'A'});
