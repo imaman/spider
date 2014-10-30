@@ -1,4 +1,4 @@
-
+var util = require('util');
 
 exports.newModel = function() {
   var ordinal = 0;
@@ -46,7 +46,15 @@ exports.newModel = function() {
 
   return {
     q: pick,
-    add: function(obj) { obj.id = nextId(); data[obj.id] = obj; return obj.id; },
+    add: function() {
+      var args = Array.prototype.slice.call(arguments, 0);
+      var done = args.pop();
+      var res = [null];
+      args.forEach(function(curr) {
+        curr.id = nextId(); data[curr.id] = curr; res.push(curr.id);
+      });
+      done.apply(null, res);
+    },
     // Debugging/Testing purposes
     at: function(id, done) { done(null, this.q(id).one()) },
     size: function() { return this.q().size() },

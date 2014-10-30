@@ -7,10 +7,13 @@ describe('model', function() {
     expect(model.size()).to.be(0);
   });
 
-  it('allows elements to be added', function() {
+  it('allows elements to be added', function(done) {
     var model = newModel();
-    model.add({text: '_'});
-    expect(model.size()).to.be(1);
+    model.add({text: '_'}, function(err) {
+      if (err) return done(err);
+      expect(model.size()).to.be(1);
+      done();
+    });
   });
 
   describe('querying', function() {
@@ -20,26 +23,29 @@ describe('model', function() {
       var texts = model.q(id).map(function(curr) { return curr.text });
       expect(texts).to.eql(['SOME_TEXT']);
     });
-    it('can find by predicate', function() {
+    it('can find by predicate', function(done) {
       var model = newModel();
-      var a1 = model.add({text: 'A1'});
-      var b = model.add({text: 'B'});
-      var a2 = model.add({text: 'A2'});
-      var query = model.q(function(i) { return i.text.indexOf('A') >= 0 });
-      var texts = query.map(function(curr) { return curr.text });
-      expect(texts).to.contain('A1');
-      expect(texts).to.contain('A2');
-      expect(texts).not.to.contain('B');
+      model.add({text: 'A1'}, {text: 'B'}, {text: 'A2'}, function(err, a1, b, a2) {
+        if (err) return done(err);
+        var query = model.q(function(i) { return i.text.indexOf('A') >= 0 });
+        var texts = query.map(function(curr) { return curr.text });
+        expect(texts).to.contain('A1');
+        expect(texts).to.contain('A2');
+        expect(texts).not.to.contain('B');
+        done();
+      });
     });
-    it('finds all if the query is falsy', function() {
+    it('finds all if the query is falsy', function(done) {
       var model = newModel();
-      var a = model.add({text: 'A'});
-      var b = model.add({text: 'B'});
-      var query = model.q(null);
-      var texts = query.map(function(curr) { return curr.text });
-      expect(texts).to.contain('A');
-      expect(texts).to.contain('B');
-      expect(texts).to.have.length(2);
+      model.add({text: 'A'}, {text: 'B'}, function(err, a, b) {
+        if(err) return done(err);
+        var query = model.q(null);
+        var texts = query.map(function(curr) { return curr.text });
+        expect(texts).to.contain('A');
+        expect(texts).to.contain('B');
+        expect(texts).to.have.length(2);
+        done();
+      });
     });
     xit('reports result set size', function() {
       var model = newModel();
@@ -52,30 +58,37 @@ describe('model', function() {
       expect(model.q(function(e) { return e.text == 'A' }).size()).to.equal(2);
       expect(model.q(id).size()).to.equal(1);
     });
-    it('is lazily evaluated', function() {
+    it('is lazily evaluated', function(done) {
       var model = newModel();
       var q = model.q(function(e) { return e.text == 'A' });
       expect(q.size()).to.equal(0);
 
-      model.add({text: 'A'});
-      expect(q.size()).to.equal(1);
+      model.add({text: 'A'}, function(err) {
+        if (err) return done(err);
+        expect(q.size()).to.equal(1);
 
-      model.add({text: 'A'});
-      expect(q.size()).to.equal(2);
+        model.add({text: 'A'}, function(err) {
+          if (err) return done(err);
+          expect(q.size()).to.equal(2);
 
-      model.q().remove();
-      expect(q.size()).to.equal(0);
+          model.q().remove();
+          expect(q.size()).to.equal(0);
+          done();
+        });
+      });
     });
   });
 
   describe('at', function() {
     it('finds an item by its ID', function(done) {
       var model = newModel();
-      var id = model.add({text: 'SOME_TEXT'});
-      model.at(id, function(err, item) {
-        expect(item).to.have.property('text').equal('SOME_TEXT');
-        expect(item).to.have.property('id').equal(id);
-        done();
+      model.add({text: 'SOME_TEXT'}, function(err, id) {
+        if(err) return done(err);
+        model.at(id, function(err, item) {
+          expect(item).to.have.property('text').equal('SOME_TEXT');
+          expect(item).to.have.property('id').equal(id);
+          done();
+        });
       });
     });
     it('returns null when if the ID was not found', function(done) {
@@ -87,9 +100,11 @@ describe('model', function() {
 
   it('can delete an item by ID', function(done) {
     var model = newModel();
-    var id = model.add({text: 'SOME_TEXT'});
-    model.q(id).remove();
-    expectAt(model, id, null, done);
+    model.add({text: 'SOME_TEXT'}, function(err, id) {
+      if (err) return done(err);
+      model.q(id).remove();
+      expectAt(model, id, null, done);
+    });
   });
 
   function expectAt(model, id, expected, done) {
@@ -103,33 +118,36 @@ describe('model', function() {
   describe('remove multiple items', function() {
     it('deletes the item that matches the predicate', function(done) {
       var model = newModel();
-      var a = model.add({text: 'A'});
-      model.q(function(curr) { return curr.text == 'A' }).remove();
-      expectAt(model, a, null, done);
+      model.add({text: 'A'}, function(err, a) {
+        if (err) return done(err);
+        model.q(function(curr) { return curr.text == 'A' }).remove();
+        expectAt(model, a, null, done);
+      });
     });
     it('deletes only the item that matches the predicate', function(done) {
       var model = newModel();
-      var a = model.add({text: 'A'});
-      var b = model.add({text: 'B'});
-      model.q(function(curr) { return curr.text == 'A' }).remove();
-      expectAt(model, a, null, function() {
-        model.at(b, function(err, value) {
-          expect(value).to.have.property('text').equal('B');
-          done();
+      model.add({text: 'A'}, {text: 'B'}, function(err, a, b) {
+        if (err) return done(err);
+        model.q(function(curr) { return curr.text == 'A' }).remove();
+        expectAt(model, a, null, function() {
+          model.at(b, function(err, value) {
+            expect(value).to.have.property('text').equal('B');
+            done();
+          });
         });
       });
     });
     it('deletes all items that match the predicate', function(done) {
       var model = newModel();
-      var a1 = model.add({text: 'A'});
-      var b = model.add({text: 'B'});
-      var a2 = model.add({text: 'A'});
-      model.q(function(curr) { return curr.text == 'A' }).remove();
-      expectAt(model, a1, null, function() {
-        model.at(b, function(err, value) {
-          expect(value).not.to.be(null);
-          expectAt(model, a2, null, done);
-       });
+      model.add({text: 'A'}, {text: 'B'}, {text: 'A'}, function(err, a1, b, a2) {
+        if (err) return done(err);
+        model.q(function(curr) { return curr.text == 'A' }).remove();
+        expectAt(model, a1, null, function() {
+          model.at(b, function(err, value) {
+            expect(value).not.to.be(null);
+            expectAt(model, a2, null, done);
+          });
+        });
       });
     });
   });

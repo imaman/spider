@@ -9,102 +9,118 @@ describe('controller', function() {
     it('lists all todo items', function(done) {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
-      model.add({text: 'TODO_1', completed: true});
-      controller.install(model, app);
-      request(app).
-        get('/todos').
-        expect(200, /TODO_1/, done);
+      model.add({text: 'TODO_1', completed: true}, function (err) {
+        if (err) return done(err);
+        controller.install(model, app);
+        request(app).
+          get('/todos').
+          expect(200, /TODO_1/, done);
+      });
     });
   });
   describe('GET /todos_completed', function() {
     it('lists only completed items', function(done) {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
-      model.add({text: 'COMPLETED_TODO', completed: true});
-      model.add({text: 'ACTIVE_TODO', completed: false});
-      controller.install(model, app);
-      request(app).
-        get('/todos_completed').
-        expect(function(res) {
-          expect(res.text).to.contain('COMPLETED_TODO');
-          expect(res.text).not.to.contain('ACTIVE_TODO');
-        }).
-        end(done);
+      model.add({text: 'COMPLETED_TODO', completed: true},
+         {text: 'ACTIVE_TODO', completed: false},
+         function (err) {
+        if (err) return done(err);
+        controller.install(model, app);
+        request(app).
+          get('/todos_completed').
+          expect(function(res) {
+            expect(res.text).to.contain('COMPLETED_TODO');
+            expect(res.text).not.to.contain('ACTIVE_TODO');
+          }).
+          end(done);
+      });
     });
   });
   describe('GET /todos_active', function() {
     it('lists only active items', function(done) {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
-      model.add({text: 'COMPLETED_TODO', completed: true});
-      model.add({text: 'ACTIVE_TODO', completed: false});
-      controller.install(model, app);
-      request(app).
-        get('/todos_active').
-        expect(function(res) {
-          expect(res.text).not.to.contain('COMPLETED_TODO');
-          expect(res.text).to.contain('ACTIVE_TODO');
-        }).
-        end(done);
+      model.add({text: 'COMPLETED_TODO', completed: true},
+          {text: 'ACTIVE_TODO', completed: false},
+          function (err) {
+        if (err) return done(err);
+        controller.install(model, app);
+        request(app).
+          get('/todos_active').
+          expect(function(res) {
+            expect(res.text).not.to.contain('COMPLETED_TODO');
+            expect(res.text).to.contain('ACTIVE_TODO');
+          }).
+          end(done);
+      });
     });
   });
   describe('DELETE /todos/:id', function() {
     it('removes the item with the given ID', function(done) {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
-      var id = model.add({text: 'TODO_1', completed: true});
-      controller.install(model, app);
-      request(app).
-        delete('/todos/' + id).
-        expect(function(res) {
-          expect(model.q(id).one()).to.be(null);
-        }).
-        expect(200, done);
+      model.add({text: 'TODO_1', completed: true}, function(err, id) {
+        if (err) return done(err);
+        controller.install(model, app);
+        request(app).
+          delete('/todos/' + id).
+          expect(function(res) {
+            expect(model.q(id).one()).to.be(null);
+          }).
+          expect(200, done);
+      });
     });
   });
   describe('PUT /todos/:id', function() {
     it('sets the completion state of the item with the given ID', function(done) {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
-      var id = model.add({text: 'TODO_1', completed: false});
-      controller.install(model, app);
-      request(app).
-        put('/todos/' + id + '?completed=true').
-        expect(function(res) {
-          expect(model.q(id).one().completed).to.be(true);
-        }).
-        end(done);
+      model.add({text: 'TODO_1', completed: false}, function(err, id) {
+        if (err) return done(err);
+        controller.install(model, app);
+        request(app).
+          put('/todos/' + id + '?completed=true').
+          expect(function(res) {
+            expect(model.q(id).one().completed).to.be(true);
+          }).
+          end(done);
+      });
     });
     it('sets the completion state of only the item with the given ID', function(done) {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
-      var a = model.add({text: 'TODO_1', completed: false});
-      var b = model.add({text: 'TODO_2', completed: false});
-
-      controller.install(model, app);
-      request(app).
-        put('/todos/' + a + '?completed=true').
-        expect(function(res) {
-          expect(model.q(b).one().completed).to.be(false);
-        }).
-        end(done);
+      model.add({text: 'TODO_1', completed: false},
+          {text: 'TODO_2', completed: false},
+          function(err, a, b) {
+        if (err) return done(err);
+        controller.install(model, app);
+        request(app).
+          put('/todos/' + a + '?completed=true').
+          expect(function(res) {
+            expect(model.q(b).one().completed).to.be(false);
+          }).
+          end(done);
+      });
     });
   });
   describe('PUT /todos', function() {
     it('sets the completion state of all items', function(done) {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
-      model.add({text: 'TODO_1', completed: true});
-      model.add({text: 'TODO_2', completed: true});
-      model.add({text: 'TODO_3', completed: true});
-
-      controller.install(model, app);
-      request(app).
-        put('/todos/?completed=false').
-        expect(function(res) {
-          expect(model.q().map(function(curr) { return curr.completed })).to.eql([false, false, false]);
-        }).
-        end(done);
+      model.add({text: 'TODO_1', completed: true},
+          {text: 'TODO_2', completed: true},
+          {text: 'TODO_3', completed: true},
+          function(err) {
+        if(err) return done(err);
+        controller.install(model, app);
+        request(app).
+          put('/todos/?completed=false').
+          expect(function(res) {
+            expect(model.q().map(function(curr) { return curr.completed })).to.eql([false, false, false]);
+          }).
+          end(done);
+      });
     });
   });
 
@@ -140,17 +156,19 @@ describe('controller', function() {
       var app = spider.createApp(-1, __dirname);
       var model = Model.newModel();
 
-      model.add({text: 'COMPLETED_1', completed: true});
-      model.add({text: 'ACTIVE', completed: false});
-      model.add({text: 'COMPLETED_2', completed: true});
-
-      controller.install(model, app);
-      request(app).
-        delete('/todos_completed').
-        expect(function(res) {
-          expect(model.q().map(function(curr) { return curr.text })).to.eql(['ACTIVE']);
-        }).
-        expect(200, done);
+      model.add({text: 'COMPLETED_1', completed: true},
+          {text: 'ACTIVE', completed: false},
+          {text: 'COMPLETED_2', completed: true},
+          function(err) {
+        if (err) return done(err);
+        controller.install(model, app);
+        request(app).
+          delete('/todos_completed').
+          expect(function(res) {
+            expect(model.q().map(function(curr) { return curr.text })).to.eql(['ACTIVE']);
+          }).
+          expect(200, done);
+      });
     });
   });
 });
