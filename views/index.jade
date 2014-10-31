@@ -16,7 +16,7 @@ html(lang='en')
         input(id="new-todo" placeholder="What needs to be done?" autofocus)
 
       section(id="main")
-        input(id="toggle-all" type="checkbox" checked=(numLeft == 0))
+        input(id="toggle-all" type="checkbox" checked=(numActive == 0))
         label(for="toggle-all") Mark all as complete
         ul(id="todo-list")
           each curr in todoItems
@@ -29,7 +29,7 @@ html(lang='en')
 
       footer(id="footer")
         span(id="todo-count")
-          strong= numLeft
+          strong= numActive
           |  item left
         ul(id="filters")
           li
