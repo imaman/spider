@@ -1,4 +1,5 @@
 var autoController = require('./auto_controller.js');
+var funflow = require('funflow');
 
 function install(model, app) {
   app.get('/', function(req, res) {
@@ -28,20 +29,11 @@ function install(model, app) {
   app.get('/todos_active', activeTodos.get(listTodoItems));
 
   function listTodoItems(req, selection, done) {
-    selection.map(function(curr) { return curr }, function(err, data) {
-      if (err) return done(err);
-      completed.size(function(err, completedSize) {
-        if (err) return done(err);
-        active.size(function(err, activeSize) {
-          if (err) return done(err);
-          done(null, {
-            todoItems: data,
-            numCompleted: completedSize,
-            numLeft: activeSize
-          });
-        });
-      });
-    });
+    funflow.newFlow({
+      todoItems: function sel(done) { selection.map(function(curr) { return curr }, done) },
+      numCompleted: function com(done) { completed.size(done) },
+      numLeft: function act(done) { active.size(done) }
+    })(null, done);
   }
 }
 
