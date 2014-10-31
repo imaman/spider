@@ -10,13 +10,13 @@ function install(model, app) {
   var todos = autoController.create('todos', model);
   var todo = autoController.create('todo', model, 'id');
 
+  app.get('/', todos.get(listTodoItems));
+
   app.post('/todos', todos.post(function(req) {
     return { text: req.body.text, completed: false };
   }));
-
   app.put('/todos', todos.put(updateItem));
   app.get('/todos', todos.get(listTodoItems));
-  app.get('/', todos.get(listTodoItems));
 
   app.put('/todos/:id', todo.put(updateItem));
   app.delete('/todos/:id', todo.delete());
