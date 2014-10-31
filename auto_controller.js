@@ -28,19 +28,16 @@ exports.create = function(name, selection, idParam) {
     delete: function() { return newDeleteController(selection, idParam) },
     get: function(jsonFromReq) {
       return function(req, res) {
-        var data = jsonFromReq(req, selection.q(req.params[idParam]), function(err, data) {
+        jsonFromReq(req, selection.q(req.params[idParam]), function(err, data) {
           if (err) return res.sendStatus(500).end();
           data.byController = data.byController || name;
           res.render('index', data);
         });
       };
     },
-    put: function() {
+    put: function(mutationFromReq) {
       return function(req, res) {
-        var newState = (req.param('completed') === 'true');
-        selection.q(req.params[idParam]).forEach(function(curr) {
-          curr.completed = newState;
-        }, function (err) {
+        mutationFromReq(req, selection.q(req.params[idParam]), function(err) {
           res.sendStatus(err ? 500 : 200).end();
         });
       };

@@ -17,16 +17,24 @@ function install(model, app) {
   app.post('/todos', todos.post(function(req) {
     return { text: req.body.text, completed: false };
   }));
-  app.put('/todos', todos.put());
+
+  app.put('/todos', todos.put(updateItem));
   app.get('/todos', todos.get(listTodoItems));
 
-  app.put('/todos/:id', todo.put());
+  app.put('/todos/:id', todo.put(updateItem));
   app.delete('/todos/:id', todo.delete());
 
   app.get('/todos_completed', completedTodos.get(listTodoItems));
   app.delete('/todos_completed', completedTodos.delete());
 
   app.get('/todos_active', activeTodos.get(listTodoItems));
+
+  function updateItem(req, selection, done) {
+    var newState = (req.param('completed') === 'true');
+    selection.forEach(function(curr) {
+      curr.completed = newState;
+    }, done);
+  }
 
   function listTodoItems(req, selection, done) {
     funflow.newFlow({
