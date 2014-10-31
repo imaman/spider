@@ -38,7 +38,9 @@ function install(model, app) {
       todoItems: function sel(done) { selection.map(function(curr) { return curr }, done) },
       numCompleted: function com(done) { completed.size(done) },
       numActive: function act(done) { active.size(done) }
-    })(null, done);
+    },
+    function addView(data, done) { done(null, data, 'index') }
+    )(null, done);
   }
 }
 

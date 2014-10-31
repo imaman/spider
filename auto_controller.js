@@ -28,10 +28,10 @@ exports.create = function(name, selection, idParam) {
     delete: function() { return newDeleteController(selection, idParam) },
     get: function(jsonFromReq) {
       return function(req, res) {
-        jsonFromReq(req, selection.q(req.params[idParam]), function(err, data) {
+        jsonFromReq(req, selection.q(req.params[idParam]), function(err, data, viewName) {
           if (err) return res.sendStatus(500).end();
           data.byController = data.byController || name;
-          res.render('index', data);
+          res.render(viewName, data);
         });
       };
     },
