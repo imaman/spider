@@ -17,6 +17,7 @@ function install(model, app) {
   }));
   app.put('/todos', todos.put(updateItem));
   app.get('/todos', todos.get(listTodoItems));
+  app.get('/todos.json', todos.get(listTodoItems));
 
   app.put('/todos/:id', todo.put(updateItem));
   app.delete('/todos/:id', todo.delete());

@@ -31,6 +31,9 @@ exports.create = function(name, selection, idParam) {
         jsonFromReq(req, selection.q(req.params[idParam]), function(err, data, viewName) {
           if (err) return res.sendStatus(500).end();
           data.byController = data.byController || name;
+          if (req.path.match(/\.json$/)) {
+            return res.status(200).json(data).end();
+          }
           res.render(viewName, data);
         });
       };

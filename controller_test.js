@@ -31,6 +31,30 @@ describe('controller', function() {
       });
     });
   });
+  describe('GET /todos.json', function() {
+    it('sends back a JSON object of all todo items', function(done) {
+      var app = spider.createApp(-1, __dirname);
+      var model = Model.newModel();
+      model.add({text: 'TODO_1', completed: true}, function (err, id) {
+        if (err) return done(err);
+        controller.install(model, app);
+        request(app).
+          get('/todos.json').
+          expect('Content-Type', /json/).
+          expect(200, {
+            byController: 'todos',
+            numCompleted: 1,
+            numActive: 0,
+            todoItems: [{
+              text: 'TODO_1',
+              completed: true,
+              id: id
+            }]
+          }).
+          end(done);
+      });
+    });
+  });
   describe('GET /todos_completed', function() {
     it('lists only completed items', function(done) {
       var app = spider.createApp(-1, __dirname);
