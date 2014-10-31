@@ -5,6 +5,19 @@ var Model = require('./model.js');
 var expect = require('expect.js');
 
 describe('controller', function() {
+  describe('GET /', function() {
+    it('lists all todo items', function(done) {
+      var app = spider.createApp(-1, __dirname);
+      var model = Model.newModel();
+      model.add({text: 'TODO_1', completed: true}, function (err) {
+        if (err) return done(err);
+        controller.install(model, app);
+        request(app).
+          get('/').
+          expect(200, /TODO_1/, done);
+      });
+    });
+  });
   describe('GET /todos', function() {
     it('lists all todo items', function(done) {
       var app = spider.createApp(-1, __dirname);

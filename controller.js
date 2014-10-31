@@ -2,10 +2,6 @@ var autoController = require('./auto_controller.js');
 var funflow = require('funflow');
 
 function install(model, app) {
-  app.get('/', function(req, res) {
-    res.redirect('/todos');
-  });
-
   var completed = model.q(function(e) { return e.completed });
   var active = model.q(function(e) { return !e.completed });
 
@@ -20,6 +16,7 @@ function install(model, app) {
 
   app.put('/todos', todos.put(updateItem));
   app.get('/todos', todos.get(listTodoItems));
+  app.get('/', todos.get(listTodoItems));
 
   app.put('/todos/:id', todo.put(updateItem));
   app.delete('/todos/:id', todo.delete());
