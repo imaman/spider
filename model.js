@@ -26,9 +26,15 @@ exports.newModel = function() {
     }
 
     return {
+      map: function(f, done) { done(null, asArr().map(f)) },
       forEach: function(act, done) { asArr().forEach(act); done() },
       remove: function(done) { delete data[id]; done(); },
-      one: function() { return data[id] || null }
+      one: function(done) {
+        var len = asArr().length;
+        if (len > 0) return done('more than one');
+        if (len == 0) return done(null, null);
+        done(null, asArr()[0]);
+      }
     };
   }
 
@@ -55,7 +61,14 @@ exports.newModel = function() {
       done.apply(null, res);
     },
     // Debugging/Testing purposes
-    at: function(id, done) { done(null, this.q(id).one()) },
+    at: function(id, done) {
+      this.q(id).map(function(curr) { return curr }, function(err, arr) {
+        if (err) return done(err);
+        if (arr.length > 1) return done('more than one result');
+        if (arr.length == 0) return done(null, null);
+        done(null, arr[0]);
+      });
+    },
     size: function(done) { return this.q().size(done) },
     toString: function() { return JSON.stringify(data, null, 2); }
   };

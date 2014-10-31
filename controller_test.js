@@ -66,7 +66,10 @@ describe('controller', function() {
         request(app).
           delete('/todos/' + id).
           expect(function(res) {
-            expect(model.q(id).one()).to.be(null);
+            model.q(id).one(function(err, value) {
+              if (err) return done(err);
+              expect(value).to.be(null);
+            });
           }).
           expect(200, done);
       });
@@ -82,7 +85,11 @@ describe('controller', function() {
         request(app).
           put('/todos/' + id + '?completed=true').
           expect(function(res) {
-            expect(model.q(id).one().completed).to.be(true);
+            model.q(id).map(function(curr) { return curr.completed },
+              function(err, states) {
+                if (err) return done(err);
+                expect(states).to.eql([true]);
+              });
           }).
           end(done);
       });
@@ -98,7 +105,11 @@ describe('controller', function() {
         request(app).
           put('/todos/' + a + '?completed=true').
           expect(function(res) {
-            expect(model.q(b).one().completed).to.be(false);
+            model.q(b).map(function(curr) { return curr.completed },
+              function(err, states) {
+                if (err) return done(err);
+                expect(states).to.eql([false]);
+              });
           }).
           end(done);
       });
