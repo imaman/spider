@@ -8,10 +8,10 @@ function install(model, app) {
   var completed = model.q(function(e) { return e.completed });
   var active = model.q(function(e) { return !e.completed });
 
-  var completedTodos = autoController.create('todo_completed', completed);
-  var activeTodos = autoController.create('todo_active', active);
-  var todo = autoController.create(null, model, 'id');
-  var todos = autoController.create('todo', model);
+  var completedTodos = autoController.create('todos_completed', completed);
+  var activeTodos = autoController.create('todos_active', active);
+  var todo = autoController.create('todo', model, 'id');
+  var todos = autoController.create('todos', model);
 
   app.delete('/todos_completed', completedTodos.delete());
   app.delete('/todos/:id', todo.delete());
@@ -39,7 +39,7 @@ function install(model, app) {
       });
     });
   }
-  app.get('/todos', todo.get(listTodoItems));
+  app.get('/todos', todos.get(listTodoItems));
   app.get('/todos_completed', completedTodos.get(listTodoItems));
   app.get('/todos_active', activeTodos.get(listTodoItems));
 }
