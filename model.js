@@ -38,7 +38,7 @@ exports.newModel = function() {
       q: function(arg) { return arg ? pick(arg) : this },
       forEach: function(act, done) { all().filter(pred).forEach(act); done() },
       remove: function(done) { this.forEach(function(curr) { delete data[curr.id] }, done) },
-      size: function() { return all().filter(pred).length },
+      size: function(done) { done(null, all().filter(pred).length); },
       map: function(f, done) { done(null, all().filter(pred).map(f)) }
     };
   }
@@ -56,7 +56,7 @@ exports.newModel = function() {
     },
     // Debugging/Testing purposes
     at: function(id, done) { done(null, this.q(id).one()) },
-    size: function() { return this.q().size() },
+    size: function(done) { return this.q().size(done) },
     toString: function() { return JSON.stringify(data, null, 2); }
   };
 };

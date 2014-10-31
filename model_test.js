@@ -1,18 +1,25 @@
 var expect = require('expect.js');
 var newModel = require('./model.js').newModel;
+var funflow = require('funflow');
 
 describe('model', function() {
   it('is initially empty', function() {
     var model = newModel();
-    expect(model.size()).to.be(0);
+    model.size(function(err, value) {
+      if (err) return done(err);
+      expect(value).to.be(0);
+    });
   });
 
   it('allows elements to be added', function(done) {
     var model = newModel();
     model.add({text: '_'}, function(err) {
       if (err) return done(err);
-      expect(model.size()).to.be(1);
-      done();
+      model.size(function(err, value) {
+        if (err) return done(err);
+        expect(value).to.be(1);
+        done();
+      });
     });
   });
 
@@ -65,23 +72,29 @@ describe('model', function() {
     it('is lazily evaluated', function(done) {
       var model = newModel();
       var q = model.q(function(e) { return e.text == 'A' });
-      expect(q.size()).to.equal(0);
 
-      model.add({text: 'A'}, function(err) {
-        if (err) return done(err);
-        expect(q.size()).to.equal(1);
-
-        model.add({text: 'A'}, function(err) {
-          if (err) return done(err);
-          expect(q.size()).to.equal(2);
-
-          model.q().remove(function(err) {
-            if (err) return done(err);
-            expect(q.size()).to.equal(0);
-            done();
-          });
-        });
-      });
+      var flow = funflow.newFlow(
+        function sizeWhenEmpty(done) { q.size(done) },
+        function is0(value, done) {
+          expect(value).to.equal(0);
+          model.add({text: 'A'}, done);
+        },
+        function sizeAfterA(done) { q.size(done) },
+        function is1(value, done) {
+          expect(value).to.equal(1);
+          model.add({text: 'A'}, done);
+        },
+        function sizeAfterB(done) { q.size(done) },
+        function is2(value, done) {
+          expect(value).to.equal(2);
+          model.q().remove(done);
+        },
+        function sizeAfterRemove(done) { q.size(done) },
+        function is0again(value, err) {
+          expect(value).to.equal(0);
+          done();
+        }
+      )(null, done);
     });
   });
 

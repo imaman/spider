@@ -26,10 +26,16 @@ function install(model, app) {
   function listTodoItems(req, selection, done) {
     selection.map(function(curr) { return curr }, function(err, data) {
       if (err) return done(err);
-      done(null, {
-        todoItems: data,
-        numCompleted: completed.size(),
-        numLeft: active.size()
+      completed.size(function(err, completedSize) {
+        if (err) return done(err);
+        active.size(function(err, activeSize) {
+          if (err) return done(err);
+          done(null, {
+            todoItems: data,
+            numCompleted: completedSize,
+            numLeft: activeSize
+          });
+        });
       });
     });
   }
