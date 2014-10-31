@@ -1,4 +1,4 @@
-var autoController = require('./auto_controller.js');
+var autoController = require('./src/framework/auto_controller.js');
 var funflow = require('funflow');
 
 function install(model, app) {
