@@ -23,6 +23,10 @@ function install(model, app) {
   app.put('/todos/:id', todo.put());
   app.put('/todos', todos.put());
 
+  app.get('/todos', todos.get(listTodoItems));
+  app.get('/todos_completed', completedTodos.get(listTodoItems));
+  app.get('/todos_active', activeTodos.get(listTodoItems));
+
   function listTodoItems(req, selection, done) {
     selection.map(function(curr) { return curr }, function(err, data) {
       if (err) return done(err);
@@ -39,9 +43,6 @@ function install(model, app) {
       });
     });
   }
-  app.get('/todos', todos.get(listTodoItems));
-  app.get('/todos_completed', completedTodos.get(listTodoItems));
-  app.get('/todos_active', activeTodos.get(listTodoItems));
 }
 
 exports.install = install;
