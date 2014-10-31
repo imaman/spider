@@ -11,21 +11,21 @@ function install(model, app) {
 
   var completedTodos = autoController.create('todos_completed', completed);
   var activeTodos = autoController.create('todos_active', active);
-  var todo = autoController.create('todo', model, 'id');
   var todos = autoController.create('todos', model);
-
-  app.delete('/todos_completed', completedTodos.delete());
-  app.delete('/todos/:id', todo.delete());
+  var todo = autoController.create('todo', model, 'id');
 
   app.post('/todos', todos.post(function(req) {
     return { text: req.body.text, completed: false };
   }));
+  app.put('/todos', todos.put());
+  app.get('/todos', todos.get(listTodoItems));
 
   app.put('/todos/:id', todo.put());
-  app.put('/todos', todos.put());
+  app.delete('/todos/:id', todo.delete());
 
-  app.get('/todos', todos.get(listTodoItems));
   app.get('/todos_completed', completedTodos.get(listTodoItems));
+  app.delete('/todos_completed', completedTodos.delete());
+
   app.get('/todos_active', activeTodos.get(listTodoItems));
 
   function listTodoItems(req, selection, done) {
