@@ -56,11 +56,16 @@ describe('model', function() {
   });
 
   describe('querying', function() {
-    xit('can find by ID', function() {
-      var model = newModel();
-      var id = model.add({text: 'SOME_TEXT'});
-      var texts = model.q(id).map(function(curr) { return curr.text });
-      expect(texts).to.eql(['SOME_TEXT']);
+    it('can find by ID', function(done) {
+      var model = newModel(collection);
+      model.add({text: 'SOME_TEXT'}, function(err, id) {
+        if (err) return done(err);
+        model.q(id).map(function(curr) { return curr.text }, function(err, texts) {
+          if (err) return done(err);
+          expect(texts).to.eql(['SOME_TEXT']);
+          done();
+        });
+      });
     });
     it('can find by predicate', function(done) {
       var model = newModel(collection);
@@ -90,16 +95,32 @@ describe('model', function() {
         });
       });
     });
-    xit('reports result set size', function() {
-      var model = newModel();
-      expect(model.q('non_existing_id').size()).to.equal(0);
-      var id = model.add({text: 'A'});
-      expect(id).not.to.be(null);
-      model.add({text: 'B'});
-      model.add({text: 'A'});
-      expect(model.q().size()).to.equal(3);
-      expect(model.q(function(e) { return e.text == 'A' }).size()).to.equal(2);
-      expect(model.q(id).size()).to.equal(1);
+    it('reports result set size', function(done) {
+      var model = newModel(collection);
+      model.q({text: 'some_weird_value'}).size(function(err, size) {
+        if (err) return done(err);
+        expect(size).to.equal(0);
+        model.add({text: 'A'}, function(err, id) {
+          if (err) return done(err);
+          expect(id).not.to.be(null);
+          model.add({text: 'B'}, {text: 'A'}, function(err, idA, idB) {
+            if (err) return done(err);
+            model.q().size(function(err, sz) {
+              if (err) return done(err);
+              expect(sz).to.equal(3);
+              model.q({text: 'A'}).size(function(err, sz) {
+                if (err) return done(err);
+                expect(sz).to.equal(2);
+                model.q(id).size(function(err, sz) {
+                  if (err) return done(err);
+                  expect(sz).to.equal(1);
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
     });
     it('is lazily evaluated', function(done) {
       var model = newModel(collection);
@@ -170,20 +191,20 @@ describe('model', function() {
 
   describe('remove multiple items', function() {
     it('deletes the item that matches the predicate', function(done) {
-      var model = newModel();
+      var model = newModel(collection);
       model.add({text: 'A'}, function(err, a) {
         if (err) return done(err);
-        model.q(function(curr) { return curr.text == 'A' }).remove(function(err) {
+        model.q({ text: { $regex: /^A/ }}).remove(function(err) {
           if (err) return done(err);
           expectAt(model, a, null, done);
         });
       });
     });
     it('deletes only the item that matches the predicate', function(done) {
-      var model = newModel();
+      var model = newModel(collection);
       model.add({text: 'A'}, {text: 'B'}, function(err, a, b) {
         if (err) return done(err);
-        model.q(function(curr) { return curr.text == 'A' }).remove(function(err) {
+        model.q({ text: 'A'}).remove(function(err) {
           if (err) return done(err);
           expectAt(model, a, null, function() {
             model.at(b, function(err, value) {
@@ -195,10 +216,10 @@ describe('model', function() {
       });
     });
     it('deletes all items that match the predicate', function(done) {
-      var model = newModel();
+      var model = newModel(collection);
       model.add({text: 'A'}, {text: 'B'}, {text: 'A'}, function(err, a1, b, a2) {
         if (err) return done(err);
-        model.q(function(curr) { return curr.text == 'A' }).remove(function(err) {
+        model.q({ text: 'A'}).remove(function(err) {
           if (err) return done(err);
           expectAt(model, a1, null, function() {
             model.at(b, function(err, value) {

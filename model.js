@@ -8,9 +8,22 @@ exports.newModel = function(coll) {
   function pick(where) {
     if (typeof where === 'string') {
       var id = ObjectID.createFromHexString(where);
+      var byId = {_id: id};
       return {
         remove: function(done) {
-          coll.removeOne({_id: id}, done);
+          coll.removeOne(byId, done);
+        },
+        map: function(mapper, done) {
+          coll.find(byId).toArray(function(err, data) {
+            if (err) return done(err);
+            done(null, data.map(mapper));
+          });
+        },
+        size: function(done) {
+          coll.find(byId).toArray(function(err, data) {
+            if (err) return done(err);
+            done(null, data.length);
+          });
         }
       };
     }
