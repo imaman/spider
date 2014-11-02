@@ -6,6 +6,14 @@ exports.newModel = function(coll) {
   if (!coll) return inMemoryModel();
 
   function pick(where) {
+    if (typeof where === 'string') {
+      var id = ObjectID.createFromHexString(where);
+      return {
+        remove: function(done) {
+          coll.removeOne({_id: id}, done);
+        }
+      };
+    }
     return {
       map: function(mapper, done) {
         coll.find(where).toArray(function(err, data) {

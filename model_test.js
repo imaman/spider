@@ -142,15 +142,15 @@ describe('model', function() {
         });
       });
     });
-    it('returns null when if the ID was not found', function(done) {
-      var model = newModel();
-      expectAt(model, 'some_id', null, done);
+    xit('returns null when if the ID was not found', function(done) {
+      var model = newModel(collection);
+      expectAt(model, '0123456789AB01234567890AB', null, done);
     });
   });
 
 
   it('can delete an item by ID', function(done) {
-    var model = newModel();
+    var model = newModel(collection);
     model.add({text: 'SOME_TEXT'}, function(err, id) {
       if (err) return done(err);
       model.q(id).remove(function(err) {
