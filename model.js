@@ -44,7 +44,9 @@ exports.newModel = function(coll) {
       map: function(mapper, done) {
         coll.find(where).toArray(function(err, data) {
           if (err) return done(err);
-          done(null, data.map(mapper));
+          if (mapper)
+            data = data.map(mapper);
+          done(null, data);
         });
       },
       size: function(done) {

@@ -34,7 +34,7 @@ function install(model, app) {
 
   function listTodoItems(req, selection, done) {
     funflow.newFlow({
-        todoItems: function sel(done) { selection.map(function(curr) { return curr }, done) },
+        todoItems: function sel(done) { selection.map(null, done) },
         numCompleted: function com(done) { completed.size(done) },
         numActive: function act(done) { active.size(done) }
       },
