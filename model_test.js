@@ -38,7 +38,7 @@ describe('model', function() {
   });
 
   it('allows elements to be added', function(done) {
-    var model = newModel();
+    var model = newModel(collection);
     model.add({text: '_'}, function(err) {
       if (err) return done(err);
       model.size(function(err, value) {
@@ -57,10 +57,10 @@ describe('model', function() {
       expect(texts).to.eql(['SOME_TEXT']);
     });
     it('can find by predicate', function(done) {
-      var model = newModel();
+      var model = newModel(collection);
       model.add({text: 'A1'}, {text: 'B'}, {text: 'A2'}, function(err, a1, b, a2) {
         if (err) return done(err);
-        var query = model.q(function(i) { return i.text.indexOf('A') >= 0 });
+        var query = model.q({ text: { $regex: /^A/ }});
         query.map(function(curr) { return curr.text }, function(err, texts) {
           if (err) return done(err);
           expect(texts).to.contain('A1');

@@ -1,14 +1,59 @@
 var util = require('util');
+var mongodb = require('mongodb');
+var ObjectID = mongodb.ObjectID;
 
 exports.newModel = function(coll) {
   if (!coll) return inMemoryModel();
 
+  function pick(where) {
+    return {
+      map: function(mapper, done) {
+        coll.find(where).toArray(function(err, data) {
+          if (err) return done(err);
+          done(null, data.map(mapper));
+        });
+      }
+    }
+  }
+
   return {
     size: function(done) {
       coll.count({}, done);
+    },
+    add: function() {
+      var args = Array.prototype.slice.call(arguments, 0);
+      var done = args.pop();
+      coll.insertMany(args, function(err, writeOpData) {
+        if (err) return done(err);
+        var ids = writeOpData.ops.map(function(curr) { return curr._id.toHexString() });
+        done.bind(null, null).apply(null, ids);
+      });
+    },
+    q: function(where) {
+      return pick(where);
     }
   };
 }
+/*
+  it('retrieves stored data', function(done) {
+    collection.insertMany([{text: 'TODO_1'}, {text: 'TODO_2'}], function(err, insertResult) {
+      if (err) return done(err);
+      var ids = insertResult.ops.map(function(curr) { return curr._id.toHexString() })
+      collection.update({text: 'TODO_1'}, { $set: { completed: true } }, function(err) {
+        if (err) return done(err);
+        collection.findOne({_id: ObjectID.createFromHexString(ids[0])}, {text: true, completed: true}, function(err, doc) {
+          if (err) return done(err);
+          expect(doc.text).to.eql('TODO_1');
+          expect(doc.completed).to.be(true);
+          collection.removeMany({_id: ObjectID.createFromHexString(ids[0])}, function(err, removeResult) {
+            if (err) return done(err);
+            expect(removeResult.result.n).to.equal(1);
+            done();
+          });
+        });
+      });
+    });
+*/
 
 
 function inMemoryModel() {
