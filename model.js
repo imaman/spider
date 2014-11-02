@@ -24,9 +24,22 @@ exports.newModel = function(coll) {
             if (err) return done(err);
             done(null, data.length);
           });
-        }
+        },
+        one: function(done) {
+          coll.find(byId).toArray(function(err, data) {
+            if (err) return done(err);
+            var len = data.length;
+            if (len > 1) return done('more than one.');
+            if (len == 0) return done(null, null);
+            done(null, data[0]);
+          });
+        },
+        update: function(change, done) {
+          coll.update(byId, {$set: change}, done);
+        },
       };
     }
+    where = where || {};
     return {
       map: function(mapper, done) {
         coll.find(where).toArray(function(err, data) {
@@ -44,6 +57,16 @@ exports.newModel = function(coll) {
         coll.removeMany(where, function(err) {
           return done(err);
         });
+      },
+      update: function(change, done) {
+        coll.updateMany(where, {$set: change}, done);
+      },
+      q: function(subWhere) {
+        var d = where;
+        if (subWhere) {
+          d = {$and: [ where, subWhere ]};
+        }
+        return pick(d)
       }
     }
   }

@@ -2,8 +2,8 @@ var autoController = require('./src/framework/auto_controller.js');
 var funflow = require('funflow');
 
 function install(model, app) {
-  var completed = model.q(function(e) { return e.completed });
-  var active = model.q(function(e) { return !e.completed });
+  var completed = model.q({completed: true});
+  var active = model.q({completed: false});
 
   var completedTodos = autoController.create('todos_completed', completed);
   var activeTodos = autoController.create('todos_active', active);
@@ -29,9 +29,7 @@ function install(model, app) {
 
   function updateItem(req, selection, done) {
     var newState = (req.param('completed') === 'true');
-    selection.forEach(function(curr) {
-      curr.completed = newState;
-    }, done);
+    selection.update({completed: newState}, done);
   }
 
   function listTodoItems(req, selection, done) {

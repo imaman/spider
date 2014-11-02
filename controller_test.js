@@ -3,12 +3,41 @@ var spider = require('./src/framework/spider.js');
 var controller = require('./controller.js');
 var Model = require('./model.js');
 var expect = require('expect.js');
+var mongodb = require('mongodb');
+var MongoClient = mongodb.MongoClient;
+
+var url = 'mongodb://localhost:27017/test_150';
 
 describe('controller', function() {
+  var db;
+  var collection;
+
+  function newModel() {
+    return Model.newModel(collection);
+  }
+
+  before(function(done) {
+    MongoClient.connect(url, function(err, db_) {
+      if (err) return done(err);
+      db = db_;
+      collection = db.collection('controller_testing');
+      done();
+    });
+  });
+  after(function(done) {
+    collection.drop(function(err) {
+      db.close();
+      done();
+    });
+  });
+  beforeEach(function(done) {
+    collection.removeMany({}, done);
+  });
+
   describe('GET /', function() {
     it('lists all todo items', function(done) {
       var app = spider.createApp(-1, __dirname);
-      var model = Model.newModel();
+      var model = newModel();
       model.add({text: 'TODO_1', completed: true}, function (err) {
         if (err) return done(err);
         controller.install(model, app);
@@ -21,7 +50,7 @@ describe('controller', function() {
   describe('GET /todos', function() {
     it('lists all todo items', function(done) {
       var app = spider.createApp(-1, __dirname);
-      var model = Model.newModel();
+      var model = newModel();
       model.add({text: 'TODO_1', completed: true}, function (err) {
         if (err) return done(err);
         controller.install(model, app);
@@ -34,7 +63,7 @@ describe('controller', function() {
   describe('GET /todos.json', function() {
     it('sends back a JSON object of all todo items', function(done) {
       var app = spider.createApp(-1, __dirname);
-      var model = Model.newModel();
+      var model = newModel();
       model.add({text: 'TODO_1', completed: true}, function (err, id) {
         if (err) return done(err);
         controller.install(model, app);
@@ -48,7 +77,7 @@ describe('controller', function() {
             todoItems: [{
               text: 'TODO_1',
               completed: true,
-              id: id
+              _id: id
             }]
           }).
           end(done);
@@ -58,7 +87,7 @@ describe('controller', function() {
   describe('GET /todos_completed', function() {
     it('lists only completed items', function(done) {
       var app = spider.createApp(-1, __dirname);
-      var model = Model.newModel();
+      var model = newModel();
       model.add({text: 'COMPLETED_TODO', completed: true},
          {text: 'ACTIVE_TODO', completed: false},
          function (err) {
@@ -77,7 +106,7 @@ describe('controller', function() {
   describe('GET /todos_active', function() {
     it('lists only active items', function(done) {
       var app = spider.createApp(-1, __dirname);
-      var model = Model.newModel();
+      var model = newModel();
       model.add({text: 'COMPLETED_TODO', completed: true},
           {text: 'ACTIVE_TODO', completed: false},
           function (err) {
@@ -96,7 +125,7 @@ describe('controller', function() {
   describe('DELETE /todos/:id', function() {
     it('removes the item with the given ID', function(done) {
       var app = spider.createApp(-1, __dirname);
-      var model = Model.newModel();
+      var model = newModel();
       model.add({text: 'TODO_1', completed: true}, function(err, id) {
         if (err) return done(err);
         controller.install(model, app);
@@ -115,25 +144,25 @@ describe('controller', function() {
   describe('PUT /todos/:id', function() {
     it('sets the completion state of the item with the given ID', function(done) {
       var app = spider.createApp(-1, __dirname);
-      var model = Model.newModel();
+      var model = newModel();
       model.add({text: 'TODO_1', completed: false}, function(err, id) {
         if (err) return done(err);
         controller.install(model, app);
         request(app).
           put('/todos/' + id + '?completed=true').
           expect(function(res) {
-            model.q(id).map(function(curr) { return curr.completed },
-              function(err, states) {
-                if (err) return done(err);
-                expect(states).to.eql([true]);
-              });
+            model.q(id).one(function(err, data) {
+              if (err) return done(err);
+              expect(data.completed).to.be(true);
+              expect(data.text).to.equal('TODO_1');
+            });
           }).
           end(done);
       });
     });
     it('sets the completion state of only the item with the given ID', function(done) {
       var app = spider.createApp(-1, __dirname);
-      var model = Model.newModel();
+      var model = newModel();
       model.add({text: 'TODO_1', completed: false},
           {text: 'TODO_2', completed: false},
           function(err, a, b) {
@@ -155,7 +184,7 @@ describe('controller', function() {
   describe('PUT /todos', function() {
     it('sets the completion state of all items', function(done) {
       var app = spider.createApp(-1, __dirname);
-      var model = Model.newModel();
+      var model = newModel();
       model.add({text: 'TODO_1', completed: true},
           {text: 'TODO_2', completed: true},
           {text: 'TODO_3', completed: true},
@@ -163,7 +192,7 @@ describe('controller', function() {
         if(err) return done(err);
         controller.install(model, app);
         request(app).
-          put('/todos/?completed=false').
+          put('/todos?completed=false').
           expect(function(res) {
             model.q().map(function(curr) { return curr.completed },
               function(err, states) {
@@ -179,7 +208,7 @@ describe('controller', function() {
   describe('POST /todos', function() {
     it('creates a new item', function(done) {
       var app = spider.createApp(-1, __dirname);
-      var model = Model.newModel();
+      var model = newModel();
 
       controller.install(model, app);
       request(app).
@@ -196,7 +225,7 @@ describe('controller', function() {
     });
     it('500s if the item cannot be added to the DB', function(done) {
       var app = spider.createApp(-1, __dirname);
-      var model = Model.newModel();
+      var model = newModel();
       model.add = function() { throw new Error('add() failed') };
 
       controller.install(model, app);
@@ -210,7 +239,7 @@ describe('controller', function() {
   describe('DELETE /todos_completed', function() {
     it('removes completed items', function(done) {
       var app = spider.createApp(-1, __dirname);
-      var model = Model.newModel();
+      var model = newModel();
 
       model.add({text: 'COMPLETED_1', completed: true},
           {text: 'ACTIVE', completed: false},
