@@ -1,6 +1,6 @@
 var spider = require('./src/framework/spider.js');
 var controller = require('./controller.js');
-var Model = require('./model.js');
+var Model = require('./src/framework/model.js');
 var funflow = require('funflow');
 var MongoClient = require('mongodb').MongoClient;
 

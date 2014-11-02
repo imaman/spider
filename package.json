@@ -4,7 +4,7 @@
   "author": "imaman",
   "description": "playground for a new MVC framework",
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha *_test.js"
+    "test": "node_modules/mocha/bin/mocha src/framework/*_test.js *_test.js"
   },
   "main": "./main.js",
   "repository": {
