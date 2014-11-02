@@ -1,6 +1,17 @@
 var util = require('util');
 
-exports.newModel = function() {
+exports.newModel = function(coll) {
+  if (!coll) return inMemoryModel();
+
+  return {
+    size: function(done) {
+      coll.count({}, done);
+    }
+  };
+}
+
+
+function inMemoryModel() {
   var ordinal = 0;
   function nextId() {
     var res = ordinal;

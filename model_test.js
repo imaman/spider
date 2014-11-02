@@ -1,10 +1,36 @@
 var expect = require('expect.js');
-var newModel = require('./model.js').newModel;
+var model = require('./model.js');
 var funflow = require('funflow');
+var mongodb = require('mongodb');
+var MongoClient = mongodb.MongoClient;
+
+var url = 'mongodb://localhost:27017/test_150';
 
 describe('model', function() {
+  var db;
+  var collection;
+
+  function newModel(c) {
+    return model.newModel(c);
+  }
+
+  before(function(done) {
+    MongoClient.connect(url, function(err, db_) {
+      if (err) return done(err);
+      db = db_;
+      collection = db.collection('model_testing');
+      done();
+    });
+  });
+  after(function(done) {
+    collection.drop(function(err) {
+      db.close();
+      done();
+    });
+  });
+
   it('is initially empty', function() {
-    var model = newModel();
+    var model = newModel(collection);
     model.size(function(err, value) {
       if (err) return done(err);
       expect(value).to.be(0);
