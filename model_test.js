@@ -29,6 +29,12 @@ describe('model', function() {
     });
   });
 
+  afterEach(function(done) {
+    collection.drop(function() {
+      done(null);
+    });
+  });
+
   it('is initially empty', function() {
     var model = newModel(collection);
     model.size(function(err, value) {
@@ -71,7 +77,7 @@ describe('model', function() {
       });
     });
     it('finds all if the query is falsy', function(done) {
-      var model = newModel();
+      var model = newModel(collection);
       model.add({text: 'A'}, {text: 'B'}, function(err, a, b) {
         if(err) return done(err);
         var query = model.q(null);
