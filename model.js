@@ -12,6 +12,17 @@ exports.newModel = function(coll) {
           if (err) return done(err);
           done(null, data.map(mapper));
         });
+      },
+      size: function(done) {
+        coll.find(where).toArray(function(err, data) {
+          if (err) return done(err);
+          done(null, data.length);
+        });
+      },
+      remove: function(done) {
+        coll.removeMany(where, function(err) {
+          return done(err);
+        });
       }
     }
   }

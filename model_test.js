@@ -102,8 +102,8 @@ describe('model', function() {
       expect(model.q(id).size()).to.equal(1);
     });
     it('is lazily evaluated', function(done) {
-      var model = newModel();
-      var q = model.q(function(e) { return e.text == 'A' });
+      var model = newModel(collection);
+      var q = model.q({ text: { $regex: /^A/ }});
 
       var flow = funflow.newFlow(
         function sizeWhenEmpty(done) { q.size(done) },
