@@ -132,12 +132,12 @@ describe('model', function() {
 
   describe('at', function() {
     it('finds an item by its ID', function(done) {
-      var model = newModel();
+      var model = newModel(collection);
       model.add({text: 'SOME_TEXT'}, function(err, id) {
         if(err) return done(err);
         model.at(id, function(err, item) {
           expect(item).to.have.property('text').equal('SOME_TEXT');
-          expect(item).to.have.property('id').equal(id);
+          expect(item).to.have.property('_id').eql(id);
           done();
         });
       });

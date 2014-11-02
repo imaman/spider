@@ -42,6 +42,14 @@ exports.newModel = function(coll) {
     },
     q: function(where) {
       return pick(where);
+    },
+    at: function(id, done) {
+      coll.findOne({_id: ObjectID.createFromHexString(id)}, function(err, data) {
+        if (err) return done(err);
+        if (!data) return done(null, data);
+        data._id = data._id.toHexString();
+        done(null, data);
+      });
     }
   };
 }
