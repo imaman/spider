@@ -23,7 +23,7 @@ html(lang='en')
             li(class=curr.completed ? 'completed' : '')
               div(class="view")
                 input(class="toggle" type="checkbox" checked=curr.completed item_id=curr._id)
-                label= curr.text
+                label(item_id=curr._id)= curr.text
                 button(class="destroy" item_id=curr._id)
               input(class="edit" value=curr.text)
 

@@ -28,8 +28,16 @@ function install(model, app) {
   app.get('/todos_active', activeTodos.get(listTodoItems));
 
   function updateItem(req, selection, done) {
-    var newState = (req.param('completed') === 'true');
-    selection.update({completed: newState}, done);
+    var data = {};
+    var comp = req.param('completed');
+    if (comp !== undefined) {
+      data.completed = comp;
+    }
+    var text = req.param('text');
+    if (text != null) {
+      data.text = text;
+    }
+    selection.update(data, done);
   }
 
   function listTodoItems(req, selection, done) {

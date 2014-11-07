@@ -30,6 +30,33 @@ $(document).ready(function() {
     });
   });
 
+  var list = $('#todo-list');
+
+  list.on('dblclick', 'label', function(e) {
+    var $input = $(e.target).closest('li').addClass('editing').find('.edit');
+	  $input.val($input.val()).focus();
+  });
+  list.on('focusout', '.edit', function() {
+    var el = $(this);
+    var id = el.closest('li').find('label').attr('item_id');
+    $.ajax({
+      url: '/todos/' + id,
+      type: 'PUT',
+      data: {
+        text: el.val()
+      }
+    }).always(function() {
+      window.location.reload();
+    });
+  });
+  list.on('keyup', '.edit', function(e) {
+    if (e.which == 13) {
+      e.target.blur();
+    }
+    if (e.which == 27) {
+      window.location.reload();
+    }
+  });
   $('.destroy').click(function() {
     var button = $(this);
     $.ajax({
