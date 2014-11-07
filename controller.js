@@ -29,9 +29,8 @@ function install(model, app) {
 
   function updateItem(req, selection, done) {
     var data = {};
-    var comp = req.param('completed');
-    if (comp !== undefined) {
-      data.completed = comp;
+    if (req.body.completed !== undefined) {
+      data.completed = req.body.completed;
     }
     var text = req.param('text');
     if (text != null) {

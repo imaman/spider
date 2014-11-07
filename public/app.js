@@ -17,16 +17,26 @@ $(document).ready(function() {
     }
   });
 
-  $('.toggle').change(function() {
-    var box = $(this);
+  function itemIdOf(e) {
+    return $(e).closest('li').attr('item_id');
+  }
+
+  function putJson(path, data) {
     $.ajax({
-      url: '/todos/' + box.attr('item_id'),
+      url: path,
       type: 'PUT',
-      data: {
-        completed: box.prop('checked')
-      }
+      contentType : 'application/json',
+      processData: false,
+      data: JSON.stringify(data),
     }).always(function() {
       window.location.reload();
+    });
+  }
+
+  $('.toggle').change(function() {
+    var box = $(this);
+    putJson('/todos/' + itemIdOf(this), {
+      completed: box.prop('checked')
     });
   });
 
@@ -38,15 +48,9 @@ $(document).ready(function() {
   });
   list.on('focusout', '.edit', function() {
     var el = $(this);
-    var id = el.closest('li').find('label').attr('item_id');
-    $.ajax({
-      url: '/todos/' + id,
-      type: 'PUT',
-      data: {
-        text: el.val()
-      }
-    }).always(function() {
-      window.location.reload();
+    var id = itemIdOf(this);
+    putJson('/todos/' + id, {
+      text: el.val()
     });
   });
   list.on('keyup', '.edit', function(e) {
@@ -58,9 +62,8 @@ $(document).ready(function() {
     }
   });
   $('.destroy').click(function() {
-    var button = $(this);
     $.ajax({
-      url: '/todos/' + button.attr('item_id'),
+      url: '/todos/' + itemIdOf(this),
       type: 'DELETE'
     }).always(function() {
       window.location.reload();
@@ -69,14 +72,8 @@ $(document).ready(function() {
 
   $('#toggle-all').change(function() {
     var box = $(this);
-    $.ajax({
-      url: '/todos',
-      type: 'PUT',
-      data: {
-        completed: box.prop('checked')
-      }
-    }).always(function() {
-      window.location.reload();
+    putJson('/todos', {
+      completed: box.prop('checked')
     });
   });
 });

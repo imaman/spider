@@ -20,7 +20,7 @@ html(lang='en')
         label(for="toggle-all") Mark all as complete
         ul(id="todo-list")
           each curr in todoItems
-            li(class=curr.completed ? 'completed' : '')
+            li(item_id=curr._id class=curr.completed ? 'completed' : '')
               div(class="view")
                 input(class="toggle" type="checkbox" checked=curr.completed item_id=curr._id)
                 label(item_id=curr._id)= curr.text
