@@ -1,0 +1,16 @@
+
+doctype html
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    title TodoMVC
+
+  body
+    table
+      tr
+        each key in tableHeader
+          td= key
+      each r in tableBody
+        tr
+          each curr in r
+            td= curr
