@@ -216,7 +216,7 @@ describe('controller', function() {
       });
     });
   });
-  xdescribe('PUT /todos', function() {
+  describe('PUT /todos', function() {
     it('sets the completion state of all items', function(done) {
       model.add({text: 'TODO_1', completed: true},
           {text: 'TODO_2', completed: true},
@@ -224,7 +224,8 @@ describe('controller', function() {
           function(err) {
         if(err) return done(err);
         request(app).
-          put('/todos?completed=false').
+          put('/todos').
+          send({completed: false}).
           expect(function(res) {
             model.q().map(function(curr) { return curr.completed },
               function(err, states) {
