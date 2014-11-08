@@ -37,6 +37,9 @@ function create(coll) {
         update: function(change, done) {
           coll.update(byId, {$set: change}, done);
         },
+        get: function(done) {
+          return this.one(done);
+        }
       };
     }
     where = where || {};
@@ -62,6 +65,9 @@ function create(coll) {
       },
       update: function(change, done) {
         coll.updateMany(where, {$set: change}, done);
+      },
+      get: function(done) {
+        return this.map(null, done);
       },
       q: function(subWhere) {
         var d = where;
