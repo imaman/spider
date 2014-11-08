@@ -11,6 +11,8 @@ var url = 'mongodb://localhost:27017/test_150';
 describe('controller', function() {
   var db;
   var collection;
+  var app;
+  var model;
 
   function newModel() {
     return Model.newModel(collection);
@@ -32,15 +34,15 @@ describe('controller', function() {
   });
   beforeEach(function(done) {
     collection.removeMany({}, done);
+    app = spider.createApp(-1, __dirname);
+    model = newModel();
+    controller.install(model, app);
   });
 
   describe('GET /', function() {
     it('lists all todo items', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add({text: 'TODO_1', completed: true}, function (err) {
         if (err) return done(err);
-        controller.install(model, app);
         request(app).
           get('/').
           expect(200, /TODO_1/, done);
@@ -49,11 +51,8 @@ describe('controller', function() {
   });
   describe('GET /todos', function() {
     it('lists all todo items', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add({text: 'TODO_1', completed: true}, function (err) {
         if (err) return done(err);
-        controller.install(model, app);
         request(app).
           get('/todos').
           expect(200, /TODO_1/, done);
@@ -62,11 +61,8 @@ describe('controller', function() {
   });
   describe('GET /todos.json', function() {
     it('sends back a JSON object of all todo items', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add({text: 'TODO_1', completed: true}, function (err, id) {
         if (err) return done(err);
-        controller.install(model, app);
         request(app).
           get('/todos.json').
           expect('Content-Type', /json/).
@@ -86,13 +82,10 @@ describe('controller', function() {
   });
   describe('GET /todos_completed', function() {
     it('lists only completed items', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add({text: 'COMPLETED_TODO', completed: true},
          {text: 'ACTIVE_TODO', completed: false},
          function (err) {
         if (err) return done(err);
-        controller.install(model, app);
         request(app).
           get('/todos_completed').
           expect(function(res) {
@@ -105,13 +98,10 @@ describe('controller', function() {
   });
   describe('GET /todos_active', function() {
     it('lists only active items', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add({text: 'COMPLETED_TODO', completed: true},
           {text: 'ACTIVE_TODO', completed: false},
           function (err) {
         if (err) return done(err);
-        controller.install(model, app);
         request(app).
           get('/todos_active').
           expect(function(res) {
@@ -125,11 +115,8 @@ describe('controller', function() {
 
   describe('GET /todos:id', function() {
     it('responds with the JSON representation of an item', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add({text: 'A', completed: true}, function(err, id) {
         if (err) return done(err);
-        controller.install(model, app);
         request(app).
           get('/todos/' + id + '.json').
           expect(function(recap) {
@@ -146,11 +133,8 @@ describe('controller', function() {
   });
   describe('DELETE /todos/:id', function() {
     it('removes the item with the given ID', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add({text: 'TODO_1', completed: true}, function(err, id) {
         if (err) return done(err);
-        controller.install(model, app);
         request(app).
           delete('/todos/' + id).
           expect(function(res) {
@@ -165,11 +149,8 @@ describe('controller', function() {
   });
   describe('PUT /todos/:id', function() {
     it('sets the completion state of an item when .completed is true', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add({text: 'TODO_1', completed: false}, function(err, id) {
         if (err) return done(err);
-        controller.install(model, app);
         request(app).
           put('/todos/' + id).
           send({completed: true}).
@@ -184,11 +165,8 @@ describe('controller', function() {
       });
     });
     it('clears the completion state of an item when .completed is false', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add({text: 'TODO_1', completed: true}, function(err, id) {
         if (err) return done(err);
-        controller.install(model, app);
         request(app).
           put('/todos/' + id).
           send({completed: false}).
@@ -203,13 +181,10 @@ describe('controller', function() {
       });
     });
     it('sets the completion state of only the item with the given ID', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add({text: 'TODO_1', completed: false},
           {text: 'TODO_2', completed: false},
           function(err, a, b) {
         if (err) return done(err);
-        controller.install(model, app);
         request(app).
           put('/todos/' + a).
           send({completed: true}).
@@ -224,12 +199,9 @@ describe('controller', function() {
       });
     });
     it('sets the text of an item when .text is specified', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add({text: 'TODO_1', completed: true},
           function(err, id) {
         if (err) return done(err);
-        controller.install(model, app);
         request(app).
           put('/todos/' + id).
           send({text: 'new text'}).
@@ -246,14 +218,11 @@ describe('controller', function() {
   });
   xdescribe('PUT /todos', function() {
     it('sets the completion state of all items', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add({text: 'TODO_1', completed: true},
           {text: 'TODO_2', completed: true},
           {text: 'TODO_3', completed: true},
           function(err) {
         if(err) return done(err);
-        controller.install(model, app);
         request(app).
           put('/todos?completed=false').
           expect(function(res) {
@@ -270,10 +239,6 @@ describe('controller', function() {
 
   describe('POST /todos', function() {
     it('creates a new item', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
-
-      controller.install(model, app);
       request(app).
         post('/todos').
         send({ text: 'TODO_100' }).
@@ -287,11 +252,8 @@ describe('controller', function() {
         end(done);
     });
     it('500s if the item cannot be added to the DB', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
       model.add = function() { throw new Error('add() failed') };
 
-      controller.install(model, app);
       request(app).
         post('/todos').
         send({ text: 'TODO_100' }).
@@ -301,15 +263,11 @@ describe('controller', function() {
 
   describe('DELETE /todos_completed', function() {
     it('removes completed items', function(done) {
-      var app = spider.createApp(-1, __dirname);
-      var model = newModel();
-
       model.add({text: 'COMPLETED_1', completed: true},
           {text: 'ACTIVE', completed: false},
           {text: 'COMPLETED_2', completed: true},
           function(err) {
         if (err) return done(err);
-        controller.install(model, app);
         request(app).
           delete('/todos_completed').
           expect(function(res) {
