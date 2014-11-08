@@ -172,14 +172,16 @@ describe('controller', function() {
         request(app).
           put('/todos/' + id).
           send({completed: false}).
-          expect(function(res) {
+          expect(204).
+          end(function(err) {
+            if (err) return done(err);
             model.q(id).one(function(err, data) {
               if (err) return done(err);
               expect(data.completed).to.be(false);
               expect(data.text).to.equal('TODO_1');
+              done();
             });
-          }).
-          end(done);
+          });
       });
     });
     it('sets the completion state of only the item with the given ID', function(done) {
@@ -190,14 +192,15 @@ describe('controller', function() {
         request(app).
           put('/todos/' + a).
           send({completed: true}).
-          expect(function(res) {
+          end(function(err) {
+            if (err) return done(err);
             model.q(b).map(function(curr) { return curr.completed },
               function(err, states) {
                 if (err) return done(err);
                 expect(states).to.eql([false]);
+                done();
               });
-          }).
-          end(done);
+          });
       });
     });
     it('sets the text of an item when .text is specified', function(done) {
@@ -207,14 +210,15 @@ describe('controller', function() {
         request(app).
           put('/todos/' + id).
           send({text: 'new text'}).
-          expect(function(res) {
+          end(function() {
+            if (err) return done(err);
             model.q(id).one(function(err, data) {
               if (err) return done(err);
               expect(data.text).to.equal('new text');
               expect(data.completed).to.be(true);
+              done();
             });
-          }).
-          end(done);
+          });
       });
     });
   });
@@ -228,14 +232,16 @@ describe('controller', function() {
         request(app).
           put('/todos').
           send({completed: false}).
-          expect(function(res) {
+          expect(204).
+          end(function(err) {
+            if (err) return done(err);
             model.q().map(function(curr) { return curr.completed },
               function(err, states) {
                 if (err) return done(err);
                 expect(states).to.eql([false, false, false]);
+                done();
               });
-          }).
-          end(done);
+          });
       });
     });
   });

@@ -44,7 +44,7 @@ exports.create = function(name, selection, idParam) {
     put: function(mutationFromReq) {
       return function(req, res) {
         mutationFromReq(req, selection.q(req.params[idParam]), function(err) {
-          res.sendStatus(err ? 500 : 200).end();
+          res.sendStatus(err ? 500 : 204).end();
         });
       };
     }
