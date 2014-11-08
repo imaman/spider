@@ -122,6 +122,28 @@ describe('controller', function() {
       });
     });
   });
+
+  describe('GET /todos:id', function() {
+    it('responds with the JSON representation of an item', function(done) {
+      var app = spider.createApp(-1, __dirname);
+      var model = newModel();
+      model.add({text: 'A', completed: true}, function(err, id) {
+        if (err) return done(err);
+        controller.install(model, app);
+        request(app).
+          get('/todos/' + id + '.json').
+          expect(function(recap) {
+            expect(recap.body).to.eql({
+              _id: id,
+              text: 'A',
+              completed: true,
+              byController: 'todo'
+            });
+          }).
+          end(done);
+      });
+    });
+  });
   describe('DELETE /todos/:id', function() {
     it('removes the item with the given ID', function(done) {
       var app = spider.createApp(-1, __dirname);
