@@ -113,7 +113,7 @@ describe('controller', function() {
     });
   });
 
-  describe('GET /todos:id', function() {
+  describe('GET /todos:id.json', function() {
     it('responds with the JSON representation of an item', function(done) {
       model.add({text: 'A', completed: true}, function(err, id) {
         if (err) return done(err);
@@ -137,13 +137,15 @@ describe('controller', function() {
         if (err) return done(err);
         request(app).
           delete('/todos/' + id).
-          expect(function(res) {
+          expect(204).
+          end(function(err) {
+            if (err) return done(err);
             model.q(id).one(function(err, value) {
               if (err) return done(err);
               expect(value).to.be(null);
+              done();
             });
-          }).
-          expect(200, done);
+          });
       });
     });
   });
@@ -278,7 +280,7 @@ describe('controller', function() {
                 expect(texts).to.eql(['ACTIVE']);
               });
           }).
-          expect(200, done);
+          expect(204, done);
       });
     });
   });

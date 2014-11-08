@@ -1,6 +1,6 @@
 function entityDelete(q, res) {
   q.remove(function (err) {
-    res.sendStatus(err ? 500 : 200).end();
+    res.sendStatus(err ? 500 : 204).end();
   });
 }
 
