@@ -20,6 +20,12 @@ function install(model, app) {
   app.get('/todos.json', todos.get(listTodoItems));
 
   app.get('/todos/:id.json', todo.get());
+  app.get('/todos/:id', todo.get(function(req, sel, done) {
+    sel.get(function(err, value) {
+      if (err) return done(err);
+      done(null, {todoItem: value}, 'todo_item');
+    });
+  }));
   app.put('/todos/:id', todo.put(updateItem));
   app.delete('/todos/:id', todo.delete());
 
