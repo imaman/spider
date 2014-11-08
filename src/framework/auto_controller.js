@@ -20,8 +20,9 @@ exports.create = function(name, selection, idParam) {
   return {
     post: function(jsonFromReq) {
       return function(req, res) {
-        selection.add(jsonFromReq(req), function(err) {
-          res.sendStatus(err ? 500 : 200).end();
+        selection.add(jsonFromReq(req), function(err, id) {
+          if (err) return res.sendStatus(500).end();
+          res.send({id: id.toString()}, 201).end();
         });
       };
     },

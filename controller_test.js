@@ -251,14 +251,31 @@ describe('controller', function() {
       request(app).
         post('/todos').
         send({ text: 'TODO_100' }).
-        expect(function(res) {
+        expect(201).
+        end(function(err) {
+          if (err) return done(err);
           model.q().map(function(curr) { return curr.text },
             function(err, texts) {
               if (err) return done(err);
               expect(texts).to.eql(['TODO_100']);
+              done();
             });
-        }).
-        end(done);
+        });
+    });
+    it('returns the ID of the new item in the body', function(done) {
+      request(app).
+        post('/todos').
+        send({ text: 'TODO_123' }).
+        expect(201).
+        end(function(err, recap) {
+          if (err) return done(err);
+          model.q().map(function(curr) { return curr._id.toString() },
+            function(err, ids) {
+              if (err) return done(err);
+              expect(ids).to.eql([recap.body.id]);
+              done();
+            });
+        });
     });
     it('500s if the item cannot be added to the DB', function(done) {
       model.add = function() { throw new Error('add() failed') };
