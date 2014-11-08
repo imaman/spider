@@ -27,6 +27,9 @@ exports.create = function(name, selection, idParam) {
     },
     delete: function() { return newDeleteController(selection, idParam) },
     get: function(jsonFromReq) {
+      jsonFromReq = jsonFromReq || function(req, sel, done) {
+        sel.get(done);
+      }
       return function(req, res) {
         jsonFromReq(req, selection.q(req.params[idParam]), function(err, data, viewName) {
           if (err) return res.sendStatus(500).end();
