@@ -4,6 +4,15 @@ html(lang='en')
   head
     meta(charset='utf-8')
     title TodoMVC
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
+    script.
+      $(document).ready(function() {
+        $('#post_button').click(function() {
+          $.post('/todos', {}).always(function() {
+            window.location.reload();
+          });
+        });
+      });
 
   body
     table
@@ -20,3 +29,5 @@ html(lang='en')
                 a(href='/' + byController + '/' + curr.value)= curr.value
             else
               td= curr.value
+    input(id='post_button' type='button' value='New')
+
