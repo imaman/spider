@@ -12,7 +12,7 @@ html(lang='en')
         $('#post_button').click(function() {
           $.post('/todos', {}).success(function(data, code, ajx) {
             var id = data.id;
-            window.location.replace('/todos/' + id);
+            window.location.assign('/todos/' + id);
           });
         });
         $('.destroy').click(function() {
@@ -42,5 +42,5 @@ html(lang='en')
                 a(href='/' + byController + '/' + curr.value)= curr.value
             else
               td= curr.value
-    input(id='post_button' type='button' value='New')
+    paper-fab(id='post_button' icon="create")
 
