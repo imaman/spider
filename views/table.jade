@@ -9,14 +9,21 @@ html(lang='en')
     script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
     script.
       $(document).ready(function() {
+        var selected = null;
+        $('.record').click(function() {
+          selected = $(this).attr('id');
+        });
         $('#post_button').click(function() {
           $.post('/todos', {}).success(function(data, code, ajx) {
             var id = data.id;
             window.location.assign('/todos/' + id);
           });
         });
-        $('.destroy').click(function() {
-          var id = $(this).closest('tr').attr('id');
+        $('#destroy').click(function() {
+          if (!selected) {
+            return;
+          }
+          var id = selected;
           $.ajax({
             url: '/todos/' + id,
             type: 'DELETE'
@@ -29,18 +36,16 @@ html(lang='en')
   body
     table
       tr
-        td
         each key in tableHeader
           td= key
       each r in tableBody
-        tr(id=r.id)
-          td(class='destroy')
-            paper-icon-button(disabled="" icon="clear" role="button" aria-label="clear" aria-disabled="")
+        tr(id=r.id class="record")
           each curr in r.values
             if curr.key === '_id'
               td
                 a(href='/' + byController + '/' + curr.value)= curr.value
             else
               td= curr.value
-    paper-fab(id='post_button' icon="create")
+    paper-fab(id='post_button' mini icon="create")
+    paper-fab(id='destroy' mini icon="clear")
 
