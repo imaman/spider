@@ -22,7 +22,7 @@ exports.create = function(name, selection, idParam) {
       return function(req, res) {
         selection.add(jsonFromReq(req), function(err, id) {
           if (err) return res.sendStatus(500).end();
-          res.send({id: id.toString()}, 201).end();
+          res.status(201).send({id: id.toString()}).end();
         });
       };
     },
