@@ -18,7 +18,7 @@ function install(model, app) {
   app.put('/todos', todos.put(updateItem));
   app.get('/todos', todos.get(listTodoItems));
   app.get('/todos.json', todos.get(listTodoItems));
-  app.get('/todos.html', todo.get(function(req, sel, done) {
+  app.get('/todos.html', todos.get(function(req, sel, done) {
     sel.get(function(err, value) {
       if (err) return done(err);
       var keys = {};
@@ -32,7 +32,7 @@ function install(model, app) {
       var acc = [];
       value.forEach(function(curr) {
         acc.push(keys.map(function(k) {
-          return curr[k];
+          return {key: k, value: curr[k]};
         }));
       });
       done(null, { tableHeader: keys, tableBody: acc }, 'table');

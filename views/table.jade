@@ -13,4 +13,8 @@ html(lang='en')
       each r in tableBody
         tr
           each curr in r
-            td= curr
+            if curr.key === '_id'
+              td
+                a(href='/' + byController + '/' + curr.value)= curr.value
+            else
+              td= curr.value
