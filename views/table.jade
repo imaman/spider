@@ -8,11 +8,13 @@ html(lang='en')
   body
     table
       tr
+        td
         each key in tableHeader
           td= key
       each r in tableBody
-        tr
-          each curr in r
+        tr(id=r.id)
+          td(class='destroy') X
+          each curr in r.values
             if curr.key === '_id'
               td
                 a(href='/' + byController + '/' + curr.value)= curr.value

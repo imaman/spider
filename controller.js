@@ -31,9 +31,10 @@ function install(model, app) {
       keys.sort();
       var acc = [];
       value.forEach(function(curr) {
-        acc.push(keys.map(function(k) {
+        var rec = keys.map(function(k) {
           return {key: k, value: curr[k]};
-        }));
+        });
+        acc.push({id: curr._id, values: rec});
       });
       done(null, { tableHeader: keys, tableBody: acc }, 'table');
     });
