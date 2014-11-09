@@ -8,8 +8,9 @@ html(lang='en')
     script.
       $(document).ready(function() {
         $('#post_button').click(function() {
-          $.post('/todos', {}).always(function() {
-            window.location.reload();
+          $.post('/todos', {}).success(function(data, code, ajx) {
+            var id = data.id;
+            window.location.replace('/todos/' + id);
           });
         });
       });
