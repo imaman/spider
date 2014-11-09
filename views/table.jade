@@ -13,6 +13,15 @@ html(lang='en')
             window.location.replace('/todos/' + id);
           });
         });
+        $('.destroy').click(function() {
+          var id = $(this).closest('tr').attr('id');
+          $.ajax({
+            url: '/todos/' + id,
+            type: 'DELETE'
+          }).always(function() {
+            window.location.reload();
+          });
+        });
       });
 
   body
@@ -23,7 +32,8 @@ html(lang='en')
           td= key
       each r in tableBody
         tr(id=r.id)
-          td(class='destroy') X
+          td(class='destroy')
+            a(href='' title='Delete') X
           each curr in r.values
             if curr.key === '_id'
               td
