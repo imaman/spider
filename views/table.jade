@@ -4,6 +4,8 @@ html(lang='en')
   head
     meta(charset='utf-8')
     title TodoMVC
+    link(rel="import" href="core-icon/core-icon.html")
+    link(rel="import" href="paper-elements/paper-elements.html")
     script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
     script.
       $(document).ready(function() {
@@ -33,7 +35,7 @@ html(lang='en')
       each r in tableBody
         tr(id=r.id)
           td(class='destroy')
-            a(href='' title='Delete') X
+            paper-icon-button(disabled="" icon="clear" role="button" aria-label="clear" aria-disabled="")
           each curr in r.values
             if curr.key === '_id'
               td
