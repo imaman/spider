@@ -13,7 +13,7 @@ html(lang='en')
     link(rel="import" href="/core-scroll-header-panel/core-scroll-header-panel.html")
     link(rel="import" href="/paper-checkbox/paper-checkbox.html")
 
-    title= 'Item ' + id
+    title= 'Element: ' + id
 
     style(shim-shadowdom).
       body {
@@ -27,6 +27,11 @@ html(lang='en')
         user-select: none;
         -webkit-tap-highlight-color: rgba(0,0,0,0);
         -webkit-touch-callout: none;
+      }
+
+      core-toolbar {
+        color: #f1f1f1;
+        fill: #f1f1f1;
       }
 
       paper-checkbox {
@@ -77,6 +82,7 @@ html(lang='en')
     script.
       $(document).ready(function() {
         var serverPayload = !{JSON.stringify(payload)};
+        var servedId = !{JSON.stringify(id)};
         function putJson(path, data) {
           $.ajax({
             url: path,
@@ -94,7 +100,6 @@ html(lang='en')
         }
 
         $('#ok_button').click(function() {
-          var id = inp('_id').val();
           var putData = {};
           serverPayload.forEach(function(curr) {
             var e = inp(curr.key);
@@ -108,15 +113,19 @@ html(lang='en')
               v = e.val();
             putData[curr.key] = v;
           });
-          putJson('/todos/' + id, putData);
+          putJson('/todos/' + servedId, putData);
         });
       });
 
   body(unresolved)
+    core-toolbar(style="background: #3f51b5;")
+      paper-icon-button(icon="menu")
+      span(flex)= id
+      paper-icon-button(icon="refresh")
+      paper-icon-button(icon="more-vert")
     section
       each curr in payload
         if curr.type == 'fixed'
-          paper-input(id='input_' + curr.key floatingLabel disabled label=curr.key value=curr.value)
         else if curr.type == 'bool'
           div(horizontal layout)
             paper-checkbox(id='input_' + curr.key class="blue" checked=curr.value)
