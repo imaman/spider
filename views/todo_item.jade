@@ -18,6 +18,7 @@ html(lang='en')
     style(shim-shadowdom).
       body {
         font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+        font-size: 14px;
         margin: 0;
         padding: 24px;
         -webkit-user-select: none;
@@ -33,8 +34,15 @@ html(lang='en')
       }
 
       section {
-        width: 300px;
+        width: 800px;
+        padding: 20px 0;
       }
+
+      section > div {
+        padding: 14px;
+        font-size: 16px;
+      }
+
 
       paper-checkbox.blue::shadow #ink[checked] {
         color: #4285f4;
@@ -44,17 +52,71 @@ html(lang='en')
         border-color: #4285f4;
       }
 
+      paper-button.colored {
+        color: #4285f4;
+      }
+
+      paper-button[raised].colored {
+        background: #4285f4;
+        color: #fff;
+      }
+
+      paper-button.custom > core-icon {
+        margin-right: 4px;
+      }
+
+      paper-button.hover:hover {
+        background: #eee;
+      }
+
+      paper-button.blue-ripple::shadow #ripple {
+        color: #4285f4;
+      }
+
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
+    script.
+      $(document).ready(function() {
+        function putJson(path, data) {
+          $.ajax({
+            url: path,
+            type: 'PUT',
+            contentType : 'application/json',
+            processData: false,
+            data: JSON.stringify(data),
+          }).always(function() {
+            window.location.reload();
+          });
+        }
+
+        function inp(k) {
+          return $('#input_' + k);
+        }
+
+        $('#ok_button').click(function() {
+          var id = inp('_id').val();
+          var data = {
+            text: inp('text').val(),
+            completed: inp('completed').prop('checked')
+          };
+          putJson('/todos/' + id, data);
+        });
+      });
+
   body(unresolved)
     section
       each curr in payload
         if curr.type == 'fixed'
-          paper-input(floatingLabel disabled label=curr.key value=curr.value)
+          paper-input(id='input_' + curr.key floatingLabel disabled label=curr.key value=curr.value)
         else if curr.type == 'bool'
           div(horizontal layout)
-            paper-checkbox(class="blue" checked=curr.value)
+            paper-checkbox(id='input_' + curr.key class="blue" checked=curr.value)
             h4= curr.key
         else
-          paper-input(floatingLabel multiline label=curr.key value=curr.value)
+          paper-input(id='input_' + curr.key floatingLabel multiline label=curr.key value=curr.value)
+    section
+      paper-button(id="ok_button" class="colored custom")
+        core-icon(icon="check")
+        span ok
 
 
 
