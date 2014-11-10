@@ -43,8 +43,14 @@ function install(model, app) {
   app.get('/todos/:id.json', todo.get());
   app.get('/todos/:id', todo.get(function(req, sel, done) {
     sel.get(function(err, value) {
+      var type = { _id: 'fixed', completed: 'bool' }
       if (err) return done(err);
-      done(null, {todoItem: value}, 'todo_item');
+      var keys = Object.keys(value);
+      keys.sort();
+      pairs = keys.map(function(k) {
+        return {key: k, value: value[k], type: type[k]};
+      });
+      done(null, {id: value._id, payload: pairs}, 'todo_item');
     });
   }));
   app.put('/todos/:id', todo.put(updateItem));

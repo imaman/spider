@@ -3,15 +3,58 @@ doctype html
 html(lang='en')
   head
     meta(charset='utf-8')
-    title TodoMVC
+    meta(name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes")
 
-  body
-    table
-      each curr in Object.keys(todoItem)
-        tr
-          td= curr
-          td= todoItem[curr]
+    script(src="/platform/platform.js")
+    link(rel="import" href="/font-roboto/roboto.html")
+    link(rel="import" href="/core-icon/core-icon.html")
+    link(rel="import" href="/paper-elements/paper-elements.html")
+    link(rel="import" href="/core-toolbar/core-toolbar.html")
+    link(rel="import" href="/core-scroll-header-panel/core-scroll-header-panel.html")
+    link(rel="import" href="/paper-checkbox/paper-checkbox.html")
 
-    script(src="todomvc-common/base.js")
-    script(src="js/app.js")
+    title= 'Item ' + id
+
+    style(shim-shadowdom).
+      body {
+        font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+        margin: 0;
+        padding: 24px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+        -webkit-touch-callout: none;
+      }
+
+      paper-checkbox {
+        padding: 20px 20px 20px 0;
+      }
+
+      section {
+        width: 300px;
+      }
+
+      paper-checkbox.blue::shadow #ink[checked] {
+        color: #4285f4;
+      }
+
+      paper-checkbox.blue::shadow #checkbox.checked {
+        border-color: #4285f4;
+      }
+
+  body(unresolved)
+    section
+      each curr in payload
+        if curr.type == 'fixed'
+          paper-input(floatingLabel disabled label=curr.key value=curr.value)
+        else if curr.type == 'bool'
+          div(horizontal layout)
+            paper-checkbox(class="blue" checked=curr.value)
+            h4= curr.key
+        else
+          paper-input(floatingLabel multiline label=curr.key value=curr.value)
+
+
 
