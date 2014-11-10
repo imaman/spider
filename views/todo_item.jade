@@ -76,6 +76,7 @@ html(lang='en')
     script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
     script.
       $(document).ready(function() {
+        var serverPayload = !{JSON.stringify(payload)};
         function putJson(path, data) {
           $.ajax({
             url: path,
@@ -94,11 +95,20 @@ html(lang='en')
 
         $('#ok_button').click(function() {
           var id = inp('_id').val();
-          var data = {
-            text: inp('text').val(),
-            completed: inp('completed').prop('checked')
-          };
-          putJson('/todos/' + id, data);
+          var putData = {};
+          serverPayload.forEach(function(curr) {
+            var e = inp(curr.key);
+            var v;
+            if (curr.type == 'fixed')
+              return;
+
+            if (curr.type == 'bool')
+              v = e.prop('checked');
+            else
+              v = e.val();
+            putData[curr.key] = v;
+          });
+          putJson('/todos/' + id, putData);
         });
       });
 
