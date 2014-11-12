@@ -124,7 +124,8 @@ describe('controller', function() {
               _id: id,
               text: 'A',
               completed: true,
-              byController: 'todo'
+              byController: 'todo',
+              collectionController: 'todos'
             });
           }).
           end(done);

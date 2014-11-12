@@ -16,7 +16,7 @@ function newDeleteController(selection, idParam) {
   };
 }
 
-exports.create = function(name, selection, idParam) {
+exports.create = function(name, selection, idParam, collectionController) {
   return {
     post: function(jsonFromReq) {
       return function(req, res) {
@@ -35,6 +35,7 @@ exports.create = function(name, selection, idParam) {
         jsonFromReq(req, selection.q(req.params[idParam]), function(err, data, viewName) {
           if (err) return res.sendStatus(500).end();
           data.byController = data.byController || name;
+          data.collectionController = data.collectionController || collectionController;
           if (req.path.match(/\.json$/)) {
             return res.status(200).json(data).end();
           }

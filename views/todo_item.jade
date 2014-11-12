@@ -30,6 +30,7 @@ html(lang='en')
     script.
       $(document).ready(function() {
         var serverPayload = !{JSON.stringify(payload)};
+        var collectionController = !{JSON.stringify(collectionController)};
         var servedId = !{JSON.stringify(id)};
         function putJson(path, data) {
           $.ajax({
@@ -39,7 +40,7 @@ html(lang='en')
             processData: false,
             data: JSON.stringify(data),
           }).always(function() {
-            window.location.reload();
+            window.location.assign('/' + collectionController + '.html');
           });
         }
 
@@ -61,7 +62,7 @@ html(lang='en')
               v = e.val();
             putData[curr.key] = v;
           });
-          putJson('/todos/' + servedId, putData);
+          putJson('/' + collectionController + '/' + servedId, putData);
         });
       });
 

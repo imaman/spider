@@ -8,7 +8,7 @@ function install(model, app) {
   var completedTodos = autoController.create('todos_completed', completed);
   var activeTodos = autoController.create('todos_active', active);
   var todos = autoController.create('todos', model);
-  var todo = autoController.create('todo', model, 'id');
+  var todo = autoController.create('todo', model, 'id', 'todos');
 
   app.get('/', todos.get(listTodoItems));
 
