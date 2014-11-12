@@ -6,12 +6,10 @@ html(lang='en')
     meta(charset='utf-8')
     meta(name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes")
 
-    script(src="platform/platform.js")
+    link(href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet")
+    link(href="/bootstrap-material-design/dist/css/ripples.min.css" rel="stylesheet")
+    link(href="/bootstrap-material-design/dist/css/material-wfont.min.css" rel="stylesheet")
     link(rel="import" href="font-roboto/roboto.html")
-    link(rel="import" href="core-icon/core-icon.html")
-    link(rel="import" href="paper-elements/paper-elements.html")
-    link(rel="import" href="core-toolbar/core-toolbar.html")
-    link(rel="import" href="core-scroll-header-panel/core-scroll-header-panel.html")
 
     style.
       body {
@@ -20,15 +18,6 @@ html(lang='en')
         padding: 24px;
       }
 
-      core-toolbar {
-        color: #f1f1f1;
-        fill: #f1f1f1;
-      }
-
-      paper-fab {
-        color: #fff;
-        margin-right:2em;
-      }
 
     script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
     script.
@@ -58,25 +47,25 @@ html(lang='en')
       });
 
   body(unresolved)
-    core-toolbar(class="tall" style="background: #3f51b5;")
-      paper-icon-button(icon="menu")
-      span(flex)= byController
-      paper-icon-button(icon="refresh")
-      paper-icon-button(icon="more-vert")
-    div(class="content")
-      table
-        tr
-          each key in tableHeader
-            td= key
-        each r in tableBody
-          tr(id=r.id class="record")
-            each curr in r.values
-              if curr.key === '_id'
-                td
-                  a(href='/' + byController + '/' + curr.value)= curr.value
-              else
-                td= curr.value
+    div(class="panel panel-primary")
+        div(class="panel-heading")
+            h3(class="panel-title")= byController
+        div(class="panel-body")
+          table(class="table table-striped table-hover")
+            thead
+              each key in tableHeader
+                th= key
+            each r in tableBody
+              tr(id=r.id class="record")
+                each curr in r.values
+                  if curr.key === '_id'
+                    td
+                      a(href='/' + byController + '/' + curr.value)= curr.value
+                  else
+                    td= curr.value
+
+
       section(style='padding: 20px 0')
-        paper-fab(id='post_button' mini icon="create")
-        paper-fab(id='destroy' mini icon="clear")
+        div(id='post_button' class="btn btn-primary btn-fab btn-raised mdi-content-create")
+        div(id='destroy' class="btn btn-danger btn-fab btn-raised mdi-content-remove")
 
