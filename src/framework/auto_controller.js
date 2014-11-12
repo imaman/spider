@@ -36,12 +36,12 @@ exports.create = function(name, selection, idParam, collectionController) {
           if (err) return res.sendStatus(500).end();
           data.byController = data.byController || name;
           data.collectionController = data.collectionController || collectionController;
-          if (req.path.match(/\.json$/)) {
-            return res.status(200).json(data).end();
-          }
           res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
           res.setHeader('Pragma', 'no-cache');
           res.setHeader('Expires', '0');
+          if (req.path.match(/\.json$/)) {
+            return res.status(200).json(data).end();
+          }
           res.render(viewName, data);
         });
       };
