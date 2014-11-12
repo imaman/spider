@@ -38,6 +38,9 @@ exports.create = function(name, selection, idParam) {
           if (req.path.match(/\.json$/)) {
             return res.status(200).json(data).end();
           }
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+          res.setHeader('Pragma', 'no-cache');
+          res.setHeader('Expires', '0');
           res.render(viewName, data);
         });
       };
