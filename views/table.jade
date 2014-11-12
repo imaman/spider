@@ -22,11 +22,11 @@ html(lang='en')
     script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
     script.
       $(document).ready(function() {
-        var selected = null;
+        var selected = {};
         $('.record').click(function() {
-          selected && selected.removeClass('info');
-          selected = $(this);
-          selected.addClass('info');
+          var e = $(this);
+          var isSelected = e.toggleClass('info').hasClass('info');
+          selected[e.attr('id')] = isSelected;
         });
         $('#post_button').click(function() {
           $.post('/todos', {}).success(function(data, code, ajx) {
@@ -35,15 +35,24 @@ html(lang='en')
           });
         });
         $('#destroy').click(function() {
-          if (!selected) {
+          var ids = Object.keys(selected).filter(function(k) { return selected[k] });
+          var left = ids.length;
+          if (left === 0) {
             return;
           }
-          var id = selected;
-          $.ajax({
-            url: '/todos/' + selected.attr('id'),
-            type: 'DELETE'
-          }).always(function() {
-            window.location.reload();
+
+          ids.forEach(function(id) {
+            $.ajax({
+              url: '/todos/' + id,
+              type: 'DELETE'
+            }).always(function() {
+              selected[ids] = false;
+              $('#' + id).remove();
+              --left;
+              if (left === 0) {
+                window.location.reload();
+              }
+            });
           });
         });
       });
