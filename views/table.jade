@@ -58,7 +58,8 @@ html(lang='en')
       });
 
   body(unresolved)
-    div(class="panel panel-primary")
+    div(class="well")
+      div(class="panel panel-primary")
         div(class="panel-heading")
             h3(class="panel-title")= byController
         div(class="panel-body")
@@ -76,7 +77,6 @@ html(lang='en')
                     td= curr.value
 
 
-      section(style='padding: 20px 0')
-        div(id='post_button' class="btn btn-primary btn-fab btn-raised mdi-content-create")
-        div(id='destroy' class="btn btn-danger btn-fab btn-raised mdi-content-remove")
+      div(id='post_button' class="btn btn-primary btn-fab btn-raised mdi-content-create")
+      div(id='destroy' class="btn btn-danger btn-fab btn-raised mdi-content-remove")
 

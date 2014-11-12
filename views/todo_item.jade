@@ -66,26 +66,21 @@ html(lang='en')
       });
 
   body(unresolved)
-    div(class="panel panel-primary")
-        div(class="panel-heading")
-            h3(class="panel-title")= id
-        div(class="panel-body")
-          form(class="form-horizontal")
-            fieldset
-              legend Update
-              each curr in payload
-                  if curr.type == 'fixed'
+    form(class="well form-horizontal")
+      fieldset
+        legend
+          div(class="panel panel-primary")
+              div(class="panel-heading")= id
+          each curr in payload
+            if curr.type == 'fixed'
+            else
+              div(class="form-group")
+                label(for='input_' + curr.key class="col-lg-2 control-label")= curr.key
+                div(class="col-lg-10")
+                  if (curr.type == 'bool')
+                    input(type="checkbox" id='input_' + curr.key checked=curr.value)
                   else
-                    div(class="form-group")
-                      label(for='input_' + curr.key class="col-lg-2 control-label")= curr.key
-                      div(class="col-lg-10")
-                        if (curr.type == 'bool')
-                          input(type="checkbox" id='input_' + curr.key checked=curr.value)
-                        else
-                          textarea(class="form-control" rows="3" id='input_' + curr.key)= curr.value
-
-
-    section
+                    textarea(class="form-control" rows="3" id='input_' + curr.key)= curr.value
       div(id='ok_button' class="btn btn-primary btn-fab btn-raised mdi-content-save")
 
 
