@@ -24,7 +24,9 @@ html(lang='en')
       $(document).ready(function() {
         var selected = null;
         $('.record').click(function() {
-          selected = $(this).attr('id');
+          selected && selected.removeClass('info');
+          selected = $(this);
+          selected.addClass('info');
         });
         $('#post_button').click(function() {
           $.post('/todos', {}).success(function(data, code, ajx) {
@@ -38,7 +40,7 @@ html(lang='en')
           }
           var id = selected;
           $.ajax({
-            url: '/todos/' + id,
+            url: '/todos/' + selected.attr('id'),
             type: 'DELETE'
           }).always(function() {
             window.location.reload();
