@@ -23,10 +23,21 @@ html(lang='en')
     script.
       $(document).ready(function() {
         var selected = {};
+        function selectedIds() {
+          return Object.keys(selected).filter(function(k) { return selected[k] });
+        }
+
+        function updateSelection(id, isSelected) {
+          id && (selected[id] = isSelected);
+          $('#destroy').toggleClass('disabled', selectedIds().length === 0);
+        }
+
+        updateSelection();
+
         $('.record').click(function() {
           var e = $(this);
           var isSelected = e.toggleClass('info').hasClass('info');
-          selected[e.attr('id')] = isSelected;
+          updateSelection(e.attr('id'), isSelected);
         });
         $('#post_button').click(function() {
           $.post('/todos', {}).success(function(data, code, ajx) {
@@ -35,7 +46,7 @@ html(lang='en')
           });
         });
         $('#destroy').click(function() {
-          var ids = Object.keys(selected).filter(function(k) { return selected[k] });
+          var ids = selectedIds();
           var left = ids.length;
           if (left === 0) {
             return;
@@ -46,7 +57,7 @@ html(lang='en')
               url: '/todos/' + id,
               type: 'DELETE'
             }).always(function() {
-              selected[ids] = false;
+              updateSelection(id, false);
               $('#' + id).remove();
               --left;
               if (left === 0) {
