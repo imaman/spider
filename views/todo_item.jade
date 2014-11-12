@@ -5,14 +5,11 @@ html(lang='en')
     meta(charset='utf-8')
     meta(name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes")
 
-    script(src="/platform/platform.js")
-    link(rel="import" href="/font-roboto/roboto.html")
-    link(rel="import" href="/core-icon/core-icon.html")
-    link(rel="import" href="/paper-elements/paper-elements.html")
-    link(rel="import" href="/core-toolbar/core-toolbar.html")
-    link(rel="import" href="/core-scroll-header-panel/core-scroll-header-panel.html")
-    link(rel="import" href="/paper-checkbox/paper-checkbox.html")
+    link(href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet")
+    link(href="/bootstrap-material-design/dist/css/ripples.min.css" rel="stylesheet")
+    link(href="/bootstrap-material-design/dist/css/material-wfont.min.css" rel="stylesheet")
 
+    link(rel="import" href="/font-roboto/roboto.html")
     title= 'Element: ' + id
 
     style(shim-shadowdom).
@@ -27,55 +24,6 @@ html(lang='en')
         user-select: none;
         -webkit-tap-highlight-color: rgba(0,0,0,0);
         -webkit-touch-callout: none;
-      }
-
-      core-toolbar {
-        color: #f1f1f1;
-        fill: #f1f1f1;
-      }
-
-      paper-checkbox {
-        padding: 20px 20px 20px 0;
-      }
-
-      section {
-        width: 800px;
-        padding: 20px 0;
-      }
-
-      section > div {
-        padding: 14px;
-        font-size: 16px;
-      }
-
-
-      paper-checkbox.blue::shadow #ink[checked] {
-        color: #4285f4;
-      }
-
-      paper-checkbox.blue::shadow #checkbox.checked {
-        border-color: #4285f4;
-      }
-
-      paper-button.colored {
-        color: #4285f4;
-      }
-
-      paper-button[raised].colored {
-        background: #4285f4;
-        color: #fff;
-      }
-
-      paper-button.custom > core-icon {
-        margin-right: 4px;
-      }
-
-      paper-button.hover:hover {
-        background: #eee;
-      }
-
-      paper-button.blue-ripple::shadow #ripple {
-        color: #4285f4;
       }
 
     script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
@@ -118,24 +66,27 @@ html(lang='en')
       });
 
   body(unresolved)
-    core-toolbar(style="background: #3f51b5;")
-      paper-icon-button(icon="menu")
-      span(flex)= id
-      paper-icon-button(icon="refresh")
-      paper-icon-button(icon="more-vert")
+    div(class="panel panel-primary")
+        div(class="panel-heading")
+            h3(class="panel-title")= id
+        div(class="panel-body")
+          form(class="form-horizontal")
+            fieldset
+              legend Update
+              each curr in payload
+                  if curr.type == 'fixed'
+                  else
+                    div(class="form-group")
+                      label(for='input_' + curr.key class="col-lg-2 control-label")= curr.key
+                      div(class="col-lg-10")
+                        if (curr.type == 'bool')
+                          input(type="checkbox" id='input_' + curr.key checked=curr.value)
+                        else
+                          textarea(class="form-control" rows="3" id='input_' + curr.key)= curr.value
+
+
     section
-      each curr in payload
-        if curr.type == 'fixed'
-        else if curr.type == 'bool'
-          div(horizontal layout)
-            paper-checkbox(id='input_' + curr.key class="blue" checked=curr.value)
-            h4= curr.key
-        else
-          paper-input(id='input_' + curr.key floatingLabel multiline label=curr.key value=curr.value)
-    section
-      paper-button(id="ok_button" class="colored custom")
-        core-icon(icon="check")
-        span ok
+      div(id='ok_button' class="btn btn-primary btn-fab btn-raised mdi-content-save")
 
 
 
