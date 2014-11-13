@@ -18,7 +18,7 @@ describe('controller', function() {
     MongoClient.connect(url, function(err, db_) {
       if (err) return done(err);
       db = db_;
-      collTodos = db.collection('controller_testing');
+      collTodos = db.collection('controller_testing_todos');
       done();
     });
   });
