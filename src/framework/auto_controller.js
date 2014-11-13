@@ -18,6 +18,9 @@ function newDeleteController(selection, idParam) {
 
 exports.create = function(name, selection, idParam, collectionController) {
   return {
+    single: function(singleName, paramName) {
+      return exports.create(singleName, selection, paramName, name);
+    },
     getHtmlMulti: function() {
       return this.get(function(req, sel, done) {
         sel.get(function(err, value) {
