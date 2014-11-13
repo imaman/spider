@@ -9,12 +9,13 @@ function defineResource(app, qPlural, namePluarl, nameSingular, options) {
 
   var idParam = 'id';
   var controller = autoController.create(namePluarl, qPlural, nameSingular, idParam);
+  var singularController = controller.singular();
   app.get('/' + namePluarl + '.html', controller.getHtml());
-  app.get('/' + namePluarl + '/:' + idParam + '.html', controller.singular().getHtml());
-  app.delete('/' + namePluarl + '/:' + idParam, controller.singular().delete());
+  app.get('/' + namePluarl + '/:' + idParam + '.html', singularController.getHtml());
+  app.delete('/' + namePluarl + '/:' + idParam, singularController.delete());
 
   app.post('/' + namePluarl, controller.post(options.post));
-  app.put('/' + namePluarl + '/:' + idParam, controller.singular().put(options.put));
+  app.put('/' + namePluarl + '/:' + idParam, singularController.put(options.put));
 }
 
 function install(qTodos, qPlaces, app) {
