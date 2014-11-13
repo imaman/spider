@@ -51,7 +51,7 @@ exports.create = function(name, selection, idParam, collectionController) {
           pairs = keys.map(function(k) {
             return {key: k, value: value[k], type: type[k]};
           });
-          done(null, {id: value._id, payload: pairs}, 'todo_item');
+          done(null, {id: value._id, payload: pairs}, 'element');
         });
       });
     },
