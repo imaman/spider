@@ -48,7 +48,7 @@ html(lang='en')
         $('#post_button').click(function() {
           $.post(uriPrefix, {}).success(function(data, code, ajx) {
             var id = data.id;
-            window.location.assign(uriPrefix + '/' + id);
+            window.location.assign(uriPrefix + '/' + id + '.html');
           });
         });
         $('#destroy').click(function() {
@@ -89,7 +89,7 @@ html(lang='en')
                 each curr in r.values
                   if curr.key === '_id'
                     td
-                      a(href='/' + byController + '/' + curr.value)= curr.value
+                      a(href='/' + byController + '/' + curr.value + '.html')= curr.value
                   else
                     td= curr.value
 

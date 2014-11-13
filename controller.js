@@ -6,7 +6,7 @@ function install(qTodos, qPlaces, app) {
   var places = autoController.create('places', qPlaces);
   var place = places.single('place', 'id');
   app.get('/places.html', places.getHtml());
-  app.get('/places/:id', place.getHtml());
+  app.get('/places/:id.html', place.getHtml());
   app.post('/places', places.post(function(req) {
     return { name: req.body.name || '', city: req.body.city || '', country: req.body.country };
   }));
@@ -38,7 +38,7 @@ function install(qTodos, qPlaces, app) {
   app.get('/todos.html', todos.getHtml());
 
   app.get('/todos/:id.json', todo.get());
-  app.get('/todos/:id', todo.getHtml());
+  app.get('/todos/:id.html', todo.getHtml());
   app.put('/todos/:id', todo.put(updateItem));
   app.delete('/todos/:id', todo.delete());
 
