@@ -11,6 +11,7 @@ var url = 'mongodb://localhost:27017/test_150';
 describe('controller', function() {
   var db;
   var collTodos;
+  var collPlaces;
   var app;
   var qTodos;
 
@@ -19,22 +20,28 @@ describe('controller', function() {
       if (err) return done(err);
       db = db_;
       collTodos = db.collection('controller_testing_todos');
+      collPlaces = db.collection('controller_testing_places');
       done();
     });
   });
   after(function(done) {
-    collTodos.drop(function(err) {
-      db.close();
-      done();
+    collTodos.drop(function() {
+      collPlaces.drop(function() {
+        db.close();
+        done();
+      });
     });
   });
   beforeEach(function(done) {
     collTodos.removeMany({}, function(err) {
       if (err) return done(err);
-      app = spider.createApp(-1, __dirname);
-      qTodos = Model.newModel(collTodos);
-      controller.install(qTodos, null, app);
-      done();
+      collPlaces.removeMany({}, function(err) {
+        if (err) return done(err);
+        app = spider.createApp(-1, __dirname);
+        qTodos = Model.newModel(collTodos);
+        controller.install(qTodos, null, app);
+        done();
+      });
     });
   });
 
