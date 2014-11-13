@@ -1,37 +1,44 @@
 var autoController = require('./src/framework/auto_controller.js');
 var funflow = require('funflow');
 
-function defineResource(app, qPlural, namePluarl, nameSingular) {
-  var idParam = 'id';
-  var places = autoController.create(namePluarl, qPlural);
-  var place = places.single(nameSingular, idParam);
-  app.get('/' + namePluarl + '.html', places.getHtml());
-  app.get('/' + namePluarl + '/:' + idParam + '.html', place.getHtml());
-  app.delete('/' + namePluarl + '/:' + idParam, place.delete());
+function defineResource(app, qPlural, namePluarl, nameSingular, options) {
+  if (!options.post)
+    throw new Error('.post must be specified');
+  if (!options.put)
+    throw new Error('.put must be specified');
 
-  app.post('/' + namePluarl, places.post(function(req) {
-    return { name: req.body.name || '', city: req.body.city || '', country: req.body.country };
-  }));
-  app.put('/' + namePluarl + '/:' + idParam, place.put(function(req, sel, done) {
-    var data = {};
-    if (req.body.name) data.name = req.body.name;
-    if (req.body.city) data.city = req.body.city;
-    if (req.body.country) data.country = req.body.country;
-    sel.update(data, done);
-  }));
+  var idParam = 'id';
+  var controller = autoController.create(namePluarl, qPlural, nameSingular, idParam);
+  app.get('/' + namePluarl + '.html', controller.getHtml());
+  app.get('/' + namePluarl + '/:' + idParam + '.html', controller.singular().getHtml());
+  app.delete('/' + namePluarl + '/:' + idParam, controller.singular().delete());
+
+  app.post('/' + namePluarl, controller.post(options.post));
+  app.put('/' + namePluarl + '/:' + idParam, controller.singular().put(options.put));
 }
 
 function install(qTodos, qPlaces, app) {
 
-  defineResource(app, qPlaces, 'places', 'place');
+  defineResource(app, qPlaces, 'places', 'place', {
+    post: function(req) {
+      return { name: req.body.name || '', city: req.body.city || '', country: req.body.country };
+    },
+    put: function(req, sel, done) {
+      var data = {};
+      if (req.body.name) data.name = req.body.name;
+      if (req.body.city) data.city = req.body.city;
+      if (req.body.country) data.country = req.body.country;
+      sel.update(data, done);
+    }
+  });
 
   var qCompleted= qTodos.q({completed: true});
   var qActive = qTodos.q({completed: false});
 
   var completedTodos = autoController.create('todos_completed', qCompleted);
   var activeTodos = autoController.create('todos_active', qActive);
-  var todos = autoController.create('todos', qTodos);
-  var todo = todos.single('todo', 'id');
+  var todos = autoController.create('todos', qTodos, 'todo', 'id');
+  var todo = todos.singular();
 
   app.get('/', todos.get(listTodoItems));
 

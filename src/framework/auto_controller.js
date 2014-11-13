@@ -16,9 +16,9 @@ function newDeleteController(selection, idParam) {
   };
 }
 
-exports.create = function(name, selection, idParam, collectionController) {
-  var isSingle = Boolean(collectionController);
-  var isPlural = !isSingle;
+exports.create = function(pluralName, selection, singularName, idParam, isSingle) {
+  var isSingle = Boolean(isSingle);
+  var name = isSingle ? singularName : pluralName;
 
   function genericGet(jsonFromReq) {
     jsonFromReq = jsonFromReq || function(req, sel, done) {
@@ -28,7 +28,8 @@ exports.create = function(name, selection, idParam, collectionController) {
       jsonFromReq(req, selection.q(req.params[idParam]), function(err, data, viewName) {
         if (err) return res.sendStatus(500).end();
         data.byController = data.byController || name;
-        data.collectionController = data.collectionController || collectionController;
+        if (isSingle)
+          data.collectionController = data.collectionController || pluralName;
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
@@ -78,8 +79,8 @@ exports.create = function(name, selection, idParam, collectionController) {
   }
 
   return {
-    single: function(singleName, paramName) {
-      return exports.create(singleName, selection, paramName, name);
+    singular: function() {
+      return exports.create(pluralName, selection, singularName, idParam, true);
     },
     getHtml: function() {
       return isSingle ? getHtmlSingle() : getHtmlMulti();
