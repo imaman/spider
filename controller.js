@@ -18,41 +18,10 @@ function install(model, app) {
   app.put('/todos', todos.put(updateItem));
   app.get('/todos', todos.get(listTodoItems));
   app.get('/todos.json', todos.get(listTodoItems));
-  app.get('/todos.html', todos.get(function(req, sel, done) {
-    sel.get(function(err, value) {
-      if (err) return done(err);
-      var keys = {};
-      value.forEach(function(curr) {
-        Object.keys(curr).forEach(function(key) {
-          keys[key] = true;
-        });
-      });
-      keys = Object.keys(keys);
-      keys.sort();
-      var acc = [];
-      value.forEach(function(curr) {
-        var rec = keys.map(function(k) {
-          return {key: k, value: curr[k]};
-        });
-        acc.push({id: curr._id, values: rec});
-      });
-      done(null, { tableHeader: keys, tableBody: acc }, 'table');
-    });
-  }));
+  app.get('/todos.html', todos.getHtmlMulti());
 
   app.get('/todos/:id.json', todo.get());
-  app.get('/todos/:id', todo.get(function(req, sel, done) {
-    sel.get(function(err, value) {
-      var type = { _id: 'fixed', completed: 'bool' }
-      if (err) return done(err);
-      var keys = Object.keys(value);
-      keys.sort();
-      pairs = keys.map(function(k) {
-        return {key: k, value: value[k], type: type[k]};
-      });
-      done(null, {id: value._id, payload: pairs}, 'todo_item');
-    });
-  }));
+  app.get('/todos/:id', todo.getHtmlSingle());
   app.put('/todos/:id', todo.put(updateItem));
   app.delete('/todos/:id', todo.delete());
 

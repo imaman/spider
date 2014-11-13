@@ -18,6 +18,43 @@ function newDeleteController(selection, idParam) {
 
 exports.create = function(name, selection, idParam, collectionController) {
   return {
+    getHtmlMulti: function() {
+      return this.get(function(req, sel, done) {
+        sel.get(function(err, value) {
+          if (err) return done(err);
+          var keys = {};
+          value.forEach(function(curr) {
+            Object.keys(curr).forEach(function(key) {
+              keys[key] = true;
+            });
+          });
+          keys = Object.keys(keys);
+          keys.sort();
+          var acc = [];
+          value.forEach(function(curr) {
+            var rec = keys.map(function(k) {
+              return {key: k, value: curr[k]};
+            });
+            acc.push({id: curr._id, values: rec});
+          });
+          done(null, { tableHeader: keys, tableBody: acc }, 'table');
+        });
+      });
+    },
+    getHtmlSingle: function() {
+      return this.get(function(req, sel, done) {
+        sel.get(function(err, value) {
+          var type = { _id: 'fixed', completed: 'bool' }
+          if (err) return done(err);
+          var keys = Object.keys(value);
+          keys.sort();
+          pairs = keys.map(function(k) {
+            return {key: k, value: value[k], type: type[k]};
+          });
+          done(null, {id: value._id, payload: pairs}, 'todo_item');
+        });
+      });
+    },
     post: function(jsonFromReq) {
       return function(req, res) {
         selection.add(jsonFromReq(req), function(err, id) {
