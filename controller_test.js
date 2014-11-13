@@ -14,6 +14,7 @@ describe('controller', function() {
   var collPlaces;
   var app;
   var qTodos;
+  var qPlaces;
 
   before(function(done) {
     MongoClient.connect(url, function(err, db_) {
@@ -39,7 +40,8 @@ describe('controller', function() {
         if (err) return done(err);
         app = spider.createApp(-1, __dirname);
         qTodos = Model.newModel(collTodos);
-        controller.install(qTodos, null, app);
+        qPlaces = Model.newModel(collPlaces);
+        controller.install(qTodos, qPlaces, app);
         done();
       });
     });
