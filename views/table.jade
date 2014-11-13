@@ -34,10 +34,14 @@ html(lang='en')
 
         updateSelection();
 
+        $('.record a').click(function(e) {
+          e.stopPropagation();
+        });
+
         $('.record').click(function() {
-          var e = $(this);
-          var isSelected = e.toggleClass('info').hasClass('info');
-          updateSelection(e.attr('id'), isSelected);
+          var target = $(this);
+          var isSelected = target.toggleClass('info').hasClass('info');
+          updateSelection(target.attr('id'), isSelected);
         });
         $('#post_button').click(function() {
           $.post('/todos', {}).success(function(data, code, ajx) {
