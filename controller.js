@@ -1,23 +1,29 @@
 var autoController = require('./src/framework/auto_controller.js');
 var funflow = require('funflow');
 
-function install(qTodos, qPlaces, app) {
+function defineResource(app, qPlural, namePluarl, nameSingular) {
+  var idParam = 'id';
+  var places = autoController.create(namePluarl, qPlural);
+  var place = places.single(nameSingular, idParam);
+  app.get('/' + namePluarl + '.html', places.getHtml());
+  app.get('/' + namePluarl + '/:' + idParam + '.html', place.getHtml());
+  app.delete('/' + namePluarl + '/:' + idParam, place.delete());
 
-  var places = autoController.create('places', qPlaces);
-  var place = places.single('place', 'id');
-  app.get('/places.html', places.getHtml());
-  app.get('/places/:id.html', place.getHtml());
-  app.post('/places', places.post(function(req) {
+  app.post('/' + namePluarl, places.post(function(req) {
     return { name: req.body.name || '', city: req.body.city || '', country: req.body.country };
   }));
-  app.put('/places/:id', place.put(function(req, sel, done) {
+  app.put('/' + namePluarl + '/:' + idParam, place.put(function(req, sel, done) {
     var data = {};
     if (req.body.name) data.name = req.body.name;
     if (req.body.city) data.city = req.body.city;
     if (req.body.country) data.country = req.body.country;
     sel.update(data, done);
   }));
-  app.delete('/places/:id', place.delete());
+}
+
+function install(qTodos, qPlaces, app) {
+
+  defineResource(app, qPlaces, 'places', 'place');
 
   var qCompleted= qTodos.q({completed: true});
   var qActive = qTodos.q({completed: false});
