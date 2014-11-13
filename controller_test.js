@@ -33,10 +33,13 @@ describe('controller', function() {
     });
   });
   beforeEach(function(done) {
-    collection.removeMany({}, done);
-    app = spider.createApp(-1, __dirname);
-    model = newModel();
-    controller.install(model, null, app);
+    collection.removeMany({}, function(err) {
+      if (err) return done(err);
+      app = spider.createApp(-1, __dirname);
+      model = newModel();
+      controller.install(model, null, app);
+      done();
+    });
   });
 
   describe('GET /', function() {
