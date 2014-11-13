@@ -14,10 +14,6 @@ describe('controller', function() {
   var app;
   var model;
 
-  function newModel() {
-    return Model.newModel(collection);
-  }
-
   before(function(done) {
     MongoClient.connect(url, function(err, db_) {
       if (err) return done(err);
@@ -36,7 +32,7 @@ describe('controller', function() {
     collection.removeMany({}, function(err) {
       if (err) return done(err);
       app = spider.createApp(-1, __dirname);
-      model = newModel();
+      model = Model.newModel(collection);
       controller.install(model, null, app);
       done();
     });
