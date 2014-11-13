@@ -1,13 +1,13 @@
 var autoController = require('./src/framework/auto_controller.js');
 var funflow = require('funflow');
 
-function install(model, app) {
-  var qCompleted= model.q({completed: true});
-  var qActive = model.q({completed: false});
+function install(qTodos, app) {
+  var qCompleted= qTodos.q({completed: true});
+  var qActive = qTodos.q({completed: false});
 
   var completedTodos = autoController.create('todos_completed', qCompleted);
   var activeTodos = autoController.create('todos_active', qActive);
-  var todos = autoController.create('todos', model);
+  var todos = autoController.create('todos', qTodos);
   var todo = todos.single('todo', 'id');
 
   app.get('/', todos.get(listTodoItems));
