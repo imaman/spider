@@ -10,7 +10,7 @@ var url = 'mongodb://localhost:27017/test_150';
 
 describe('controller', function() {
   var db;
-  var collection;
+  var collTodos;
   var app;
   var qTodos;
 
@@ -18,21 +18,21 @@ describe('controller', function() {
     MongoClient.connect(url, function(err, db_) {
       if (err) return done(err);
       db = db_;
-      collection = db.collection('controller_testing');
+      collTodos = db.collection('controller_testing');
       done();
     });
   });
   after(function(done) {
-    collection.drop(function(err) {
+    collTodos.drop(function(err) {
       db.close();
       done();
     });
   });
   beforeEach(function(done) {
-    collection.removeMany({}, function(err) {
+    collTodos.removeMany({}, function(err) {
       if (err) return done(err);
       app = spider.createApp(-1, __dirname);
-      qTodos = Model.newModel(collection);
+      qTodos = Model.newModel(collTodos);
       controller.install(qTodos, null, app);
       done();
     });
