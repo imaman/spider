@@ -22,6 +22,8 @@ html(lang='en')
     script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
     script.
       $(document).ready(function() {
+        var byController = !{JSON.stringify(byController)};
+        var uriPrefix = '/' + byController;
         var selected = {};
         function selectedIds() {
           return Object.keys(selected).filter(function(k) { return selected[k] });
@@ -44,9 +46,9 @@ html(lang='en')
           updateSelection(target.attr('id'), isSelected);
         });
         $('#post_button').click(function() {
-          $.post('/todos', {}).success(function(data, code, ajx) {
+          $.post(uriPrefix, {}).success(function(data, code, ajx) {
             var id = data.id;
-            window.location.assign('/todos/' + id);
+            window.location.assign(uriPrefix + '/' + id);
           });
         });
         $('#destroy').click(function() {
@@ -58,7 +60,7 @@ html(lang='en')
 
           ids.forEach(function(id) {
             $.ajax({
-              url: '/todos/' + id,
+              url: uriPrefix + '/' + id,
               type: 'DELETE'
             }).always(function() {
               updateSelection(id, false);
