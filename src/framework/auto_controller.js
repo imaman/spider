@@ -17,46 +17,72 @@ function newDeleteController(selection, idParam) {
 }
 
 exports.create = function(name, selection, idParam, collectionController) {
+  var isSingle = Boolean(collectionController);
+  var isPlural = !isSingle;
+
+  function genericGet(jsonFromReq) {
+    jsonFromReq = jsonFromReq || function(req, sel, done) {
+      sel.get(done);
+    }
+    return function(req, res) {
+      jsonFromReq(req, selection.q(req.params[idParam]), function(err, data, viewName) {
+        if (err) return res.sendStatus(500).end();
+        data.byController = data.byController || name;
+        data.collectionController = data.collectionController || collectionController;
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        if (req.path.match(/\.json$/)) {
+          return res.status(200).json(data).end();
+        }
+        res.render(viewName, data);
+      });
+    };
+  }
+  function getHtmlMulti() {
+    return genericGet(function(req, sel, done) {
+      sel.get(function(err, value) {
+        if (err) return done(err);
+        var keys = {};
+        value.forEach(function(curr) {
+          Object.keys(curr).forEach(function(key) {
+            keys[key] = true;
+          });
+        });
+        keys = Object.keys(keys);
+        keys.sort();
+        var acc = [];
+        value.forEach(function(curr) {
+          var rec = keys.map(function(k) {
+            return {key: k, value: curr[k]};
+          });
+          acc.push({id: curr._id, values: rec});
+        });
+        done(null, { tableHeader: keys, tableBody: acc }, 'table');
+      });
+    });
+  }
+  function getHtmlSingle() {
+    return genericGet(function(req, sel, done) {
+      sel.get(function(err, value) {
+        var type = { _id: 'fixed', completed: 'bool' }
+        if (err) return done(err);
+        var keys = Object.keys(value);
+        keys.sort();
+        pairs = keys.map(function(k) {
+          return {key: k, value: value[k], type: type[k]};
+        });
+        done(null, {id: value._id, payload: pairs}, 'element');
+      });
+    });
+  }
+
   return {
     single: function(singleName, paramName) {
       return exports.create(singleName, selection, paramName, name);
     },
-    getHtmlMulti: function() {
-      return this.get(function(req, sel, done) {
-        sel.get(function(err, value) {
-          if (err) return done(err);
-          var keys = {};
-          value.forEach(function(curr) {
-            Object.keys(curr).forEach(function(key) {
-              keys[key] = true;
-            });
-          });
-          keys = Object.keys(keys);
-          keys.sort();
-          var acc = [];
-          value.forEach(function(curr) {
-            var rec = keys.map(function(k) {
-              return {key: k, value: curr[k]};
-            });
-            acc.push({id: curr._id, values: rec});
-          });
-          done(null, { tableHeader: keys, tableBody: acc }, 'table');
-        });
-      });
-    },
-    getHtmlSingle: function() {
-      return this.get(function(req, sel, done) {
-        sel.get(function(err, value) {
-          var type = { _id: 'fixed', completed: 'bool' }
-          if (err) return done(err);
-          var keys = Object.keys(value);
-          keys.sort();
-          pairs = keys.map(function(k) {
-            return {key: k, value: value[k], type: type[k]};
-          });
-          done(null, {id: value._id, payload: pairs}, 'element');
-        });
-      });
+    getHtml: function() {
+      return isSingle ? getHtmlSingle() : getHtmlMulti();
     },
     post: function(jsonFromReq) {
       return function(req, res) {
@@ -68,23 +94,7 @@ exports.create = function(name, selection, idParam, collectionController) {
     },
     delete: function() { return newDeleteController(selection, idParam) },
     get: function(jsonFromReq) {
-      jsonFromReq = jsonFromReq || function(req, sel, done) {
-        sel.get(done);
-      }
-      return function(req, res) {
-        jsonFromReq(req, selection.q(req.params[idParam]), function(err, data, viewName) {
-          if (err) return res.sendStatus(500).end();
-          data.byController = data.byController || name;
-          data.collectionController = data.collectionController || collectionController;
-          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-          res.setHeader('Pragma', 'no-cache');
-          res.setHeader('Expires', '0');
-          if (req.path.match(/\.json$/)) {
-            return res.status(200).json(data).end();
-          }
-          res.render(viewName, data);
-        });
-      };
+      return genericGet(jsonFromReq);
     },
     put: function(mutationFromReq) {
       return function(req, res) {

@@ -2,11 +2,11 @@ var autoController = require('./src/framework/auto_controller.js');
 var funflow = require('funflow');
 
 function install(model, app) {
-  var completed = model.q({completed: true});
-  var active = model.q({completed: false});
+  var qCompleted= model.q({completed: true});
+  var qActive = model.q({completed: false});
 
-  var completedTodos = autoController.create('todos_completed', completed);
-  var activeTodos = autoController.create('todos_active', active);
+  var completedTodos = autoController.create('todos_completed', qCompleted);
+  var activeTodos = autoController.create('todos_active', qActive);
   var todos = autoController.create('todos', model);
   var todo = todos.single('todo', 'id');
 
@@ -18,10 +18,10 @@ function install(model, app) {
   app.put('/todos', todos.put(updateItem));
   app.get('/todos', todos.get(listTodoItems));
   app.get('/todos.json', todos.get(listTodoItems));
-  app.get('/todos.html', todos.getHtmlMulti());
+  app.get('/todos.html', todos.getHtml());
 
   app.get('/todos/:id.json', todo.get());
-  app.get('/todos/:id', todo.getHtmlSingle());
+  app.get('/todos/:id', todo.getHtml());
   app.put('/todos/:id', todo.put(updateItem));
   app.delete('/todos/:id', todo.delete());
 
@@ -45,8 +45,8 @@ function install(model, app) {
   function listTodoItems(req, selection, done) {
     funflow.newFlow({
         todoItems: function sel(done) { selection.map(null, done) },
-        numCompleted: function com(done) { completed.size(done) },
-        numActive: function act(done) { active.size(done) }
+        numCompleted: function com(done) { qCompleted.size(done) },
+        numActive: function act(done) { qActive.size(done) }
       },
       function addView(data, done) { done(null, data, 'index') }
     )(null, done);
