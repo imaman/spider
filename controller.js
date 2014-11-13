@@ -1,26 +1,10 @@
 var autoController = require('./src/framework/auto_controller.js');
 var funflow = require('funflow');
 
-function defineResource(app, qPlural, namePluarl, nameSingular, options) {
-  if (!options.post)
-    throw new Error('.post must be specified');
-  if (!options.put)
-    throw new Error('.put must be specified');
-
-  var idParam = 'id';
-  var controller = autoController.create(namePluarl, qPlural, nameSingular, idParam);
-  var singularController = controller.singular();
-  app.get('/' + namePluarl + '.html', controller.getHtml());
-  app.get('/' + namePluarl + '/:' + idParam + '.html', singularController.getHtml());
-  app.delete('/' + namePluarl + '/:' + idParam, singularController.delete());
-
-  app.post('/' + namePluarl, controller.post(options.post));
-  app.put('/' + namePluarl + '/:' + idParam, singularController.put(options.put));
-}
 
 function install(qTodos, qPlaces, app) {
 
-  defineResource(app, qPlaces, 'places', 'place', {
+  autoController.defineResource(app, qPlaces, 'places', 'place', {
     post: function(req) {
       return { name: req.body.name || '', city: req.body.city || '', country: req.body.country };
     },

@@ -16,6 +16,8 @@ function newDeleteController(selection, idParam) {
   };
 }
 
+
+
 exports.create = function(pluralName, selection, singularName, idParam, isSingle) {
   var isSingle = Boolean(isSingle);
   var name = isSingle ? singularName : pluralName;
@@ -105,5 +107,22 @@ exports.create = function(pluralName, selection, singularName, idParam, isSingle
       };
     }
   }
+}
+
+exports.defineResource = function(app, qPlural, namePluarl, nameSingular, options) {
+  if (!options.post)
+    throw new Error('.post must be specified');
+  if (!options.put)
+    throw new Error('.put must be specified');
+
+  var idParam = 'id';
+  var controller = exports.create(namePluarl, qPlural, nameSingular, idParam);
+  var singularController = controller.singular();
+  app.get('/' + namePluarl + '.html', controller.getHtml());
+  app.get('/' + namePluarl + '/:' + idParam + '.html', singularController.getHtml());
+  app.delete('/' + namePluarl + '/:' + idParam, singularController.delete());
+
+  app.post('/' + namePluarl, controller.post(options.post));
+  app.put('/' + namePluarl + '/:' + idParam, singularController.put(options.put));
 }
 
