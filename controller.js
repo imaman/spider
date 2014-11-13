@@ -13,7 +13,7 @@ function install(model, app) {
   app.get('/', todos.get(listTodoItems));
 
   app.post('/todos', todos.post(function(req) {
-    return { text: req.body.text, completed: false };
+    return { text: req.body.text || '', completed: false };
   }));
   app.put('/todos', todos.put(updateItem));
   app.get('/todos', todos.get(listTodoItems));
