@@ -11,8 +11,8 @@ function ready(app) {
 var url = 'mongodb://localhost:27017/prod_150';
 
 var db;
-var collection;
-var model;
+var qToods;
+var qPlaces;
 
 
 var flow = funflow.newFlow(
@@ -21,12 +21,12 @@ var flow = funflow.newFlow(
   },
   function populate(db_, done) {
     db = db_;
-    collection = db.collection('todos');
-    model = Model.newModel(collection);
+    qToods = Model.newModel(db.collection('todos'));
+    qPlaces = Model.newModel(db.collection('places'));
     done();
   },
   function(done) {
-    spider.run(3000, __dirname, controller.install.bind(null, model, null), ready, done);
+    spider.run(3000, __dirname, controller.install.bind(null, qToods, qPlaces), ready, done);
   });
 
 flow(null, function(err) {
