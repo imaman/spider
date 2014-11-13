@@ -12,7 +12,7 @@ describe('controller', function() {
   var db;
   var collection;
   var app;
-  var model;
+  var qTodos;
 
   before(function(done) {
     MongoClient.connect(url, function(err, db_) {
@@ -32,15 +32,15 @@ describe('controller', function() {
     collection.removeMany({}, function(err) {
       if (err) return done(err);
       app = spider.createApp(-1, __dirname);
-      model = Model.newModel(collection);
-      controller.install(model, null, app);
+      qTodos = Model.newModel(collection);
+      controller.install(qTodos, null, app);
       done();
     });
   });
 
   describe('GET /', function() {
     it('lists all todo items', function(done) {
-      model.add({text: 'TODO_1', completed: true}, function (err) {
+      qTodos.add({text: 'TODO_1', completed: true}, function (err) {
         if (err) return done(err);
         request(app).
           get('/').
@@ -50,7 +50,7 @@ describe('controller', function() {
   });
   describe('GET /todos', function() {
     it('lists all todo items', function(done) {
-      model.add({text: 'TODO_1', completed: true}, function (err) {
+      qTodos.add({text: 'TODO_1', completed: true}, function (err) {
         if (err) return done(err);
         request(app).
           get('/todos').
@@ -60,7 +60,7 @@ describe('controller', function() {
   });
   describe('GET /todos.json', function() {
     it('sends back a JSON object of all todo items', function(done) {
-      model.add({text: 'TODO_1', completed: true}, function (err, id) {
+      qTodos.add({text: 'TODO_1', completed: true}, function (err, id) {
         if (err) return done(err);
         request(app).
           get('/todos.json').
@@ -81,7 +81,7 @@ describe('controller', function() {
   });
   describe('GET /todos_completed', function() {
     it('lists only completed items', function(done) {
-      model.add({text: 'COMPLETED_TODO', completed: true},
+      qTodos.add({text: 'COMPLETED_TODO', completed: true},
          {text: 'ACTIVE_TODO', completed: false},
          function (err) {
         if (err) return done(err);
@@ -97,7 +97,7 @@ describe('controller', function() {
   });
   describe('GET /todos_active', function() {
     it('lists only active items', function(done) {
-      model.add({text: 'COMPLETED_TODO', completed: true},
+      qTodos.add({text: 'COMPLETED_TODO', completed: true},
           {text: 'ACTIVE_TODO', completed: false},
           function (err) {
         if (err) return done(err);
@@ -114,7 +114,7 @@ describe('controller', function() {
 
   describe('GET /todos:id.json', function() {
     it('responds with the JSON representation of an item', function(done) {
-      model.add({text: 'A', completed: true}, function(err, id) {
+      qTodos.add({text: 'A', completed: true}, function(err, id) {
         if (err) return done(err);
         request(app).
           get('/todos/' + id + '.json').
@@ -133,14 +133,14 @@ describe('controller', function() {
   });
   describe('DELETE /todos/:id', function() {
     it('removes the item with the given ID', function(done) {
-      model.add({text: 'TODO_1', completed: true}, function(err, id) {
+      qTodos.add({text: 'TODO_1', completed: true}, function(err, id) {
         if (err) return done(err);
         request(app).
           delete('/todos/' + id).
           expect(204).
           end(function(err) {
             if (err) return done(err);
-            model.q(id).one(function(err, value) {
+            qTodos.q(id).one(function(err, value) {
               if (err) return done(err);
               expect(value).to.be(null);
               done();
@@ -151,13 +151,13 @@ describe('controller', function() {
   });
   describe('PUT /todos/:id', function() {
     it('sets the completion state of an item when .completed is true', function(done) {
-      model.add({text: 'TODO_1', completed: false}, function(err, id) {
+      qTodos.add({text: 'TODO_1', completed: false}, function(err, id) {
         if (err) return done(err);
         request(app).
           put('/todos/' + id).
           send({completed: true}).
           expect(function(res) {
-            model.q(id).one(function(err, data) {
+            qTodos.q(id).one(function(err, data) {
               if (err) return done(err);
               expect(data.completed).to.be(true);
               expect(data.text).to.equal('TODO_1');
@@ -167,7 +167,7 @@ describe('controller', function() {
       });
     });
     it('clears the completion state of an item when .completed is false', function(done) {
-      model.add({text: 'TODO_1', completed: true}, function(err, id) {
+      qTodos.add({text: 'TODO_1', completed: true}, function(err, id) {
         if (err) return done(err);
         request(app).
           put('/todos/' + id).
@@ -175,7 +175,7 @@ describe('controller', function() {
           expect(204).
           end(function(err) {
             if (err) return done(err);
-            model.q(id).one(function(err, data) {
+            qTodos.q(id).one(function(err, data) {
               if (err) return done(err);
               expect(data.completed).to.be(false);
               expect(data.text).to.equal('TODO_1');
@@ -185,7 +185,7 @@ describe('controller', function() {
       });
     });
     it('sets the completion state of only the item with the given ID', function(done) {
-      model.add({text: 'TODO_1', completed: false},
+      qTodos.add({text: 'TODO_1', completed: false},
           {text: 'TODO_2', completed: false},
           function(err, a, b) {
         if (err) return done(err);
@@ -194,7 +194,7 @@ describe('controller', function() {
           send({completed: true}).
           end(function(err) {
             if (err) return done(err);
-            model.q(b).map(function(curr) { return curr.completed },
+            qTodos.q(b).map(function(curr) { return curr.completed },
               function(err, states) {
                 if (err) return done(err);
                 expect(states).to.eql([false]);
@@ -204,7 +204,7 @@ describe('controller', function() {
       });
     });
     it('sets the text of an item when .text is specified', function(done) {
-      model.add({text: 'TODO_1', completed: true},
+      qTodos.add({text: 'TODO_1', completed: true},
           function(err, id) {
         if (err) return done(err);
         request(app).
@@ -212,7 +212,7 @@ describe('controller', function() {
           send({text: 'new text'}).
           end(function() {
             if (err) return done(err);
-            model.q(id).one(function(err, data) {
+            qTodos.q(id).one(function(err, data) {
               if (err) return done(err);
               expect(data.text).to.equal('new text');
               expect(data.completed).to.be(true);
@@ -224,7 +224,7 @@ describe('controller', function() {
   });
   describe('PUT /todos', function() {
     it('sets the completion state of all items', function(done) {
-      model.add({text: 'TODO_1', completed: true},
+      qTodos.add({text: 'TODO_1', completed: true},
           {text: 'TODO_2', completed: true},
           {text: 'TODO_3', completed: true},
           function(err) {
@@ -235,7 +235,7 @@ describe('controller', function() {
           expect(204).
           end(function(err) {
             if (err) return done(err);
-            model.q().map(function(curr) { return curr.completed },
+            qTodos.q().map(function(curr) { return curr.completed },
               function(err, states) {
                 if (err) return done(err);
                 expect(states).to.eql([false, false, false]);
@@ -254,7 +254,7 @@ describe('controller', function() {
         expect(201).
         end(function(err) {
           if (err) return done(err);
-          model.q().map(function(curr) { return curr.text },
+          qTodos.q().map(function(curr) { return curr.text },
             function(err, texts) {
               if (err) return done(err);
               expect(texts).to.eql(['TODO_100']);
@@ -269,7 +269,7 @@ describe('controller', function() {
         expect(201).
         end(function(err, recap) {
           if (err) return done(err);
-          model.q().map(function(curr) { return curr._id.toString() },
+          qTodos.q().map(function(curr) { return curr._id.toString() },
             function(err, ids) {
               if (err) return done(err);
               expect(ids).to.eql([recap.body.id]);
@@ -278,7 +278,7 @@ describe('controller', function() {
         });
     });
     it('500s if the item cannot be added to the DB', function(done) {
-      model.add = function() { throw new Error('add() failed') };
+      qTodos.add = function() { throw new Error('add() failed') };
 
       request(app).
         post('/todos').
@@ -289,7 +289,7 @@ describe('controller', function() {
 
   describe('DELETE /todos_completed', function() {
     it('removes completed items', function(done) {
-      model.add({text: 'COMPLETED_1', completed: true},
+      qTodos.add({text: 'COMPLETED_1', completed: true},
           {text: 'ACTIVE', completed: false},
           {text: 'COMPLETED_2', completed: true},
           function(err) {
@@ -297,7 +297,7 @@ describe('controller', function() {
         request(app).
           delete('/todos_completed').
           expect(function(res) {
-            model.q().map(function(curr) { return curr.text },
+            qTodos.q().map(function(curr) { return curr.text },
               function(err, texts) {
                 if (err) return done(err);
                 expect(texts).to.eql(['ACTIVE']);
