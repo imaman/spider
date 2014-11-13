@@ -1,7 +1,7 @@
 var autoController = require('./src/framework/auto_controller.js');
 var funflow = require('funflow');
 
-function install(qTodos, app) {
+function install(qTodos, qPlaces, app) {
   var qCompleted= qTodos.q({completed: true});
   var qActive = qTodos.q({completed: false});
 

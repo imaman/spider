@@ -26,7 +26,7 @@ var flow = funflow.newFlow(
     done();
   },
   function(done) {
-    spider.run(3000, __dirname, controller.install.bind(null, model), ready, done);
+    spider.run(3000, __dirname, controller.install.bind(null, model, null), ready, done);
   });
 
 flow(null, function(err) {

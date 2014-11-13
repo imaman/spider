@@ -36,7 +36,7 @@ describe('controller', function() {
     collection.removeMany({}, done);
     app = spider.createApp(-1, __dirname);
     model = newModel();
-    controller.install(model, app);
+    controller.install(model, null, app);
   });
 
   describe('GET /', function() {
