@@ -109,7 +109,8 @@ exports.create = function(pluralName, selection, singularName, idParam, isSingle
     put: function(mutationFromReq) {
       return function(req, res) {
         mutationFromReq(req, selection.q(req.params[idParam]), function(err) {
-          res.sendStatus(err ? 500 : 204).end();
+          if (!err) return res.status(204).end();
+          res.status(400).send({message: err}).end();
         });
       };
     }

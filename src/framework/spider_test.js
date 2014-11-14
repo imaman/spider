@@ -199,6 +199,19 @@ describe('spider', function() {
           done();
         });
       });
+      it('PUT failures are propagated back to the client side', function(done) {
+        autoController.defineResource(app, qBooks, 'books', 'book', {
+          post: 'NOT_USED',
+          put: function(req, sel, done) {
+            done('PUT_REJECTED');
+          }
+        });
+        request(app).put('/books/1234567890ab1234567890ab').send({}).expect(400, function(err, recap) {
+          expect(err).to.be(null);
+          expect(recap.body).to.have.property('message', 'PUT_REJECTED');
+          done();
+        });
+      });
     });
   });
 });
