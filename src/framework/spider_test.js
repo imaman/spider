@@ -189,13 +189,13 @@ describe('spider', function() {
       it('POST failures are propagated back to the client side', function(done) {
         autoController.defineResource(app, qBooks, 'books', 'book', {
           post: function(req) {
-            throw new Error('Rejected');
+            throw new Error('POST_REJECTED');
           },
           put: 'NOT_USED'
         });
         request(app).post('/books').send({}).expect(400, function(err, recap) {
           expect(err).to.be(null);
-          expect(recap.body).to.eql({message: 'Rejected'});
+          expect(recap.body).to.have.property('message', 'POST_REJECTED');
           done();
         });
       });

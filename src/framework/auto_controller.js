@@ -22,6 +22,10 @@ exports.create = function(pluralName, selection, singularName, idParam, isSingle
   isSingle = Boolean(isSingle);
   var name = isSingle ? singularName : pluralName;
 
+  function problem(err, res) {
+    res.status(400).send({message: err.message || err, stack: err.stack}).end();
+  }
+
   function genericGet(jsonFromReq) {
     jsonFromReq = jsonFromReq || function(req, sel, done) {
       sel.get(done);
@@ -93,7 +97,7 @@ exports.create = function(pluralName, selection, singularName, idParam, isSingle
         try {
           data = jsonFromReq(req);
         } catch (err) {
-          return res.status(400).send({message: err.message}).end();
+          return problem(err, res);
         }
 
         selection.add(data, function(err, id) {
@@ -109,8 +113,8 @@ exports.create = function(pluralName, selection, singularName, idParam, isSingle
     put: function(mutationFromReq) {
       return function(req, res) {
         mutationFromReq(req, selection.q(req.params[idParam]), function(err) {
-          if (!err) return res.status(204).end();
-          res.status(400).send({message: err}).end();
+          if (err) return problem(err, res);
+          res.status(204).end();
         });
       };
     }
