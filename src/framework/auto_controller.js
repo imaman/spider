@@ -19,7 +19,7 @@ function newDeleteController(selection, idParam) {
 
 
 exports.create = function(pluralName, selection, singularName, idParam, isSingle) {
-  var isSingle = Boolean(isSingle);
+  isSingle = Boolean(isSingle);
   var name = isSingle ? singularName : pluralName;
 
   function genericGet(jsonFromReq) {
