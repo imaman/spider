@@ -89,8 +89,15 @@ exports.create = function(pluralName, selection, singularName, idParam, isSingle
     },
     post: function(jsonFromReq) {
       return function(req, res) {
-        selection.add(jsonFromReq(req), function(err, id) {
-          if (err) return res.sendStatus(500).end();
+        var data;
+        try {
+          data = jsonFromReq(req);
+        } catch (err) {
+          return res.status(400).send({message: err.message}).end();
+        }
+
+        selection.add(data, function(err, id) {
+          if (err) return res.status(500).send({message: err}).end();
           res.status(201).send({id: id.toString()}).end();
         });
       };

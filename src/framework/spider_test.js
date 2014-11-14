@@ -188,6 +188,21 @@ describe('spider', function() {
           }
         )(null, done);
       });
+      it('POST failures are propagated back to the client side', function(done) {
+        autoController.defineResource(app, qBooks, 'books', 'book', {
+          post: function(req) {
+            throw new Error('Rejected');
+          },
+          put: function(req, sel, done) {
+            sel.update({title: req.body.title, author: req.body.author}, done);
+          }
+        });
+        request(app).post('/books').send({}).expect(400, function(err, recap) {
+          expect(err).to.be(null);
+          expect(recap.body).to.eql({message: 'Rejected'});
+          done();
+        });
+      });
     });
   });
 });
