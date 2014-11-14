@@ -47,10 +47,7 @@ describe('spider', function() {
             return { title: req.body.title, author: req.body.author }
           },
           put: function(req, sel, done) {
-            var data = {};
-            data.title = req.body.title;
-            data.author = req.body.author;
-            sel.update(data, done);
+            sel.update({title: req.body.title, author: req.body.author}, done);
           }
         });
         funflow.newFlow(
@@ -89,7 +86,6 @@ describe('spider', function() {
               author: 'A1',
               byController: 'book',
               collectionController: 'books'
-
             });
             done();
           },
