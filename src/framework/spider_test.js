@@ -158,6 +158,36 @@ describe('spider', function() {
           }
         )(null, done);
       });
+      it('DELETE removes only the specified document', function(done) {
+        autoController.defineResource(app, qBooks, 'books', 'book', {
+          post: function(req) {
+            return { title: req.body.title, author: req.body.author }
+          },
+          put: function(req, sel, done) {
+            sel.update({title: req.body.title, author: req.body.author}, done);
+          }
+        });
+        funflow.newFlow(
+          function postFirstBook(done) {
+            request(app).post('/books').send({title: 'T1', author: 'A1'}).expect(201, done);
+          },
+          function postSecondBook(recap, done) {
+            this.id1 = recap.body.id;
+            request(app).post('/books').send({title: 'T2', author: 'A2'}).expect(201, done);
+          },
+          function deleteFirst(done) {
+            request(app).delete('/books/' + this.id1).expect(204, done);
+          },
+          function listBooksAfterDelete(done) {
+            request(app).get('/books.json').expect(200, done);
+          },
+          function checkListAfterDelete(recap, done) {
+            var titles = recap.body.map(function(curr) { return curr.title });
+            expect(titles).to.eql(['T2']);
+            done();
+          }
+        )(null, done);
+      });
     });
   });
 });
