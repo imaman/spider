@@ -48,8 +48,8 @@ describe('spider', function() {
           },
           put: function(req, sel, done) {
             var data = {};
-            if (req.body.title) data.title = req.body.title;
-            if (req.body.authro) data.author = req.body.author;
+            data.title = req.body.title;
+            data.author = req.body.author;
             sel.update(data, done);
           }
         });
@@ -102,7 +102,7 @@ describe('spider', function() {
             done();
           },
           function update(done) {
-            request(app).put('/books/' + this.id).send({ title: 'NEW_TITLE'}).expect(204, done);
+            request(app).put('/books/' + this.id).send({title: 'NEW_TITLE'}).expect(204, done);
           },
           function getJsonOfUpdatedBook(done) {
             request(app).get('/books/' + this.id + '.json').expect(200, done);

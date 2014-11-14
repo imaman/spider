@@ -151,6 +151,80 @@ describe('model', function() {
     });
   });
 
+  describe('updates', function() {
+    it('can change existing fields of an item', function(done) {
+      var model = newModel(collection);
+      model.add({text: 'OLD_TEXT'}, function(err, id) {
+        if(err) return done(err);
+        model.q(id).update({text: 'NEW_TEXT'}, function(err) {
+          if(err) return done(err);
+          model.at(id, function(err, item) {
+            expect(item).to.have.property('text').equal('NEW_TEXT');
+            done();
+          });
+        });
+      });
+    });
+    it('changes only the specified fields of that item', function(done) {
+      var model = newModel(collection);
+      model.add({a: 'A1', b: 'B1', c: 'C1'}, function(err, id) {
+        if(err) return done(err);
+        model.q(id).update({b: 'B2', c: 'C2'}, function(err) {
+          if(err) return done(err);
+          model.at(id, function(err, item) {
+            expect(item).to.have.property('a', 'A1');
+            expect(item).to.have.property('b', 'B2');
+            expect(item).to.have.property('c', 'C2');
+            done();
+          });
+        });
+      });
+    });
+    it('ignores undefined fields', function(done) {
+      var model = newModel(collection);
+      model.add({a: 'A1', b: 'B1'}, function(err, id) {
+        if(err) return done(err);
+        model.q(id).update({b: 'B2', a: undefined}, function(err) {
+          if(err) return done(err);
+          model.at(id, function(err, item) {
+            expect(item).to.have.property('a', 'A1');
+            expect(item).to.have.property('b', 'B2');
+            done();
+          });
+        });
+      });
+    });
+    it('can update multiple items at once', function(done) {
+      var model = newModel(collection);
+      model.add({n: 100}, {n: 200}, function(err, id) {
+        if(err) return done(err);
+        model.q().update({n: 500}, function(err) {
+          if(err) return done(err);
+          model.q().map(function(curr) { return curr.n }, function(err, ns) {
+            if (err) return done(err);
+            expect(ns).to.eql([500, 500]);
+            done();
+          });
+        });
+      });
+    });
+    it('ignores undefined fields (also) when updating multiple items', function(done) {
+      var model = newModel(collection);
+      model.add({n: 100, m: 1}, {n: 200, m: 2}, function(err, id) {
+        if(err) return done(err);
+        model.q().update({n: 500, m: undefined}, function(err) {
+          if(err) return done(err);
+          model.q().map(function(curr) { return curr.n + '/' + curr.m }, function(err, items) {
+            if (err) return done(err);
+            items.sort();
+            expect(items).to.eql(['500/1', '500/2']);
+            done();
+          });
+        });
+      });
+    });
+  });
+
   describe('at', function() {
     it('finds an item by its ID', function(done) {
       var model = newModel(collection);

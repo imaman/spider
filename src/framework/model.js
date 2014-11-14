@@ -5,6 +5,15 @@ var ObjectID = mongodb.ObjectID;
 
 
 function create(coll) {
+  function normalizeChange(obj) {
+    Object.keys(obj).forEach(function(k) {
+      var v = obj[k];
+      if (v === undefined) {
+        delete obj[k];
+      }
+    });
+  }
+
   function pick(where) {
     if (typeof where === 'string') {
       var id = ObjectID.createFromHexString(where);
@@ -35,6 +44,7 @@ function create(coll) {
           });
         },
         update: function(change, done) {
+          normalizeChange(change);
           coll.update(byId, {$set: change}, done);
         },
         get: function(done) {
@@ -64,6 +74,7 @@ function create(coll) {
         });
       },
       update: function(change, done) {
+        normalizeChange(change);
         coll.updateMany(where, {$set: change}, done);
       },
       get: function(done) {
