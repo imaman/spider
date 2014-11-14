@@ -41,7 +41,7 @@ describe('spider', function() {
 
   describe('creation of an app using autoController', function() {
     describe('resource introduced using defineResource()', function() {
-      it('is initially empty', function(done) {
+      it('sets up GET, PUT, POST, DELETE routes', function(done) {
         autoController.defineResource(app, qBooks, 'books', 'book', {
           post: function(req) {
             return { title: req.body.title, author: req.body.author }
@@ -54,11 +54,73 @@ describe('spider', function() {
           }
         });
         funflow.newFlow(
-          function getBooks(done) {
+          function getBooksInitially(done) {
+            request(app).get('/books.json').expect(200).end(done);
+          },
+          function isEmpty(recap, done) {
+            expect(recap.body).to.eql([]);
+            done();
+          },
+          function post(done) {
+            request(app).post('/books').send({ title: 'T1', author: 'A1' }).expect(201, done);
+          },
+          function getBooks(recap, done) {
+            this.id = recap.body.id;
+            request(app).get('/books.json').expect(200, done);
+          },
+          function containsThePostedBook(recap, done) {
+            expect(recap.body).to.eql([{ _id: this.id, title: 'T1', author: 'A1' }]);
+            done();
+          },
+          function getBooksHtml(done) {
             request(app).get('/books.html').expect(200, done);
           },
-          function getBooks2(done) {
-            request(app).get('/books.html').expect(200, done);
+          function containsRendering(recap, done) {
+            expect(recap.text).to.contain('<td>T1</td>');
+            done();
+          },
+          function getBook(done) {
+            request(app).get('/books/' + this.id + '.json').expect(200, done);
+          },
+          function checkJsonOfPostedBook(recap, done) {
+            expect(recap.body).to.eql({
+              _id: this.id,
+              title: 'T1',
+              author: 'A1',
+              byController: 'book',
+              collectionController: 'books'
+
+            });
+            done();
+          },
+          function getBookHtml(done) {
+            request(app).get('/books/' + this.id + '.html').expect(200, done);
+          },
+          function checkRenderingOfPostedBook(recap, done) {
+            expect(recap.text).to.contain('<input type="text" id="input_author" value="A1" class="form-control">');
+            expect(recap.text).to.contain('<input type="text" id="input_title" value="T1" class="form-control">');
+            done();
+          },
+          function update(done) {
+            request(app).put('/books/' + this.id).send({ title: 'NEW_TITLE'}).expect(204, done);
+          },
+          function getJsonOfUpdatedBook(done) {
+            request(app).get('/books/' + this.id + '.json').expect(200, done);
+          },
+          function checkJsonOfUpdatedBook(recap, done) {
+            expect(recap.body).to.have.property('title', 'NEW_TITLE');
+            expect(recap.body).to.have.property('author', 'A1');
+            done();
+          },
+          function deleteTheBook(done) {
+            request(app).delete('/books/' + this.id).expect(204, done);
+          },
+          function listBooksAfterDeletion(done) {
+            request(app).get('/books.json').expect(200, done);
+          },
+          function checkAfterDeletion(recap, done) {
+            expect(recap.body).to.eql([]);
+            done();
           }
         )(null, done);
       });

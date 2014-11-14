@@ -118,7 +118,9 @@ exports.defineResource = function(app, qPlural, namePluarl, nameSingular, option
   var idParam = 'id';
   var controller = exports.create(namePluarl, qPlural, nameSingular, idParam);
   var singularController = controller.singular();
+  app.get('/' + namePluarl + '.json', controller.get());
   app.get('/' + namePluarl + '.html', controller.getHtml());
+  app.get('/' + namePluarl + '/:' + idParam + '.json', singularController.get());
   app.get('/' + namePluarl + '/:' + idParam + '.html', singularController.getHtml());
   app.delete('/' + namePluarl + '/:' + idParam, singularController.delete());
 
