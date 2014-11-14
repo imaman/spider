@@ -163,9 +163,7 @@ describe('spider', function() {
           post: function(req) {
             return { title: req.body.title, author: req.body.author }
           },
-          put: function(req, sel, done) {
-            sel.update({title: req.body.title, author: req.body.author}, done);
-          }
+          put: 'NOT_USED'
         });
         funflow.newFlow(
           function postFirstBook(done) {
@@ -193,9 +191,7 @@ describe('spider', function() {
           post: function(req) {
             throw new Error('Rejected');
           },
-          put: function(req, sel, done) {
-            sel.update({title: req.body.title, author: req.body.author}, done);
-          }
+          put: 'NOT_USED'
         });
         request(app).post('/books').send({}).expect(400, function(err, recap) {
           expect(err).to.be(null);
