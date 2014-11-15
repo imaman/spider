@@ -80,9 +80,7 @@ exports.create = function(pluralName, selection, singularName, idParam, typeByKe
         pairs = keys.map(function(k) {
           var t = typeByKey[k] || type[k];
           var v = value[k];
-          if (t == 'DATE')
-            v = v && v.toJSON();
-          else if (t == 'fixed')
+          if (t == 'fixed')
             v = v && v.toString();
           return {key: k, value: v, type: t};
         });
