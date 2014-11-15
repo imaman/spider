@@ -11,7 +11,7 @@ exports.createApp = function(port, rootDir) {
   var app = express();
 
   app.set('port', port);
-  app.set('views', [path.join(rootDir, 'views'), path.join(__dirname, 'views')]);
+  app.set('views', [path.join(rootDir, 'views'), __dirname]);
   app.set('view engine', 'jade');
 
   app.use(logger);
