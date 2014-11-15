@@ -130,16 +130,15 @@ exports.defineResource = function(app, qPlural, namePluarl, nameSingular, option
     throw new Error('.put must be specified');
   typeByKey = typeByKey || {};
 
-  var idParam = 'id';
-  var controller = exports.create(namePluarl, qPlural, nameSingular, idParam, typeByKey);
+  var controller = exports.create(namePluarl, qPlural, nameSingular, 'id', typeByKey);
   var singularController = controller.singular();
   app.get('/' + namePluarl + '.json', controller.get());
   app.get('/' + namePluarl + '.html', controller.getHtml());
-  app.get('/' + namePluarl + '/:' + idParam + '.json', singularController.get());
-  app.get('/' + namePluarl + '/:' + idParam + '.html', singularController.getHtml());
-  app.delete('/' + namePluarl + '/:' + idParam, singularController.delete());
+  app.get('/' + namePluarl + '/:id' + '.json', singularController.get());
+  app.get('/' + namePluarl + '/:id' + '.html', singularController.getHtml());
+  app.delete('/' + namePluarl + '/:id', singularController.delete());
 
   app.post('/' + namePluarl, controller.post(options.post));
-  app.put('/' + namePluarl + '/:' + idParam, singularController.put(options.put));
+  app.put('/' + namePluarl + '/:id', singularController.put(options.put));
 }
 
