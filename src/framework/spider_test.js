@@ -235,7 +235,6 @@ describe('spider', function() {
           },
           function checkHtml(recap, done) {
             expect(recap.body.payload).to.eql([
-                { key: '_id', value: this.id, type: 'fixed' },
                 { key: 'published', value: date.toJSON(), type: 'DATE' }
             ]);
             done();

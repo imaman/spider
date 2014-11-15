@@ -73,15 +73,12 @@ exports.create = function(pluralName, selection, singularName, idParam, typeByKe
   function getHtmlSingle() {
     return genericGet(function(req, sel, done) {
       sel.get(function(err, value) {
-        var type = { _id: 'fixed', completed: 'bool' }
         if (err) return done(err);
-        var keys = Object.keys(value);
+        var keys = Object.keys(value).filter(function(k) { return k !== '_id' });
         keys.sort();
         pairs = keys.map(function(k) {
-          var t = typeByKey[k] || type[k];
+          var t = typeByKey[k];
           var v = value[k];
-          if (t == 'fixed')
-            v = v && v.toString();
           return {key: k, value: v, type: t};
         });
         done(null, {id: value._id, payload: pairs}, 'element');

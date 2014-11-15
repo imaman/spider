@@ -61,9 +61,6 @@ html(lang='en')
           serverPayload.forEach(function(curr) {
             var e = inp(curr.key);
             var v;
-            if (curr.type == 'fixed')
-              return;
-
             if (curr.type == 'bool')
               v = e.prop('checked');
             else if (curr.type == 'DATE')
