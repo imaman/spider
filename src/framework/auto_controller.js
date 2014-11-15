@@ -59,12 +59,11 @@ exports.create = function(pluralName, selection, singularName, idParam, typeByKe
         });
         keys = Object.keys(keys);
         keys.sort();
-        var acc = [];
-        value.forEach(function(curr) {
+        var acc = value.map(function(curr) {
           var rec = keys.map(function(k) {
             return {key: k, value: curr[k], type: typeByKey[k]};
           });
-          acc.push({id: curr._id, values: rec});
+          return {id: curr._id, values: rec};
         });
         done(null, { tableHeader: keys, tableBody: acc }, 'table');
       });
@@ -76,10 +75,8 @@ exports.create = function(pluralName, selection, singularName, idParam, typeByKe
         if (err) return done(err);
         var keys = Object.keys(value).filter(function(k) { return k !== '_id' });
         keys.sort();
-        pairs = keys.map(function(k) {
-          var t = typeByKey[k];
-          var v = value[k];
-          return {key: k, value: v, type: t};
+        var pairs = keys.map(function(k) {
+          return {key: k, value: value[k], type: typeByKey[k]};
         });
         done(null, {id: value._id, payload: pairs}, 'element');
       });
