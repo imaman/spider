@@ -38,6 +38,12 @@ describe('spider', function() {
     });
   });
 
+  function noRendering() {
+    app.engine('jade', function(path, options, callback) {
+      callback(null, options);
+    });
+  }
+
   describe('creation of an app using autoController', function() {
     describe('resource introduced using defineResource()', function() {
       it('sets up GET, PUT, POST, DELETE routes', function(done) {
@@ -224,9 +230,7 @@ describe('spider', function() {
           },
           function list(recap, done) {
             this.id = recap.body.id;
-            app.engine('jade', function(path, options, callback) {
-              callback(null, options);
-            });
+            noRendering();
             request(app).get('/books/' + this.id + '.html').expect(200, done);
           },
           function checkHtml(recap, done) {
