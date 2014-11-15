@@ -78,7 +78,13 @@ exports.create = function(pluralName, selection, singularName, idParam, typeByKe
         var keys = Object.keys(value);
         keys.sort();
         pairs = keys.map(function(k) {
-          return {key: k, value: value[k], type: typeByKey[k] || type[k]};
+          var t = typeByKey[k] || type[k];
+          var v = value[k];
+          if (t == 'DATE')
+            v = v && v.toJSON();
+          else if (t == 'fixed')
+            v = v && v.toString();
+          return {key: k, value: v, type: t};
         });
         done(null, {id: value._id, payload: pairs}, 'element');
       });

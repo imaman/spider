@@ -33,7 +33,10 @@ html(lang='en')
 
     script.
       $(document).ready(function() {
-        $('.datepicker').datepicker();
+        $('.datepicker').each(function(i, e) {
+          e = $(e);
+          e.datepicker('setDate', new Date(e.attr('value')));
+        });
         var serverPayload = !{JSON.stringify(payload)};
         var collectionController = !{JSON.stringify(collectionController)};
         var servedId = !{JSON.stringify(id)};
@@ -64,7 +67,7 @@ html(lang='en')
             if (curr.type == 'bool')
               v = e.prop('checked');
             else if (curr.type == 'DATE')
-              v = e.datepicker('getDate');
+              v = e.datepicker('getDate').toJSON();
             else
               v = e.val();
             putData[curr.key] = v;
@@ -88,7 +91,7 @@ html(lang='en')
                   if (curr.type == 'bool')
                     input(type="checkbox" id='input_' + curr.key checked=curr.value)
                   else if (curr.type == 'DATE')
-                    input(data-provide="datepicker-inline" id='input_' + curr.key class="datepicker form-control" value=curr.value)
+                    input(id='input_' + curr.key class="datepicker form-control" value=curr.value)
                   else
                     input(type="text" class="form-control" id='input_' + curr.key value=curr.value)= curr.value
       div(id='ok_button' class="btn btn-primary btn-fab btn-raised mdi-content-save")

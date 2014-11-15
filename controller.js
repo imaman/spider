@@ -13,7 +13,7 @@ function install(qTodos, qPlaces, app) {
       if (req.body.name) data.name = req.body.name;
       if (req.body.city) data.city = req.body.city;
       if (req.body.country) data.country = req.body.country;
-      data.when = req.body.when;
+      data.when = req.body.when && new Date(req.body.when);
       sel.update(data, done);
     }
   }, { when: 'DATE' });

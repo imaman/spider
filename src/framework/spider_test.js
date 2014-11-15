@@ -213,20 +213,27 @@ describe('spider', function() {
         });
       });
       it('supports a DATE type', function(done) {
+        var date = new Date('2014-11-15T14:40:22.317Z');
         autoController.defineResource(app, qBooks, 'books', 'book', {
-          post: function(req) { return { published: req.body.when } },
+          post: function(req) { return { published: new Date(req.body.published) } },
           put: 'NOT_USED'
         }, { published: 'DATE' });
         funflow.newFlow(
           function post(done) {
-            request(app).post('/books').send({published: new Date()}).expect(201, done);
+            request(app).post('/books').send({published: date.toJSON()}).expect(201, done);
           },
           function list(recap, done) {
-            request(app).get('/books/' + recap.body.id + '.html').expect(200, done);
+            this.id = recap.body.id;
+            app.engine('jade', function(path, options, callback) {
+              callback(null, options);
+            });
+            request(app).get('/books/' + this.id + '.html').expect(200, done);
           },
           function checkHtml(recap, done) {
-            expect(recap.text).to.contain(
-                '<input data-provide="datepicker-inline" id="input_published" class="datepicker form-control">');
+            expect(recap.body.payload).to.eql([
+                { key: '_id', value: this.id, type: 'fixed' },
+                { key: 'published', value: date.toJSON(), type: 'DATE' }
+            ]);
             done();
           }
         )(null, done);
