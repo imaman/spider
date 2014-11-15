@@ -212,6 +212,25 @@ describe('spider', function() {
           done();
         });
       });
+      it('supports a DATE type', function(done) {
+        autoController.defineResource(app, qBooks, 'books', 'book', {
+          post: function(req) { return { published: req.body.when } },
+          put: 'NOT_USED'
+        }, { published: 'DATE' });
+        funflow.newFlow(
+          function post(done) {
+            request(app).post('/books').send({published: new Date()}).expect(201, done);
+          },
+          function list(recap, done) {
+            request(app).get('/books/' + recap.body.id + '.html').expect(200, done);
+          },
+          function checkHtml(recap, done) {
+            expect(recap.text).to.contain(
+                '<input data-provide="datepicker-inline" id="input_published" class="datepicker form-control">');
+            done();
+          }
+        )(null, done);
+      });
     });
   });
 });

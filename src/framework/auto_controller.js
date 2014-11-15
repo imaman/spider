@@ -18,7 +18,8 @@ function newDeleteController(selection, idParam) {
 
 
 
-exports.create = function(pluralName, selection, singularName, idParam, isSingle) {
+exports.create = function(pluralName, selection, singularName, idParam, typeByKey, isSingle) {
+  typeByKey = typeByKey || {};
   isSingle = Boolean(isSingle);
   var name = isSingle ? singularName : pluralName;
 
@@ -61,7 +62,7 @@ exports.create = function(pluralName, selection, singularName, idParam, isSingle
         var acc = [];
         value.forEach(function(curr) {
           var rec = keys.map(function(k) {
-            return {key: k, value: curr[k]};
+            return {key: k, value: curr[k], type: typeByKey[k]};
           });
           acc.push({id: curr._id, values: rec});
         });
@@ -77,7 +78,7 @@ exports.create = function(pluralName, selection, singularName, idParam, isSingle
         var keys = Object.keys(value);
         keys.sort();
         pairs = keys.map(function(k) {
-          return {key: k, value: value[k], type: type[k]};
+          return {key: k, value: value[k], type: typeByKey[k] || type[k]};
         });
         done(null, {id: value._id, payload: pairs}, 'element');
       });
@@ -86,7 +87,7 @@ exports.create = function(pluralName, selection, singularName, idParam, isSingle
 
   return {
     singular: function() {
-      return exports.create(pluralName, selection, singularName, idParam, true);
+      return exports.create(pluralName, selection, singularName, idParam, typeByKey, true);
     },
     getHtml: function() {
       return isSingle ? getHtmlSingle() : getHtmlMulti();
@@ -121,14 +122,15 @@ exports.create = function(pluralName, selection, singularName, idParam, isSingle
   }
 }
 
-exports.defineResource = function(app, qPlural, namePluarl, nameSingular, options) {
+exports.defineResource = function(app, qPlural, namePluarl, nameSingular, options, typeByKey) {
   if (!options.post)
     throw new Error('.post must be specified');
   if (!options.put)
     throw new Error('.put must be specified');
+  typeByKey = typeByKey || {};
 
   var idParam = 'id';
-  var controller = exports.create(namePluarl, qPlural, nameSingular, idParam);
+  var controller = exports.create(namePluarl, qPlural, nameSingular, idParam, typeByKey);
   var singularController = controller.singular();
   app.get('/' + namePluarl + '.json', controller.get());
   app.get('/' + namePluarl + '.html', controller.getHtml());

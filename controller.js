@@ -6,16 +6,17 @@ function install(qTodos, qPlaces, app) {
 
   autoController.defineResource(app, qPlaces, 'places', 'place', {
     post: function(req) {
-      return { name: req.body.name || '', city: req.body.city || '', country: req.body.country };
+      return { when: new Date(), name: req.body.name || '', city: req.body.city || '', country: req.body.country };
     },
     put: function(req, sel, done) {
       var data = {};
       if (req.body.name) data.name = req.body.name;
       if (req.body.city) data.city = req.body.city;
       if (req.body.country) data.country = req.body.country;
+      data.when = req.body.when;
       sel.update(data, done);
     }
-  });
+  }, { when: 'DATE' });
 
   var qCompleted= qTodos.q({completed: true});
   var qActive = qTodos.q({completed: false});

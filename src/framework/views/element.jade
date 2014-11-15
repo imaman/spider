@@ -5,9 +5,14 @@ html(lang='en')
     meta(charset='utf-8')
     meta(name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes")
 
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
+
     link(href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet")
     link(href="/bootstrap-material-design/dist/css/ripples.min.css" rel="stylesheet")
     link(href="/bootstrap-material-design/dist/css/material-wfont.min.css" rel="stylesheet")
+
+    link(href="/bootstrap-datepicker/css/datepicker3.css" rel="stylesheet")
+    script(src="/bootstrap-datepicker/js/bootstrap-datepicker.js")
 
     link(rel="import" href="/font-roboto/roboto.html")
     title= 'ELEMENT: ' + id
@@ -26,9 +31,9 @@ html(lang='en')
         -webkit-touch-callout: none;
       }
 
-    script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
     script.
       $(document).ready(function() {
+        $('.datepicker').datepicker();
         var serverPayload = !{JSON.stringify(payload)};
         var collectionController = !{JSON.stringify(collectionController)};
         var servedId = !{JSON.stringify(id)};
@@ -58,6 +63,8 @@ html(lang='en')
 
             if (curr.type == 'bool')
               v = e.prop('checked');
+            else if (curr.type == 'DATE')
+              v = e.datepicker('getDate');
             else
               v = e.val();
             putData[curr.key] = v;
@@ -80,6 +87,8 @@ html(lang='en')
                 div(class="col-lg-10")
                   if (curr.type == 'bool')
                     input(type="checkbox" id='input_' + curr.key checked=curr.value)
+                  else if (curr.type == 'DATE')
+                    input(data-provide="datepicker-inline" id='input_' + curr.key class="datepicker form-control" value=curr.value)
                   else
                     input(type="text" class="form-control" id='input_' + curr.key value=curr.value)= curr.value
       div(id='ok_button' class="btn btn-primary btn-fab btn-raised mdi-content-save")
