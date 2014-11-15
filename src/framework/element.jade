@@ -61,7 +61,7 @@ html(lang='en')
           serverPayload.forEach(function(curr) {
             var e = inp(curr.key);
             var v;
-            if (curr.type == 'bool')
+            if (curr.type == 'BOOL')
               v = e.prop('checked');
             else if (curr.type == 'DATE')
               v = e.datepicker('getDate').toJSON();
@@ -85,7 +85,7 @@ html(lang='en')
               div(class="form-group")
                 label(for='input_' + curr.key class="col-lg-2 control-label")= curr.key
                 div(class="col-lg-10")
-                  if (curr.type == 'bool')
+                  if (curr.type == 'BOOL')
                     input(type="checkbox" id='input_' + curr.key checked=curr.value)
                   else if (curr.type == 'DATE')
                     input(id='input_' + curr.key class="datepicker form-control" value=curr.value)

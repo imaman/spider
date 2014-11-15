@@ -16,10 +16,20 @@ function newDeleteController(selection, idParam) {
   };
 }
 
-
+var supportedTypes = {
+  BOOL: true,
+  DATE: true
+};
 
 exports.create = function(pluralName, selection, singularName, idParam, typeByKey, isSingle) {
   typeByKey = typeByKey || {};
+  Object.keys(typeByKey).forEach(function(k) {
+    var t = typeByKey[k];
+    var ok = supportedTypes[t];
+    if (!ok)
+      throw new Error('Type [' + t + '] of [' + k + '] is not recozniged');
+
+  });
   isSingle = Boolean(isSingle);
   var name = isSingle ? singularName : pluralName;
 
