@@ -218,6 +218,29 @@ describe('spider', function() {
           done();
         });
       });
+      it('supports a BOOL type', function(done) {
+        autoController.defineResource(app, qBooks, 'books', 'book', {
+          post: function(req) { return {isScience: req.body.isScience, isFiction: req.body.isFiction} },
+          put: 'NOT_USED'
+        });
+        funflow.newFlow(
+          function post(done) {
+            request(app).post('/books').send({isScience: false, isFiction: true}).expect(201, done);
+          },
+          function list(recap, done) {
+            this.id = recap.body.id;
+            noRendering();
+            request(app).get('/books/' + this.id + '.html').expect(200, done);
+          },
+          function checkHtml(recap, done) {
+            expect(recap.body.payload).to.eql([
+              { key: 'isFiction', value: true, type: 'BOOL' },
+              { key: 'isScience', value: false, type: 'BOOL' }
+            ]);
+            done();
+          }
+        )(null, done);
+      });
       it('supports a DATE type', function(done) {
         var date = new Date('2014-11-15T14:40:22.317Z');
         autoController.defineResource(app, qBooks, 'books', 'book', {

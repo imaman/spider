@@ -23,7 +23,7 @@ function install(qTodos, qPlaces, app) {
 
   var completedTodos = autoController.create('todos_completed', qCompleted);
   var activeTodos = autoController.create('todos_active', qActive);
-  var todos = autoController.create('todos', qTodos, 'todo', 'id', { completed: 'BOOL' });
+  var todos = autoController.create('todos', qTodos, 'todo', 'id');
   var todo = todos.singular();
 
   app.get('/', todos.get(listTodoItems));

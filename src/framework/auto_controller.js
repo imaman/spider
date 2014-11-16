@@ -21,6 +21,10 @@ var supportedTypes = {
   DATE: true
 };
 
+function guessType(v) {
+  if (v === true || v === false) return 'BOOL';
+}
+
 exports.create = function(pluralName, selection, singularName, idParam, typeByKey, isSingle) {
   typeByKey = typeByKey || {};
   Object.keys(typeByKey).forEach(function(k) {
@@ -86,7 +90,9 @@ exports.create = function(pluralName, selection, singularName, idParam, typeByKe
         var keys = Object.keys(value).filter(function(k) { return k !== '_id' });
         keys.sort();
         var pairs = keys.map(function(k) {
-          return {key: k, value: value[k], type: typeByKey[k]};
+          var v = value[k];
+          var t = guessType(v) || typeByKey[k];
+          return {key: k, value: v, type: t};
         });
         done(null, {id: value._id, payload: pairs}, 'element');
       });
