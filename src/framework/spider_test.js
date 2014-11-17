@@ -264,6 +264,34 @@ describe('spider', function() {
           }
         )(null, done);
       });
+      it('supports an ARRAY type', function(done) {
+        autoController.defineResource(app, qBooks, 'books', 'book', {
+          post: function(req) { return { editions: req.body.editions } },
+          put: 'NOT_USED'
+        });
+        funflow.newFlow(
+          function post(done) {
+            request(app).post('/books').send({editions: [
+              {year: 2011, ordinal: '1st'},
+              {year: 2012, ordinal: '2nd'}
+            ]}).expect(201, done);
+          },
+          function list(recap, done) {
+            this.id = recap.body.id;
+            noRendering();
+            request(app).get('/books/' + this.id + '.html').expect(200, done);
+          },
+          function checkHtml(recap, done) {
+            expect(recap.body.payload).to.eql([
+              { key: 'editions', type: 'ARRAY', value: [
+                {year: 2011, ordinal: '1st'},
+                {year: 2012, ordinal: '2nd'}
+              ]}
+            ]);
+            done();
+          }
+        )(null, done);
+      });
     });
   });
 });

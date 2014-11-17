@@ -26,6 +26,7 @@ var supportedTypes = {
 function guessType(v) {
   if (v === true || v === false) return 'BOOL';
   if (util.isDate(v)) return 'DATE';
+  if (util.isArray(v)) return 'ARRAY';
 }
 
 exports.create = function(pluralName, selection, singularName, idParam, typeByKey, isSingle) {
