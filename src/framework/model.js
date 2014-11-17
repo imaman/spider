@@ -81,7 +81,7 @@ function query(coll, where) {
   });
 }
 
-function create(coll) {
+function newModel(coll) {
   return {
     size: function(done) {
       coll.count({}, done);
@@ -112,4 +112,4 @@ function create(coll) {
   };
 }
 
-exports.newModel = create;
+exports.newModel = newModel;
