@@ -3,6 +3,7 @@ var model = require('./model.js');
 var funflow = require('funflow');
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
+var ObjectID = mongodb.ObjectID;
 
 var url = 'mongodb://localhost:27017/test_150';
 
@@ -302,6 +303,50 @@ describe('model', function() {
             });
           });
         });
+      });
+    });
+  });
+
+  describe('nested array queries', function() {
+    it('is created by passing the field name inside an array as a sub-query', function() {
+      var model = newModel(collection);
+      model.q('1234567890ab1234567890ab').q(['arrName']);
+    });
+    it('returns the size of the nested array', function(done) {
+      var model = newModel(collection);
+      funflow.newFlow(
+        function createDoc(done) {
+          model.add({names: []}, done);
+        },
+        function size(id, done) {
+          this.id = id;
+          this.q = model.q(id).q(['names']);
+          this.q.size(done);
+        },
+        function shouldBeZero(size, done) {
+          expect(size).to.equal(0);
+          done();
+        },
+        function addAnElement(done) {
+          collection.updateOne(
+            {_id: ObjectID.createFromHexString(this.id)},
+            {$push: {names: 'John'}},
+            done);
+        },
+        function checkSucces(r, done) {
+          expect(r.result.ok).to.equal(1);
+          model.q(this.id).get(done);
+        },
+        function checkContent(data, done) {
+          expect(data.names).to.eql(['John']);
+          this.q.size(done);
+        },
+        function sizeAfterInsertion(size, done) {
+          expect(size).to.equal(1);
+          done();
+        }
+      )(null, function(e) {
+        done(e && e.flowTrace);
       });
     });
   });

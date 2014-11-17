@@ -31,6 +31,23 @@ function inject(toArray, target) {
   return target;
 }
 
+function nestedArrayQuery(coll, id, fieldName) {
+  var byId = {_id: ObjectID.createFromHexString(id)}
+
+  function toArray(f) {
+    coll.find(byId).toArray(f);
+  }
+  return {
+    size: function(done) {
+      toArray(function(err, x) {
+        console.log('err=' + err);
+        if (err) return done(err);
+        if (x.length !== 1) return done('Size should be 1 but was '  +x.length);
+        done(null, x[0][fieldName].length);
+      });
+    }
+  };
+}
 function singletonQuery(coll, id) {
   var byId = {_id: ObjectID.createFromHexString(id)}
 
@@ -54,6 +71,11 @@ function singletonQuery(coll, id) {
         if (len == 0) return done(null, null);
         done(null, data[0]);
       });
+    },
+    q: function(subWhere) {
+      if (util.isArray(subWhere))
+        return nestedArrayQuery(coll, id, subWhere[0]);
+      throw new Error('sub-query must be an array');
     }
   });
 }
