@@ -292,7 +292,12 @@ describe('controller', function() {
       request(app).
         post('/todos').
         send({ text: 'TODO_100' }).
-        expect(500, done);
+        expect(400, function(err, recap) {
+          if (err) return done(err);
+          expect(recap.body).to.have.property('message', 'add() failed');
+          expect(recap.body).to.have.property('stack');
+          done();
+        });
     });
   });
 

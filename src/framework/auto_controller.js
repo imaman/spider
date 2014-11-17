@@ -112,17 +112,29 @@ exports.create = function(pluralName, selection, singularName, idParam, typeByKe
     },
     post: function(jsonFromReq) {
       return function(req, res) {
-        var data;
+        var executed = false;
+        function emit500(err, extra) {
+          res.status(500).send({message: err, extra: extra}).end();
+        }
         try {
-          data = jsonFromReq(req);
+          var data = jsonFromReq(req, selection.q(req.params[idParam]), execute);
+          if (data !== undefined) {
+            execute(null, data);
+          }
         } catch (err) {
           return problem(err, res);
         }
 
-        selection.add(data, function(err, id) {
-          if (err) return res.status(500).send({message: err}).end();
-          res.status(201).send({id: id.toString()}).end();
-        });
+        function execute(err, data) {
+          if (executed) throw new Error('cannot be called twice');
+          executed = true;
+          if (err) return emit500(err);
+
+          selection.add(data, function(err, id) {
+            if (err) return emit500(err);
+            res.status(201).send({id: id.toString()}).end();
+          });
+        }
       };
     },
     delete: function() { return newDeleteController(selection, idParam) },
