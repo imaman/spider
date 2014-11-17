@@ -169,21 +169,5 @@ exports.defineResource = function(app, qPlural, namePluarl, nameSingular, option
 
   app.post('/' + namePluarl, controller.post(options.post));
   app.put('/' + namePluarl + '/:id', singularController.put(options.put));
-  return {app: app, qPlural: qPlural, namePluarl: namePluarl, singularController: singularController};
-};
-
-exports.defineArray = function(owner, name, options) {
-  var app = owner.app;
-  var controller = exports.create(owner.namePluarl + '.' + name, qPlural
-  app.post('/' + owner.namePluarl + '/:id/' + name, function(req, res) {
-    var q = owner.qPlural.q(req.params[idParam]);
-    options.post(req, q, function(err, data) {
-      if (err) return problem(err, res);
-      q.updateDirectly({$push: { name: data }}, function(err, id) {
-        if (err) return emit500(err);
-        res.status(201).send({id: id.toString()}).end();
-      });
-  });
-};
-
+}
 
