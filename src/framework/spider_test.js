@@ -246,7 +246,7 @@ describe('spider', function() {
         autoController.defineResource(app, qBooks, 'books', 'book', {
           post: function(req) { return { published: new Date(req.body.published) } },
           put: 'NOT_USED'
-        }, { published: 'DATE' });
+        });
         funflow.newFlow(
           function post(done) {
             request(app).post('/books').send({published: date.toJSON()}).expect(201, done);

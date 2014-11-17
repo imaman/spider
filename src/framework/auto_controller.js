@@ -1,3 +1,5 @@
+var util = require('util');
+
 function entityDelete(q, res) {
   q.remove(function (err) {
     res.sendStatus(err ? 500 : 204).end();
@@ -23,6 +25,7 @@ var supportedTypes = {
 
 function guessType(v) {
   if (v === true || v === false) return 'BOOL';
+  if (util.isDate(v)) return 'DATE';
 }
 
 exports.create = function(pluralName, selection, singularName, idParam, typeByKey, isSingle) {

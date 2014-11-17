@@ -16,7 +16,7 @@ function install(qTodos, qPlaces, app) {
       data.when = req.body.when && new Date(req.body.when);
       sel.update(data, done);
     }
-  }, { when: 'DATE' });
+  });
 
   var qCompleted= qTodos.q({completed: true});
   var qActive = qTodos.q({completed: false});
