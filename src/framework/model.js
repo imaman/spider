@@ -13,45 +13,49 @@ function normalizeChange(obj) {
 }
 
 
-function elementQuery(coll, where) {
+function singletonQuery(coll, where) {
   var id = ObjectID.createFromHexString(where);
   var byId = {_id: id};
+
+  function toArray(f) {
+    coll.find(byId).toArray(f);
+  }
+
   return {
-    remove: function(done) {
-      coll.removeOne(byId, done);
-    },
     map: function(mapper, done) {
-      coll.find(byId).toArray(function(err, data) {
+      toArray(function(err, data) {
         if (err) return done(err);
-        done(null, data.map(mapper));
+        if (mapper)
+          data = data.map(mapper);
+        done(null, data);
       });
     },
     size: function(done) {
-      coll.find(byId).toArray(function(err, data) {
+      toArray(function(err, data) {
         if (err) return done(err);
         done(null, data.length);
       });
     },
-    one: function(done) {
-      coll.find(byId).toArray(function(err, data) {
-        if (err) return done(err);
-        var len = data.length;
-        if (len > 1) return done('more than one.');
-        if (len == 0) return done(null, null);
-        done(null, data[0]);
-      });
+    remove: function(done) {
+      coll.removeOne(byId, done);
     },
     update: function(change, done) {
       normalizeChange(change);
       coll.update(byId, {$set: change}, done);
     },
     get: function(done) {
-      return this.one(done);
+      toArray(function(err, data) {
+        if (err) return done(err);
+        var len = data.length;
+        if (len > 1) return done('more than one.');
+        if (len == 0) return done(null, null);
+        done(null, data[0]);
+      });
     }
   };
 }
 
-function collectionQuery(coll, where) {
+function pluralQuery(coll, where) {
   return {
     map: function(mapper, done) {
       coll.find(where).toArray(function(err, data) {
@@ -91,9 +95,9 @@ function collectionQuery(coll, where) {
 
 function pick(coll, where) {
   if (typeof where === 'string')
-    return elementQuery(coll, where);
+    return singletonQuery(coll, where);
   else
-    return collectionQuery(coll, where || {});
+    return pluralQuery(coll, where || {});
 }
 
 function create(coll) {

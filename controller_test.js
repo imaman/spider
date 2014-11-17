@@ -149,7 +149,7 @@ describe('controller', function() {
           expect(204).
           end(function(err) {
             if (err) return done(err);
-            qTodos.q(id).one(function(err, value) {
+            qTodos.q(id).get(function(err, value) {
               if (err) return done(err);
               expect(value).to.be(null);
               done();
@@ -166,7 +166,7 @@ describe('controller', function() {
           put('/todos/' + id).
           send({completed: true}).
           expect(function(res) {
-            qTodos.q(id).one(function(err, data) {
+            qTodos.q(id).get(function(err, data) {
               if (err) return done(err);
               expect(data.completed).to.be(true);
               expect(data.text).to.equal('TODO_1');
@@ -184,7 +184,7 @@ describe('controller', function() {
           expect(204).
           end(function(err) {
             if (err) return done(err);
-            qTodos.q(id).one(function(err, data) {
+            qTodos.q(id).get(function(err, data) {
               if (err) return done(err);
               expect(data.completed).to.be(false);
               expect(data.text).to.equal('TODO_1');
@@ -221,7 +221,7 @@ describe('controller', function() {
           send({text: 'new text'}).
           end(function() {
             if (err) return done(err);
-            qTodos.q(id).one(function(err, data) {
+            qTodos.q(id).get(function(err, data) {
               if (err) return done(err);
               expect(data.text).to.equal('new text');
               expect(data.completed).to.be(true);
