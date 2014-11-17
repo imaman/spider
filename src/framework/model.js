@@ -124,9 +124,6 @@ function create(coll) {
         data._id = data._id.toHexString();
         done(null, data);
       });
-    },
-    newModel: function(coll) {
-      return create(coll);
     }
   };
 }
