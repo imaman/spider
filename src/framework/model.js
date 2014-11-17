@@ -13,6 +13,24 @@ function normalizeChange(obj) {
 }
 
 
+function inject(toArray, target) {
+  target.map =  function(mapper, done) {
+    toArray(function(err, data) {
+      if (err) return done(err);
+      if (mapper)
+        data = data.map(mapper);
+      done(null, data);
+    });
+  };
+  target.size = function(done) {
+    toArray(function(err, data) {
+      if (err) return done(err);
+      done(null, data.length);
+    });
+  };
+  return target;
+}
+
 function singletonQuery(coll, where) {
   var id = ObjectID.createFromHexString(where);
   var byId = {_id: id};
@@ -21,21 +39,7 @@ function singletonQuery(coll, where) {
     coll.find(byId).toArray(f);
   }
 
-  return {
-    map: function(mapper, done) {
-      toArray(function(err, data) {
-        if (err) return done(err);
-        if (mapper)
-          data = data.map(mapper);
-        done(null, data);
-      });
-    },
-    size: function(done) {
-      toArray(function(err, data) {
-        if (err) return done(err);
-        done(null, data.length);
-      });
-    },
+  return inject(toArray, {
     remove: function(done) {
       coll.removeOne(byId, done);
     },
@@ -52,13 +56,16 @@ function singletonQuery(coll, where) {
         done(null, data[0]);
       });
     }
-  };
+  });
 }
 
 function pluralQuery(coll, where) {
+  function toArray(f) {
+    coll.find(where).toArray(f);
+  }
   return {
     map: function(mapper, done) {
-      coll.find(where).toArray(function(err, data) {
+      toArray(function(err, data) {
         if (err) return done(err);
         if (mapper)
           data = data.map(mapper);
@@ -66,7 +73,7 @@ function pluralQuery(coll, where) {
       });
     },
     size: function(done) {
-      coll.find(where).toArray(function(err, data) {
+      toArray(function(err, data) {
         if (err) return done(err);
         done(null, data.length);
       });
