@@ -14,7 +14,7 @@ function normalizeChange(obj) {
 
 
 function inject(toArray, target) {
-  target.map =  function(mapper, done) {
+  target.map = function(mapper, done) {
     toArray(function(err, data) {
       if (err) return done(err);
       if (mapper)
@@ -76,20 +76,9 @@ function query(coll, where) {
       return this.map(null, done);
     },
     q: function(subWhere) {
-      var d = where;
-      if (subWhere) {
-        d = {$and: [ where, subWhere ]};
-      }
-      return pick(coll, d)
+      return !subWhere ? this : query(coll, {$and: [ where, subWhere ]});
     }
   });
-}
-
-function pick(coll, where) {
-  if (typeof where === 'string')
-    return singletonQuery(coll, where);
-  else
-    return query(coll, where || {});
 }
 
 function create(coll) {
@@ -107,7 +96,10 @@ function create(coll) {
       });
     },
     q: function(where) {
-      return pick(coll, where);
+      if (typeof where === 'string')
+        return singletonQuery(coll, where);
+      else
+        return query(coll, where || {});
     },
     at: function(id, done) {
       coll.findOne({_id: ObjectID.createFromHexString(id)}, function(err, data) {
