@@ -31,9 +31,8 @@ function inject(toArray, target) {
   return target;
 }
 
-function singletonQuery(coll, where) {
-  var id = ObjectID.createFromHexString(where);
-  var byId = {_id: id};
+function singletonQuery(coll, id) {
+  var byId = {_id: ObjectID.createFromHexString(id)}
 
   function toArray(f) {
     coll.find(byId).toArray(f);
@@ -59,7 +58,7 @@ function singletonQuery(coll, where) {
   });
 }
 
-function pluralQuery(coll, where) {
+function query(coll, where) {
   function toArray(f) {
     coll.find(where).toArray(f);
   }
@@ -90,7 +89,7 @@ function pick(coll, where) {
   if (typeof where === 'string')
     return singletonQuery(coll, where);
   else
-    return pluralQuery(coll, where || {});
+    return query(coll, where || {});
 }
 
 function create(coll) {
