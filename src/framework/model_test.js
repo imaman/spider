@@ -328,17 +328,13 @@ describe('model', function() {
           done();
         },
         function addAnElement(done) {
-          collection.updateOne(
-            {_id: ObjectID.createFromHexString(this.id)},
-            {$push: {names: 'John'}},
-            done);
+          this.q.add('John', done);
         },
-        function checkSucces(r, done) {
-          expect(r.result.ok).to.equal(1);
-          model.q(this.id).get(done);
+        function checkSucces(done) {
+          this.q.get(done);
         },
         function checkContent(data, done) {
-          expect(data.names).to.eql(['John']);
+          expect(data).to.eql(['John']);
           this.q.size(done);
         },
         function sizeAfterInsertion(size, done) {

@@ -40,11 +40,22 @@ function nestedArrayQuery(coll, id, fieldName) {
   return {
     size: function(done) {
       toArray(function(err, x) {
-        console.log('err=' + err);
         if (err) return done(err);
         if (x.length !== 1) return done('Size should be 1 but was '  +x.length);
         done(null, x[0][fieldName].length);
       });
+    },
+    get: function(done) {
+      toArray(function(err, x) {
+        if (err) return done(err);
+        if (x.length !== 1) return done('Size should be 1 but was '  +x.length);
+        done(null, x[0][fieldName]);
+      });
+    },
+    add: function(v, done) {
+      var change = {};
+      change[fieldName] = v;
+      coll.updateOne(byId, {$push: change}, done);
     }
   };
 }
