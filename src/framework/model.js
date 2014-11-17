@@ -47,6 +47,10 @@ function create(coll) {
           normalizeChange(change);
           coll.update(byId, {$set: change}, done);
         },
+        updateDirectly: function(change, done) {
+          normalizeChange(change);
+          coll.update(byId, change, done);
+        },
         get: function(done) {
           return this.one(done);
         }

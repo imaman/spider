@@ -7,6 +7,9 @@ var expect = require('expect.js');
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
 
+var defineResource = autoController.defineResource;
+var defineArray = autoController.defineArray;
+
 var url = 'mongodb://localhost:27017/test_spider';
 
 describe('spider', function() {
@@ -264,33 +267,60 @@ describe('spider', function() {
           }
         )(null, done);
       });
-      it('supports an ARRAY type', function(done) {
-        autoController.defineResource(app, qBooks, 'books', 'book', {
-          post: function(req) { return { editions: req.body.editions } },
-          put: 'NOT_USED'
-        });
-        funflow.newFlow(
-          function post(done) {
-            request(app).post('/books').send({editions: [
-              {year: 2011, ordinal: '1st'},
-              {year: 2012, ordinal: '2nd'}
-            ]}).expect(201, done);
-          },
-          function list(recap, done) {
-            this.id = recap.body.id;
-            noRendering();
-            request(app).get('/books/' + this.id + '.html').expect(200, done);
-          },
-          function checkHtml(recap, done) {
-            expect(recap.body.payload).to.eql([
-              { key: 'editions', type: 'ARRAY', value: [
+      describe('nested arrays', function() {
+        it('supports an ARRAY type', function(done) {
+          autoController.defineResource(app, qBooks, 'books', 'book', {
+            post: function(req) { return { editions: req.body.editions } },
+            put: 'NOT_USED'
+          });
+          funflow.newFlow(
+            function post(done) {
+              request(app).post('/books').send({editions: [
                 {year: 2011, ordinal: '1st'},
                 {year: 2012, ordinal: '2nd'}
-              ]}
-            ]);
-            done();
-          }
-        )(null, done);
+              ]}).expect(201, done);
+            },
+            function list(recap, done) {
+              this.id = recap.body.id;
+              noRendering();
+              request(app).get('/books/' + this.id + '.html').expect(200, done);
+            },
+            function checkHtml(recap, done) {
+              expect(recap.body.payload).to.eql([
+                { key: 'editions', type: 'ARRAY', value: [
+                  {year: 2011, ordinal: '1st'},
+                  {year: 2012, ordinal: '2nd'}
+                ]}
+              ]);
+              done();
+            }
+          )(null, done);
+        });
+        it('allows posting an individual element', function(done) {
+          var books = defineResource(app, qBooks, 'books', 'book', {
+            post: function(req) { return { editions: [] } },
+            put: 'NOT_USED'
+          });
+
+          defineArray(books, 'editions', {
+            post: function(req) { return { year: req.body.year, ordinal: req.body.ordinal } },
+            put: 'NOT_USED'
+          });
+          funflow.newFlow(
+            function postBook(done) {
+              request(app).post('/books').send({}).expect(201, done);
+            },
+            function postEdition(recap, done) {
+              this.id = recap.body.id;
+              request(app).post('/books/' + this.id + '/editions').send({ year: 2011, ordinal: '1st'}).expect(201, done);
+            },
+            function list(recap, done) {
+              this.index = recap.body.index;
+              expect(recap.body).to.eql({index: 0});
+              done();
+            }
+          )(null, done);
+        });
       });
     });
   });
