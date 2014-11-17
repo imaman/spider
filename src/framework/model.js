@@ -63,21 +63,7 @@ function pluralQuery(coll, where) {
   function toArray(f) {
     coll.find(where).toArray(f);
   }
-  return {
-    map: function(mapper, done) {
-      toArray(function(err, data) {
-        if (err) return done(err);
-        if (mapper)
-          data = data.map(mapper);
-        done(null, data);
-      });
-    },
-    size: function(done) {
-      toArray(function(err, data) {
-        if (err) return done(err);
-        done(null, data.length);
-      });
-    },
+  return inject(toArray, {
     remove: function(done) {
       coll.removeMany(where, function(err) {
         return done(err);
@@ -97,7 +83,7 @@ function pluralQuery(coll, where) {
       }
       return pick(coll, d)
     }
-  }
+  });
 }
 
 function pick(coll, where) {
