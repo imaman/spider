@@ -307,18 +307,18 @@ describe('model', function() {
     });
   });
 
-  describe('nested array queries', function() {
+  describe('nested array query', function() {
     it('is created by passing the field name inside an array as a sub-query', function() {
       var model = newModel(collection);
       model.q('1234567890ab1234567890ab').q(['arrName']);
     });
-    it('returns the size of the nested array', function(done) {
+    it('supports, size(), add(), and get()', function(done) {
       var model = newModel(collection);
       funflow.newFlow(
         function createDoc(done) {
           model.add({names: []}, done);
         },
-        function size(id, done) {
+        function inspectSize(id, done) {
           this.id = id;
           this.q = model.q(id).q(['names']);
           this.q.size(done);
@@ -327,31 +327,34 @@ describe('model', function() {
           expect(size).to.equal(0);
           done();
         },
-        function addAnElement(done) {
+        function insert(done) {
           this.q.add('John', done);
         },
-        function checkSucces(done) {
+        function list(done) {
           this.q.get(done);
         },
-        function checkContent(data, done) {
+        function shouldContainTheInsertedElement(data, done) {
           expect(data).to.eql(['John']);
+          done();
+        },
+        function inspectSizeAfterInsertion(done) {
           this.q.size(done);
         },
-        function sizeAfterInsertion(size, done) {
+        function shouldBeOne(size, done) {
           expect(size).to.equal(1);
           done();
         },
-        function addASecondElement(done) {
+        function insertTheSecondElement(done) {
           this.q.add('Paul', done);
         },
-        function fetchContentAfterSecondInsertion(done) {
+        function listAfterSecondInsertion(done) {
           this.q.get(done);
         },
-        function checkContentAfterSecondInsertion(data, done) {
+        function shouldContainBothElements(data, done) {
           expect(data).to.eql(['John', 'Paul']);
           this.q.size(done);
         },
-        function checkSizeAfterSecondInsertion(size, done) {
+        function inspectSizeAfterSecondInsertion(size, done) {
           expect(size).to.equal(2);
           done();
         }
