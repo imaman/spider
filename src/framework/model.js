@@ -37,19 +37,24 @@ function nestedArrayQuery(coll, id, fieldName) {
   function toArray(f) {
     coll.find(byId).toArray(f);
   }
+
+  var projection = {};
+  projection[fieldName] = true;
+
+  function one(f) {
+    coll.findOne(byId, projection, f);
+  }
   return {
     size: function(done) {
-      toArray(function(err, x) {
+      this.get(function(err, arr) {
         if (err) return done(err);
-        if (x.length !== 1) return done('Size should be 1 but was '  +x.length);
-        done(null, x[0][fieldName].length);
+        done(null, arr.length);
       });
     },
     get: function(done) {
-      toArray(function(err, x) {
+      one(function(err, element) {
         if (err) return done(err);
-        if (x.length !== 1) return done('Size should be 1 but was '  +x.length);
-        done(null, x[0][fieldName]);
+        done(null, element[fieldName]);
       });
     },
     add: function(v, done) {

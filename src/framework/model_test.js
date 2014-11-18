@@ -340,6 +340,20 @@ describe('model', function() {
         function sizeAfterInsertion(size, done) {
           expect(size).to.equal(1);
           done();
+        },
+        function addASecondElement(done) {
+          this.q.add('Paul', done);
+        },
+        function fetchContentAfterSecondInsertion(done) {
+          this.q.get(done);
+        },
+        function checkContentAfterSecondInsertion(data, done) {
+          expect(data).to.eql(['John', 'Paul']);
+          this.q.size(done);
+        },
+        function checkSizeAfterSecondInsertion(size, done) {
+          expect(size).to.equal(2);
+          done();
         }
       )(null, function(e) {
         done(e && e.flowTrace);
