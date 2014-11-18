@@ -51,6 +51,11 @@ function nestedArrayQuery(coll, id, fieldName) {
         done(null, arr.length);
       });
     },
+    remove: function(done) {
+      var change = {};
+      change[fieldName] = [];
+      coll.updateOne(byId, {$set: change}, done);
+    },
     get: function(done) {
       one(function(err, element) {
         if (err) return done(err);

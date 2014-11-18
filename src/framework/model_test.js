@@ -312,7 +312,7 @@ describe('model', function() {
       var model = newModel(collection);
       model.q('1234567890ab1234567890ab').q(['arrName']);
     });
-    it('supports, size(), add(), and get()', function(done) {
+    it('supports size inpsection, insertion and listing', function(done) {
       var model = newModel(collection);
       funflow.newFlow(
         function createDoc(done) {
@@ -361,6 +361,38 @@ describe('model', function() {
       )(null, function(e) {
         done(e && e.flowTrace);
       });
+    });
+    it('get() returns an empty array when invoked on an empty array', function(done) {
+      var model = newModel(collection);
+      funflow.newFlow(
+        function createDoc(done) { model.add({names: []}, done); },
+        function list(id, done) {
+          model.q(id).q(['names']).get(done);
+        },
+        function shouldBeEmpty(data, done) {
+          expect(data).to.eql([]);
+          done();
+        }
+      )(null, done);
+    });
+    it('supports deletion', function(done) {
+      var model = newModel(collection);
+      funflow.newFlow(
+        function createDoc(done) { model.add({n: 5, arr: ['A', 'B']}, done); },
+        function deleteTheArray(id, done) {
+          this.id = id;
+          var q = model.q(id).q(['arr']);
+          q.remove(done);
+        },
+        function inspectDoc(done) {
+          model.q(this.id).get(done);
+        },
+        function checkContent(value, done) {
+          expect(value).to.have.property('n', 5);
+          expect(value).to.have.property('arr').eql([]);
+          done();
+        }
+      )(null, done);
     });
   });
 });
