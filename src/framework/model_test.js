@@ -381,8 +381,7 @@ describe('model', function() {
         function createDoc(done) { model.add({n: 5, arr: ['A', 'B']}, done); },
         function deleteTheArray(id, done) {
           this.id = id;
-          var q = model.q(id).q(['arr']);
-          q.remove(done);
+          model.q(id).q(['arr']).remove(done);
         },
         function inspectDoc(done) {
           model.q(this.id).get(done);
@@ -390,6 +389,58 @@ describe('model', function() {
         function checkContent(value, done) {
           expect(value).to.have.property('n', 5);
           expect(value).to.have.property('arr').eql([]);
+          done();
+        }
+      )(null, done);
+    });
+    it('supports mapping', function(done) {
+      var model = newModel(collection);
+      funflow.newFlow(
+        function createDoc(done) { model.add({n: 5, arr: ['A', 'B']}, done); },
+        function map(id, done) {
+          this.id = id;
+          model.q(id).q(['arr']).map(function(curr) { return '#' + curr + '#' }, done);
+        },
+        function check(data, done) {
+          expect(data).to.eql(['#A#', '#B#']);
+          done();
+        }
+      )(null, done);
+    });
+  });
+  describe('element of nested array query', function() {
+    it('supports deletion of primitive values', function(done) {
+      var model = newModel(collection);
+      funflow.newFlow(
+        function createDoc(done) { model.add({n: 5, arr: ['A', 'B']}, done); },
+        function map(id, done) {
+          this.id = id;
+          model.q(id).q(['arr']).q('A').remove(done);
+        },
+        function inspect(done) {
+          model.q(this.id).get(done);
+        },
+        function check(value, done) {
+          expect(value).to.have.property('n', 5);
+          expect(value).to.have.property('arr').eql(['B']);
+          done();
+        }
+      )(null, done);
+    });
+    it('supports deletion of objects by specifying the name of a unique filed in the subquery', function(done) {
+      var model = newModel(collection);
+      funflow.newFlow(
+        function createDoc(done) { model.add({n: 5, arr: [{name: 'Alice', city: 'ATL'}, {name: 'Bob', city: 'BAL'}]}, done); },
+        function map(id, done) {
+          this.id = id;
+          model.q(id).q(['arr']).q('name', 'Alice').remove(done);
+        },
+        function inspect(done) {
+          model.q(this.id).get(done);
+        },
+        function check(value, done) {
+          expect(value).to.have.property('n', 5);
+          expect(value).to.have.property('arr').eql([{name: 'Bob', city: 'BAL'}]);
           done();
         }
       )(null, done);

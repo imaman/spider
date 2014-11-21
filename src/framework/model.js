@@ -31,12 +31,8 @@ function inject(toArray, target) {
   return target;
 }
 
-function nestedArrayQuery(coll, id, fieldName) {
+function nestedArrayElementQuery(coll, id, fieldName, key, val) {
   var byId = {_id: ObjectID.createFromHexString(id)}
-
-  function toArray(f) {
-    coll.find(byId).toArray(f);
-  }
 
   var projection = {};
   projection[fieldName] = true;
@@ -45,6 +41,34 @@ function nestedArrayQuery(coll, id, fieldName) {
     coll.findOne(byId, projection, f);
   }
   return {
+    remove: function(done) {
+      var change = {$pull: {}};
+      change['$pull'][fieldName] = val;
+      if (key) {
+        change['$pull'][fieldName] = {};
+        change['$pull'][fieldName][key] = val;
+      }
+      coll.update(byId, change, done);
+    }
+  }
+}
+
+function nestedArrayQuery(coll, id, fieldName) {
+  var byId = {_id: ObjectID.createFromHexString(id)}
+
+  var projection = {};
+  projection[fieldName] = true;
+
+  function one(f) {
+    coll.findOne(byId, projection, f);
+  }
+  return {
+    map: function(mapper, done) {
+      this.get(function(err, arr) {
+        if (err) return done(err);
+        done(null, arr.map(mapper));
+      });
+    },
     size: function(done) {
       this.get(function(err, arr) {
         if (err) return done(err);
@@ -66,6 +90,13 @@ function nestedArrayQuery(coll, id, fieldName) {
       var change = {};
       change[fieldName] = v;
       coll.updateOne(byId, {$push: change}, done);
+    },
+    q: function(key, val) {
+      if (arguments.length === 1) {
+        val = key;
+        key = undefined;
+      }
+      return nestedArrayElementQuery(coll, id, fieldName, key, val);
     }
   };
 }
