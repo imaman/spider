@@ -50,12 +50,26 @@ function nestedArrayElementQuery(coll, id, fieldName, key, val) {
       }
       coll.update(byId, change, done);
     },
-    get: function(done) {
+    update: function(change, done) {
+      var setter = {};
+      Object.keys(change).forEach(function(k) {
+        setter[fieldName + '.$.' + k] = change[k];
+      });
+
       var cond = { _id: byId._id };
       cond[fieldName + '.' + key] = val;
-      coll.findOne(cond, function(err, element) {
+      coll.update(cond, {$set: setter}, done);
+    },
+    get: function(done) {
+      var cond = { _id: byId._id };
+      var elemCond = {};
+      elemCond[fieldName] = { $elemMatch: {} };
+      elemCond[fieldName]['$elemMatch'][key] = val;
+      coll.findOne(byId, elemCond, function(err, element) {
         if (err) return done(err);
-        done(null, element[fieldName][0]);
+        var arr = element[fieldName];
+        if (arr.length != 1) return done('Expected exactly one match but found ' + arr.lengh);
+        done(null, arr[0]);
       });
     }
   }

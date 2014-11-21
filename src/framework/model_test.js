@@ -459,5 +459,59 @@ describe('model', function() {
         }
       )(null, done);
     });
+    it('supports update', function(done) {
+      var model = newModel(collection);
+      funflow.newFlow(
+        function createDoc(done) { model.add({n: 5, arr: [{name: 'Alice', city: 'ATL'}, {name: 'Bob', city: 'BAL'}]}, done); },
+        function update(id, done) {
+          this.id = id;
+          this.q = model.q(id).q(['arr']).q('name', 'Alice');
+          this.q.update({city: 'Austin'}, done);
+        },
+        function list(done) {
+          this.q.get(done);
+        },
+        function inspect(value, done) {
+          expect(value).to.eql({name: 'Alice', city: 'Austin'});
+          done();
+        }
+      )(null, done);
+    });
+    it('can update several fields of the selected array element at once', function(done) {
+      var model = newModel(collection);
+      funflow.newFlow(
+        function createDoc(done) { model.add({n: 5, arr: [{name: 'Alice', city: 'ATL'}, {name: 'Bob', city: 'BAL'}]}, done); },
+        function update(id, done) {
+          this.id = id;
+          this.q = model.q(id).q(['arr']).q('name', 'Alice');
+          this.q.update({city: 'Austin', state: 'TX'}, done);
+        },
+        function list(done) {
+          this.q.get(done);
+        },
+        function inspect(value, done) {
+          expect(value).to.eql({name: 'Alice', city: 'Austin', state: 'TX'});
+          done();
+        }
+      )(null, done);
+    });
+    it('updates to one element do not affect other elements in the array', function(done) {
+      var model = newModel(collection);
+      funflow.newFlow(
+        function createDoc(done) { model.add({n: 5, arr: [{name: 'Alice', city: 'ATL'}, {name: 'Bob', city: 'BAL'}]}, done); },
+        function update(id, done) {
+          this.id = id;
+          this.q = model.q(id).q(['arr']);
+          this.q.q('name', 'Alice').update({city: 'Austin', state: 'TX'}, done);
+        },
+        function list(done) {
+          this.q.q('name', 'Bob').get(done);
+        },
+        function inspect(value, done) {
+          expect(value).to.eql({name: 'Bob', city: 'BAL'});
+          done();
+        }
+      )(null, done);
+    });
   });
 });
