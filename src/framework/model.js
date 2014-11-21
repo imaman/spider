@@ -49,6 +49,14 @@ function nestedArrayElementQuery(coll, id, fieldName, key, val) {
         change['$pull'][fieldName][key] = val;
       }
       coll.update(byId, change, done);
+    },
+    get: function(done) {
+      var cond = { _id: byId._id };
+      cond[fieldName + '.' + key] = val;
+      coll.findOne(cond, function(err, element) {
+        if (err) return done(err);
+        done(null, element[fieldName][0]);
+      });
     }
   }
 }

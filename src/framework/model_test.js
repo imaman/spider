@@ -427,7 +427,7 @@ describe('model', function() {
         }
       )(null, done);
     });
-    it('supports deletion of objects by specifying the name of a unique filed in the subquery', function(done) {
+    it('can target a non-primitive element by sppecifying the name of a unique field in the subquery', function(done) {
       var model = newModel(collection);
       funflow.newFlow(
         function createDoc(done) { model.add({n: 5, arr: [{name: 'Alice', city: 'ATL'}, {name: 'Bob', city: 'BAL'}]}, done); },
@@ -441,6 +441,20 @@ describe('model', function() {
         function check(value, done) {
           expect(value).to.have.property('n', 5);
           expect(value).to.have.property('arr').eql([{name: 'Bob', city: 'BAL'}]);
+          done();
+        }
+      )(null, done);
+    });
+    it('supports listing', function(done) {
+      var model = newModel(collection);
+      funflow.newFlow(
+        function createDoc(done) { model.add({n: 5, arr: [{name: 'Alice', city: 'ATL'}, {name: 'Bob', city: 'BAL'}]}, done); },
+        function list(id, done) {
+          this.id = id;
+          model.q(id).q(['arr']).q('name', 'Alice').get(done);
+        },
+        function inspect(value, done) {
+          expect(value).to.eql({name: 'Alice', city: 'ATL'});
           done();
         }
       )(null, done);
